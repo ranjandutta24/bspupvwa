@@ -1,0 +1,449 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden">
+  <div
+    class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-3 sm:py-2 sm:px-10 border-b bg-card dark:bg-transparent"
+  >
+    <div class="flex-1 min-w-0">
+      <!-- Breadcrumbs -->
+
+      <!-- Title -->
+      <div class="mt-2">
+        <h2
+          class="text-2xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate"
+        >
+          Temp Trend Report
+        </h2>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+      <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="addnew()">
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2 mr-1">Add</span>
+            </button> -->
+      <div
+        class="flex flex-row items-center space-x-3 mr-10 text-md font-semibold"
+      >
+        <span>Start Date: {{ start }}</span>
+        <span>End Date: {{ end }}</span>
+      </div>
+      <button mat-icon-button [color]="'primary'" (click)="matDrawer.open()">
+        <mat-icon [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+      </button>
+    </div>
+  </div>
+  <mat-drawer-container class="flex-auto h-full bg-card" [hasBackdrop]="false">
+    <mat-drawer
+      class="w-full md:w-100 dark:bg-gray-900"
+      [mode]="'over'"
+      [opened]="false"
+      [position]="'end'"
+      [disableClose]="false"
+      #matDrawer
+    >
+      <div class="flex flex-col w-full overflow-hidden">
+        <div
+          class="items-center w-full py-0 px-3 bg-blue-800 dark:bg-accent-700"
+        >
+          <div
+            class="flex items-center justify-between w-full max-w-3xl mx-auto"
+          >
+            <span class="text-white font-semibold text-xl">Filter</span>
+            <div class="flex flex-row items-center justify-center">
+              <a
+                mat-icon-button
+                [matTooltip]="'Close'"
+                (click)="matDrawer.close()"
+              >
+                <mat-icon
+                  class="text-white"
+                  [svgIcon]="'heroicons_outline:x-mark'"
+                ></mat-icon>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col flex-auto p-6 pt-10 sm:p-12 sm:pt-10 overflow-y-auto"
+        >
+          <div class="row flex flex-wrap">
+            <mat-form-field class="flex-grow mr-2">
+              <mat-label>Choose Start date</mat-label>
+              <input
+                matInput
+                [matDatepicker]="datepicker1"
+                [(ngModel)]="filterJson.sDate"
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="datepicker1"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #datepicker1></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow ml-2">
+              <mat-label>Start time</mat-label>
+              <input
+                matInput
+                [ngxTimepicker]="timepicker1"
+                readonly
+                [(ngModel)]="filterJson.startTime"
+              />
+              <ngx-material-timepicker #timepicker1></ngx-material-timepicker>
+            </mat-form-field>
+          </div>
+
+          <div class="row flex flex-wrap">
+            <mat-form-field class="flex-grow mr-2">
+              <mat-label>Choose End date</mat-label>
+              <input
+                matInput
+                [matDatepicker]="datepicker2"
+                [(ngModel)]="filterJson.eDate"
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="datepicker2"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #datepicker2></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow ml-2">
+              <mat-label>End time</mat-label>
+              <input
+                matInput
+                [ngxTimepicker]="timepicker2"
+                readonly
+                [(ngModel)]="filterJson.endTime"
+              />
+              <ngx-material-timepicker #timepicker2></ngx-material-timepicker>
+            </mat-form-field>
+          </div>
+
+          <div class="flex flex-row items-center justify-end w-full">
+            <button
+              mat-raised-button
+              style="background-color: #1e3a8a; color: #fff"
+              (click)="onFilter()"
+              class="submit-button"
+              aria-label="Filter"
+            >
+              Filter
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-drawer>
+    <mat-drawer-content class="overflow-y-auto px-5 py-5 pb-5">
+      <div
+        *ngIf="loading"
+        class="flex flex-col justify-center items-center h-full"
+      >
+        <mat-spinner></mat-spinner>
+      </div>
+      <div
+        style="margin-top: 10%"
+        *ngIf="!loading && detailsReport.length == 0"
+      >
+        <div
+          class="text-4xl md:text-7xl font-extrabold tracking-tight leading-tight md:leading-none text-center"
+        >
+          No Data!!
+        </div>
+        <div
+          class="mt-2 text-lg md:text-xl font-medium tracking-tight text-center text-secondary"
+        >
+          There are no data to display!!
+        </div>
+      </div>
+      <div class="slabTocoil" *ngIf="!loading && detailsReport.length > 0">
+        <div class="filter">
+          <h5 class="border border-slate-600 px-3 bg-blue-800 text-white ...">
+            Filter
+          </h5>
+
+          <div class="filter_con">
+            <div class="dest">
+              <h5
+                class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+              >
+                Furnace
+              </h5>
+              <div class="each_filter">
+                <mat-checkbox
+                  *ngFor="let item of furnaces; let rindex = index"
+                  (click)="localFilter()"
+                  [checked]="isChecked(item)"
+                  (change)="onCheckboxChange($event, item)"
+                >
+                  {{ item }}
+                  <span class="cnt"
+                    >({{ filterCount(item, "CHRGD_FUR_NO") }})</span
+                  >
+                  <!-- <span class="cnt">({{ filterCount(item, "DEST") }})</span> -->
+                </mat-checkbox>
+              </div>
+            </div>
+            <div class="quality">
+              <h5
+                class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+              >
+                Quality Parameter
+              </h5>
+              <div class="each_filter">
+                <!-- <mat-checkbox
+                  (click)="localFilter()"
+                  [checked]="isChecked(item)"
+                  (change)="onCheckboxChange($event, item)"
+                >
+                  Min
+                </mat-checkbox> -->
+                <mat-checkbox
+                  (change)="onCheckboxChangeMin($event)"
+                  *ngIf="!max"
+                >
+                  Min
+                </mat-checkbox>
+                <mat-checkbox
+                  (change)="onCheckboxChangeMax($event)"
+                  *ngIf="!min"
+                >
+                  Max
+                </mat-checkbox>
+
+                <div style="display: flex; justify-content: space-between">
+                  <mat-checkbox (change)="onCheckboxChange35($event)">
+                    <p>< 35℃ %</p>
+                  </mat-checkbox>
+                  <div style="margin-top: 8px; margin-right: 15px">
+                    <span class="cnt"> ({{ filter35percent(1) }}) </span>
+                    <span class="cnt"> ({{ filter35percent(2) }}) </span>
+                    <span class="cnt"> ({{ filter35percent(3) }}) </span>
+                    <span class="cnt"> ({{ filter35percent(4) }}) </span>
+                  </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between">
+                  <mat-checkbox (change)="onCheckboxChange140($event)">
+                    <p>< 1040℃ %</p>
+                  </mat-checkbox>
+
+                  <div style="margin-top: 8px; margin-right: 15px">
+                    <span class="cnt"> ({{ filter1040percent(1) }}) </span>
+                    <span class="cnt"> ({{ filter1040percent(2) }}) </span>
+                    <span class="cnt"> ({{ filter1040percent(3) }}) </span>
+                    <span class="cnt"> ({{ filter1040percent(4) }}) </span>
+                  </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between">
+                  <mat-checkbox (change)="onCheckboxChange160($event)">
+                    <p>< 1060℃ %</p>
+                  </mat-checkbox>
+
+                  <div style="margin-top: 8px; margin-right: 15px">
+                    <span class="cnt"> ({{ filter1060percent(1) }}) </span>
+                    <span class="cnt"> ({{ filter1060percent(2) }}) </span>
+                    <span class="cnt"> ({{ filter1060percent(3) }}) </span>
+                    <span class="cnt"> ({{ filter1060percent(4) }}) </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="quality">
+              <h5
+                class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+              >
+                Temperature Parameter
+              </h5>
+              <div class="each_filter">
+                <div style="display: flex; justify-content: space-between">
+                  <mat-checkbox (change)="onCheckboxChange110($event)">
+                    <p>< 1010℃</p>
+                  </mat-checkbox>
+
+                  <div style="margin-top: 8px; margin-right: 15px">
+                    <span class="cnt"> ({{ filter1010percent(1) }}) </span>
+                    <span class="cnt"> ({{ filter1010percent(2) }}) </span>
+                    <span class="cnt"> ({{ filter1010percent(3) }}) </span>
+                    <span class="cnt"> ({{ filter1010percent(4) }}) </span>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: space-between">
+                  <mat-checkbox (change)="onCheckboxChange140_2($event)">
+                    <p>< 1040℃</p>
+                  </mat-checkbox>
+
+                  <div style="margin-top: 8px; margin-right: 15px">
+                    <span class="cnt"> ({{ filter1040_2percent(1) }}) </span>
+                    <span class="cnt"> ({{ filter1040_2percent(2) }}) </span>
+                    <span class="cnt"> ({{ filter1040_2percent(3) }}) </span>
+                    <span class="cnt"> ({{ filter1040_2percent(4) }}) </span>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: space-between">
+                  <mat-checkbox (change)="onCheckboxChange180($event)">
+                    <p>< 1080℃</p>
+                  </mat-checkbox>
+
+                  <div style="margin-top: 8px; margin-right: 15px">
+                    <span class="cnt"> ({{ filter1080percent(1) }}) </span>
+                    <span class="cnt"> ({{ filter1080percent(2) }}) </span>
+                    <span class="cnt"> ({{ filter1080percent(3) }}) </span>
+                    <span class="cnt"> ({{ filter1080percent(4) }}) </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="report_table">
+          <table
+            class="border-collapse border border-slate-500 w-full col-span-3"
+          >
+            <thead style="position: sticky; top: 0">
+              <tr
+                class="border-collapse border border-slate-500 bg-blue-800 text-white hover:bg-blue-300 hover:font-semibold ..."
+              >
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  *ngFor="let list of tableHead; let rindex = index"
+                >
+                  <div class="flex flex-row items-center">
+                    {{ list.name }}
+                    <button
+                      mat-icon-button
+                      (click)="sortArrayByProperty(list.attr, rindex)"
+                      *ngIf="list.arrowDownward && list.showBtn"
+                      class="white-icon"
+                    >
+                      <mat-icon svgIcon="mat_outline:arrow_downward"></mat-icon>
+                    </button>
+                    <button
+                      mat-icon-button
+                      (click)="sortArrayByPropertyReverse(list.attr, rindex)"
+                      *ngIf="!list.arrowDownward && list.showBtn"
+                      class="white-icon"
+                    >
+                      <mat-icon svgIcon="mat_outline:arrow_upward"></mat-icon>
+                    </button>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-blue-50">
+              <tr
+                class="hover:bg-blue-300"
+                *ngFor="let row of filteredData; let rindex = index"
+              >
+                <td class="border border-slate-700 px-3 ...">
+                  {{ rindex + 1 }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.COILID }}
+                </td>
+                <td
+                  style="white-space: nowrap"
+                  class="border border-slate-700 px-3 ..."
+                >
+                  {{ row.L3_SLABID }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.GRADE }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.CHRGD_FUR_NO }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.SLAB_THCK }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.SLAB_WDTH }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.SLAB_LNTH }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.SLAB_WT }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.R5_TMP_MIN }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.R5_TMP_MAX }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.R5_TMP_AVG }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.RMTEMP_PEAKDIF }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FM_EN_TEMP }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FM_TEMP1 }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FM_TEMP2 }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FM_TEMP3 }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FM_TEMP4 }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FM_TEMP5 }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FM_TEMP6 }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FM_TEMP7 }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FM_EX_TEMP }}
+                </td>
+
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FIN_TEMP_MIN }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FIN_TEMP_MAX }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FMTEMP_PEAKDIFF }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FIN_TEMP_AVG }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FIN_TEMP_SD }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.COIL_TEMP_MIN }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.COIL_TEMP_MAX }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.COIL_TEMP_AVG }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.COIL_TEMP_SD }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FM_COIL_TEMP }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.ACT_COILR_TEMP }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</div>

@@ -1,0 +1,92 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden">
+
+  <div
+    class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-3 sm:py-3 sm:px-10 border-b bg-card dark:bg-transparent">
+    <div class="flex-1 min-w-0">
+      <!-- Breadcrumbs -->
+
+      <!-- Title -->
+      <div class="mt-2">
+        <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+          Users
+        </h2>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+      <button class="ml-4" mat-flat-button [color]="'primary'" (click)="addnew()">
+        <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+        <span class="ml-2 mr-1">Add</span>
+      </button>
+      <button mat-icon-button [color]="'primary'" (click)="matDrawer.open()">
+        <mat-icon [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+      </button>
+    </div>
+  </div>
+  <mat-drawer-container class="flex-auto h-full bg-card" [hasBackdrop]="false">
+    <mat-drawer class="w-full md:w-160 dark:bg-gray-900" [mode]="drawerMode" [opened]="false" [position]="'end'"
+      [disableClose]="false" #matDrawer>
+
+      <div class="flex flex-col w-full overflow-hidden">
+
+        <!-- View mode -->
+
+
+        <!-- Header -->
+        <div class=" items-center w-full py-0 px-3 bg-primary-800 dark:bg-accent-700">
+          <div class="flex items-center justify-between w-full max-w-3xl mx-auto">
+            <span class="text-white font-semibold text-xl">Filter User</span>
+            <div class="flex flex-row items-center justify-center">
+
+              <!-- <button mat-icon-button [matTooltip]="'Add'">
+                                  <mat-icon class="text-white" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                              </button> -->
+              <a mat-icon-button [matTooltip]="'Close'" (click)="matDrawer.close()">
+                <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+              </a>
+
+            </div>
+
+          </div>
+
+        </div>
+        <form class="flex flex-col flex-auto p-6 pt-10 sm:p-12 sm:pt-10 overflow-y-auto">
+          <!-- Header -->
+
+
+
+          <!-- Role -->
+
+          <!-- <mat-form-field class="flex-auto gt-xs:pr-3 w-full">
+            <mat-label>Select Department</mat-label>
+            <select matNativeControl [placeholder]="'Select Role'" name="role" [(ngModel)]="department">
+              <option value="All">All</option>
+              <option *ngFor="let department of departments" [value]="department.name">
+                {{department.name}}</option>
+            </select>
+            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:user'"></mat-icon>
+          </mat-form-field>
+
+
+          <div fxLayout="column" fxLayoutAlign="end center"
+            style="margin-bottom: 20px; margin-top:20px;margin-left:10px;">
+            <button mat-raised-button color="primary" (click)="onFilter()" class="submit-button" aria-label="Filter">
+              Filter
+            </button>
+          </div> -->
+        </form>
+      </div>
+
+    </mat-drawer>
+    <mat-drawer-content class="flex overflow-hidden">
+      <!-- <fuse-alert class="mb-8" *ngIf="showAlert" [type]="'success'" [appearance]="'fill'">
+          <span fuseAlertTitle>Success alert</span>
+          {{alert.message}}
+        </fuse-alert> -->
+      <ng-container>
+        <!-- <app-sub-department-list class="w-full"></app-sub-department-list> -->
+      </ng-container>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</div>

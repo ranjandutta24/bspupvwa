@@ -1,0 +1,56 @@
+[
+  {
+    "feature": "Settings",
+    "privilege": [
+      "View Organization",
+      "Edit Organization",
+      "Delete Organization",
+      "App Dashboard",
+      "Dashboard",
+      "View User",
+      "Edit User",
+      "Delete User",
+      "Reset Password",
+      "View User Log",
+      "Add Role",
+      "Edit Role",
+      "Delete Role",
+      "View Role",
+      "Add Department",
+      "Edit Department",
+      "Delete Department",
+      "View Department",
+      "Add Sub Department",
+      "Edit Sub Department",
+      "Delete Sub Department",
+      "View Sub Department",
+      "Add Designation",
+      "Edit Designation",
+      "Delete Designation",
+      "View Designation",
+      "Add Section",
+      "Edit Section",
+      "Delete Section",
+      "View Section"
+    ]
+  },
+  {
+    "feature": "File & Document Management",
+    "privilege": [
+      "Add File",
+      "Edit File",
+      "Delete File",
+      "View File",
+      "View File Log",
+      "Add Reference",
+      "Edit Reference",
+      "Delete Reference",
+      "View Reference",
+      "View Activity Log",
+      "Edit Share File",
+      "Delete Share File",
+      "Multiple Share File",
+      "Download PDF"
+    ]
+  }
+]

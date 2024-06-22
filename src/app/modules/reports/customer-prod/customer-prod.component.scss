@@ -1,0 +1,101 @@
+.slabTocoil {
+    display: flex;
+    margin-top: 10px;
+}
+
+.filter {
+    width: 15%;
+    // height: 400px;
+    // padding-top: 5px;
+    // padding-left: 5px;
+    // border: 1px solid black;
+    margin-right: 10px;
+   
+    box-shadow: 0px 0px 10px 0px rgb(152 152 152);
+
+      /* WebKit specific styling */
+      ::-webkit-scrollbar {
+        width: 12px; /* Width of the scrollbar */
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1; /* Color of the track */
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color:#526dc6; /* Color of the thumb */
+        border-radius: 1px; /* Roundness of the thumb */
+        border: 3px solid #526dc6; /* Border around the thumb */
+    }
+
+    /* General scrollbar properties */
+    scrollbar-face-color: #888; /* Color of the scrollbar face */
+    scrollbar-arrow-color: #f1f1f1; /* Color of the scrollbar arrows */
+    scrollbar-highlight-color: #f1f1f1; /* Highlight color */
+    scrollbar-shadow-color: #888; /* Shadow color */
+    scrollbar-3dlight-color: #f1f1f1; /* 3D light color */
+    scrollbar-darkshadow-color: #888; /* Dark shadow color */
+}
+.filter_con{
+    height: calc(100vh - 182px);
+    overflow: scroll;
+
+      /* WebKit specific styling */
+      ::-webkit-scrollbar {
+        width: 12px; /* Width of the scrollbar */
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1; /* Color of the track */
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #e7e7e7; /* Color of the thumb */
+        border-radius: 6px; /* Roundness of the thumb */
+        border: 3px solid #ffffff; /* Border around the thumb */
+    }
+
+    /* General scrollbar properties */
+    scrollbar-face-color: #888; /* Color of the scrollbar face */
+    scrollbar-arrow-color: #f1f1f1; /* Color of the scrollbar arrows */
+    scrollbar-highlight-color: #f1f1f1; /* Highlight color */
+    scrollbar-shadow-color: #888; /* Shadow color */
+    scrollbar-3dlight-color: #f1f1f1; /* 3D light color */
+    scrollbar-darkshadow-color: #888; /* Dark shadow color */
+   
+}
+
+.report_table {
+    padding-left: 5px;
+    width: 85%;
+    // height: 400px;
+    // background-color: rgb(229, 255, 0);
+    // border: 1px solid black;
+    box-shadow: 0px 0px 10px 0px rgb(152 152 152);
+    height: calc(100vh - 160px);
+    overflow: scroll;
+}
+
+.each_filter {
+    height: 25%;
+    border: 1px solid black;
+    border-collapse: collapse;
+    display: flex;
+    flex-direction: column;
+    height: 200px;
+    overflow: scroll;
+}
+
+.white-icon .mat-icon {
+    color: white !important;
+}
+.filter_con{
+    height: calc(100vh - 182px);
+    overflow: scroll;
+}
+.cnt{
+    color:#8e8e8e
+    }
+    tbody tr:nth-child(odd) {
+        background-color: #ffffff; /* Replace with your desired color */
+    }

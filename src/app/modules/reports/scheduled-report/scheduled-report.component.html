@@ -1,0 +1,350 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden">
+  <div
+    class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-3 sm:py-2 sm:px-10 border-b bg-card dark:bg-transparent"
+  >
+    <div class="flex-1 min-w-0">
+      <!-- Breadcrumbs -->
+
+      <!-- Title -->
+      <div class="mt-2">
+        <h2
+          class="text-2xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate"
+        >
+          Rolling Sequence
+        </h2>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+      <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="addnew()">
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2 mr-1">Add</span>
+            </button> -->
+      <div
+        class="flex flex-row items-center space-x-3 mr-10 text-md font-semibold"
+      >
+        <span>Date: {{ filterJson.date | date }}</span>
+        <span>Shift: {{ filterJson.shift }}</span>
+      </div>
+      <button mat-icon-button [color]="'primary'" (click)="matDrawer.open()">
+        <mat-icon [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+      </button>
+    </div>
+  </div>
+  <mat-drawer-container class="flex-auto h-full bg-card" [hasBackdrop]="false">
+    <mat-drawer
+      class="w-full md:w-100 dark:bg-gray-900"
+      [mode]="'over'"
+      [opened]="false"
+      [position]="'end'"
+      [disableClose]="false"
+      #matDrawer
+    >
+      <div class="flex flex-col w-full overflow-hidden">
+        <div
+          class="items-center w-full py-0 px-3 bg-blue-800 dark:bg-accent-700"
+        >
+          <div
+            class="flex items-center justify-between w-full max-w-3xl mx-auto"
+          >
+            <span class="text-white font-semibold text-xl">Filter</span>
+            <div class="flex flex-row items-center justify-center">
+              <a
+                mat-icon-button
+                [matTooltip]="'Close'"
+                (click)="matDrawer.close()"
+              >
+                <mat-icon
+                  class="text-white"
+                  [svgIcon]="'heroicons_outline:x-mark'"
+                ></mat-icon>
+              </a>
+            </div>
+          </div>
+        </div>
+        <form
+          class="flex flex-col flex-auto p-6 pt-10 sm:p-12 sm:pt-10 overflow-y-auto"
+        >
+          <mat-form-field class="example-full-width">
+            <mat-label>Choose a date</mat-label>
+            <input
+              name="date"
+              matInput
+              [matDatepicker]="picker"
+              [(ngModel)]="filterJson.date"
+            />
+            <mat-hint>DD/MM/YYYY</mat-hint>
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Select</mat-label>
+            <mat-select name="shift" [(ngModel)]="filterJson.shift">
+              <mat-option value="1">1</mat-option>
+              <mat-option value="2">2</mat-option>
+              <mat-option value="3">3</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div class="flex flex-row items-center justify-end w-full">
+            <button
+              mat-raised-button
+              style="background-color: #1e3a8a; color: #fff"
+              (click)="getdata()"
+              class="submit-button"
+              aria-label="Filter"
+            >
+              Filter
+            </button>
+          </div>
+        </form>
+      </div>
+    </mat-drawer>
+    <mat-drawer-content class="overflow-y-auto px-5 py-5 pb-5">
+      <div
+        *ngIf="loading"
+        class="flex flex-col justify-center items-center h-full"
+      >
+        <mat-spinner></mat-spinner>
+      </div>
+      <div
+        style="margin-top: 10%"
+        *ngIf="!loading && dataOfSlabCoil.length == 0"
+      >
+        <div
+          class="text-4xl md:text-7xl font-extrabold tracking-tight leading-tight md:leading-none text-center"
+        >
+          No Data!!
+        </div>
+        <div
+          class="mt-2 text-lg md:text-xl font-medium tracking-tight text-center text-secondary"
+        >
+          There are no data to display!!
+        </div>
+      </div>
+
+      <div class="slabTocoil" *ngIf="!loading && dataOfSlabCoil.length > 0">
+        <div class="filter">
+          <h5 class="border border-slate-600 px-3 bg-blue-800 text-white ...">
+            Filter
+          </h5>
+
+          <div class="filter_con">
+            <div class="sh_no">
+              <h5
+                class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+              >
+                Schedule No
+              </h5>
+              <div class="each_filter">
+                <mat-checkbox
+                  *ngFor="let item of schedulenos; let rindex = index"
+                  (click)="slabToCoilFilter()"
+                  [checked]="isChecked(item)"
+                  (change)="onCheckboxChange($event, item)"
+                >
+                  {{ item }}
+                  <span class="cnt">({{ filterCount(item, "SCHDL_NO") }})</span>
+                </mat-checkbox>
+              </div>
+            </div>
+
+            <div class="rf_no">
+              <h5
+                class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+              >
+                Ref No
+              </h5>
+              <div class="each_filter">
+                <mat-checkbox
+                  *ngFor="let item of refnos; let rindex = index"
+                  (click)="slabToCoilFilter()"
+                  [checked]="rfisChecked(item)"
+                  (change)="rfonCheckboxChange($event, item)"
+                >
+                  {{ item }}
+                  <span class="cnt">({{ filterCount(item, "REF_NO") }})</span>
+                </mat-checkbox>
+              </div>
+            </div>
+            <div class="c_thik">
+              <h5
+                class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+              >
+                Coil Thickness
+              </h5>
+              <div class="each_filter">
+                <mat-checkbox
+                  *ngFor="let item of coilthicknesses; let rindex = index"
+                  (click)="slabToCoilFilter()"
+                  [checked]="ctisChecked(item)"
+                  (change)="ctonCheckboxChange($event, item)"
+                >
+                  {{ item }}
+                  <span class="cnt"
+                    >({{ filterCount(item, "COIL_THCK") }})</span
+                  >
+                </mat-checkbox>
+              </div>
+            </div>
+            <div class="c_width">
+              <h5
+                class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+              >
+                Coil Width
+              </h5>
+              <div class="each_filter">
+                <mat-checkbox
+                  *ngFor="let item of coilwidthes; let rindex = index"
+                  (click)="slabToCoilFilter()"
+                  [checked]="cwisChecked(item)"
+                  (change)="cwonCheckboxChange($event, item)"
+                >
+                  {{ item }}
+                  <span class="cnt"
+                    >({{ filterCount(item, "COIL_WDTH") }})</span
+                  >
+                </mat-checkbox>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="report_table">
+          <table class="border-collapse border border-slate-500 w-full">
+            <thead style="position: sticky; top: 0">
+              <tr>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  colspan="6"
+                >
+                  Basic
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  colspan="3"
+                >
+                  Coil Details
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  colspan="6"
+                >
+                  Slab Details
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                ></th>
+
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  colspan="4"
+                >
+                  ISO/PPC/HSM/REC-08
+                </th>
+              </tr>
+              <tr>
+                <!-- <th colspan="17">
+                  <hr style="border-top: .5px solid white; margin: 0 !important;">
+                </th> -->
+              </tr>
+              <tr>
+                <th
+                  style="text-align: center"
+                  class="border border-slate-600 bg-blue-800 text-white ..."
+                  *ngFor="let list of tableHead; let rindex = index"
+                >
+                  <div
+                    class="flex flex-row items-center"
+                    [ngClass]="{ 'px-3': !list.showBtn, 'pl-3': list.showBtn }"
+                  >
+                    {{ list.name }}
+                    <button
+                      mat-icon-button
+                      (click)="sortArrayByProperty(list.attr, rindex)"
+                      *ngIf="list.arrowDownward && list.showBtn"
+                      class="white-icon"
+                    >
+                      <mat-icon svgIcon="mat_outline:arrow_downward"></mat-icon>
+                    </button>
+                    <button
+                      mat-icon-button
+                      (click)="sortArrayByPropertyReverse(list.attr, rindex)"
+                      *ngIf="!list.arrowDownward && list.showBtn"
+                      class="white-icon"
+                    >
+                      <mat-icon svgIcon="mat_outline:arrow_upward"></mat-icon>
+                    </button>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+
+            <tbody class="bg-blue-50">
+              <tr
+                class="hover:bg-blue-300"
+                *ngFor="let item of filteredData; let rindex = index"
+              >
+                <td class="border border-slate-700 px-3 ...">
+                  {{ rindex + 1 }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.SCHDL_NO }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.COILID }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.S || "" }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.CHRGD_FUR_NO }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.THCK_TOLR }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.COIL_THCK }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.COIL_WDTH }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.COIL_DEST }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.HEAT_NO }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.SLAB_NO }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.SLAB_THCK }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.SLAB_WDTH }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.SLAB_MEM_WT }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.REF_NO }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.P_TYPE }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ item.TGCM }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</div>

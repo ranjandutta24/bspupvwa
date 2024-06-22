@@ -1,0 +1,25 @@
+.conveyor_belt {
+    position: absolute;
+    left: -3%;
+    top: 50%;
+    width: 97%;
+    height: 3.5%;
+    z-index: 11;
+    transform: rotate(23.8deg);
+    -ms-transform: rotate(23.8deg);
+    -moz-transform: rotate(23.8deg);
+    -o-transform: rotate(23.8deg);
+    -webkit-transform: rotate(23.8deg);
+}
+
+.conveyor_belt span {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 104%;
+    height: 111%;
+    background: #e7e7e8;
+    border-bottom: 1px solid #232122;
+    border-top: 1px solid #232122;
+}

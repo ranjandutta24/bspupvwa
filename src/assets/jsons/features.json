@@ -1,0 +1,10 @@
+[
+    {
+        "name": "Settings",
+        "default": true
+    },
+    {
+        "name": "File & Document Management",
+        "default": false
+    }
+]

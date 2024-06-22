@@ -1,0 +1,370 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden">
+  <div
+    class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-3 sm:py-2 sm:px-10 border-b bg-card dark:bg-transparent"
+  >
+    <div class="flex-1 min-w-0">
+      <!-- Breadcrumbs -->
+
+      <!-- Title -->
+      <div class="mt-2">
+        <h2
+          class="text-2xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate"
+        >
+          Customer Production Report
+        </h2>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+      <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="addnew()">
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2 mr-1">Add</span>
+            </button> -->
+      <div
+        class="flex flex-row items-center space-x-3 mr-10 text-md font-semibold"
+      >
+        <span>Start Date: {{ start }}</span>
+        <span>End Date: {{ end }}</span>
+      </div>
+      <button mat-icon-button [color]="'primary'" (click)="matDrawer.open()">
+        <mat-icon [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+      </button>
+    </div>
+  </div>
+  <mat-drawer-container class="flex-auto h-full bg-card" [hasBackdrop]="false">
+    <mat-drawer
+      class="w-full md:w-100 dark:bg-gray-900"
+      [mode]="'over'"
+      [opened]="false"
+      [position]="'end'"
+      [disableClose]="false"
+      #matDrawer
+    >
+      <div class="flex flex-col w-full overflow-hidden">
+        <div
+          class="items-center w-full py-0 px-3 bg-blue-800 dark:bg-accent-700"
+        >
+          <div
+            class="flex items-center justify-between w-full max-w-3xl mx-auto"
+          >
+            <span class="text-white font-semibold text-xl">Filter</span>
+            <div class="flex flex-row items-center justify-center">
+              <a
+                mat-icon-button
+                [matTooltip]="'Close'"
+                (click)="matDrawer.close()"
+              >
+                <mat-icon
+                  class="text-white"
+                  [svgIcon]="'heroicons_outline:x-mark'"
+                ></mat-icon>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col flex-auto p-6 pt-10 sm:p-12 sm:pt-10 overflow-y-auto"
+        >
+          <div class="row flex flex-wrap">
+            <mat-form-field class="flex-grow mr-2">
+              <mat-label>Choose Start date</mat-label>
+              <input
+                matInput
+                [matDatepicker]="datepicker1"
+                [(ngModel)]="filterJson.sDate"
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="datepicker1"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #datepicker1></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow ml-2">
+              <mat-label>Start time</mat-label>
+              <input
+                matInput
+                [ngxTimepicker]="timepicker1"
+                readonly
+                [(ngModel)]="filterJson.startTime"
+              />
+              <ngx-material-timepicker #timepicker1></ngx-material-timepicker>
+            </mat-form-field>
+          </div>
+
+          <div class="row flex flex-wrap">
+            <mat-form-field class="flex-grow mr-2">
+              <mat-label>Choose End date</mat-label>
+              <input
+                matInput
+                [matDatepicker]="datepicker2"
+                [(ngModel)]="filterJson.eDate"
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="datepicker2"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #datepicker2></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow ml-2">
+              <mat-label>End time</mat-label>
+              <input
+                matInput
+                [ngxTimepicker]="timepicker2"
+                readonly
+                [(ngModel)]="filterJson.endTime"
+              />
+              <ngx-material-timepicker #timepicker2></ngx-material-timepicker>
+            </mat-form-field>
+          </div>
+
+          <div class="flex flex-row items-center justify-end w-full">
+            <button
+              mat-raised-button
+              style="background-color: #1e3a8a; color: #fff"
+              (click)="onFilter()"
+              class="submit-button"
+              aria-label="Filter"
+            >
+              Filter
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-drawer>
+    <mat-drawer-content class="overflow-y-auto px-5 py-5 pb-5">
+      <div
+        *ngIf="loading"
+        class="flex flex-col justify-center items-center h-full"
+      >
+        <mat-spinner></mat-spinner>
+      </div>
+      <div
+        style="margin-top: 10%"
+        *ngIf="!loading && detailsReport.length == 0"
+      >
+        <div
+          class="text-4xl md:text-7xl font-extrabold tracking-tight leading-tight md:leading-none text-center"
+        >
+          No Data!!
+        </div>
+        <div
+          class="mt-2 text-lg md:text-xl font-medium tracking-tight text-center text-secondary"
+        >
+          There are no data to display!!
+        </div>
+      </div>
+      <div class="slabTocoil" *ngIf="!loading && detailsReport.length > 0">
+        <div class="filter">
+          <h5 class="border border-slate-600 px-3 bg-blue-800 text-white ...">
+            Filter
+          </h5>
+
+          <div class="filter_con">
+            <div class="dest">
+              <h5
+                class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+              >
+                Destination
+              </h5>
+              <div class="each_filter">
+                <mat-checkbox
+                  *ngFor="let item of destinations; let rindex = index"
+                  (click)="localFilter()"
+                  [checked]="isChecked(item)"
+                  (change)="onCheckboxChange($event, item)"
+                >
+                  {{ item }}
+                  <span class="cnt">({{ filterCount(item, "DEST") }})</span>
+                </mat-checkbox>
+              </div>
+            </div>
+
+            <div class="pl_sz">
+              <h5
+                class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+              >
+                Planned Size
+              </h5>
+              <div class="each_filter">
+                <mat-checkbox
+                  *ngFor="let item of plannedSizes; let rindex = index"
+                  (click)="localFilter()"
+                  [checked]="plisChecked(item)"
+                  (change)="plonCheckboxChange($event, item)"
+                >
+                  {{ item }}
+                  <span class="cnt"
+                    >({{ filterCount(item, "PLANNEDSIZE") }})</span
+                  >
+                </mat-checkbox>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="report_table">
+          <table
+            class="border-collapse border border-slate-500 w-full col-span-3"
+          >
+            <thead style="position: sticky; top: 0">
+              <tr>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  colspan="5"
+                >
+                  Basic
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  colspan="4"
+                >
+                  FM Exit Thickness
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  colspan="4"
+                >
+                  FM Exit Width
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                >
+                  Fin Temp
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                >
+                  Coil Temp
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                >
+                  Profile
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  colspan="4"
+                >
+                  Flatness
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                ></th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                >
+                  F12 Bend
+                </th>
+              </tr>
+              <tr
+                class="border-collapse border border-slate-500 bg-blue-800 text-white hover:bg-blue-300 hover:font-semibold ..."
+              >
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  *ngFor="let list of tableHead; let rindex = index"
+                >
+                  <div class="flex flex-row items-center">
+                    {{
+                      list.name == "Planned Size"
+                        ? "Planned&nbsp;Size"
+                        : list.name
+                    }}
+                    <button
+                      mat-icon-button
+                      (click)="sortArrayByProperty(list.attr, rindex)"
+                      *ngIf="list.arrowDownward && list.showBtn"
+                      class="white-icon"
+                    >
+                      <mat-icon svgIcon="mat_outline:arrow_downward"></mat-icon>
+                    </button>
+                    <button
+                      mat-icon-button
+                      (click)="sortArrayByPropertyReverse(list.attr, rindex)"
+                      *ngIf="!list.arrowDownward && list.showBtn"
+                      class="white-icon"
+                    >
+                      <mat-icon svgIcon="mat_outline:arrow_upward"></mat-icon>
+                    </button>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-blue-50">
+              <tr
+                class="hover:bg-blue-300"
+                *ngFor="let row of filteredData; let rindex = index"
+              >
+                <td class="border border-slate-700 px-3 ...">
+                  {{ rindex + 1 }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.COILID }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.ROLLINGTIME | date : "MMM dd, HH:mm" }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.STEELGRADE }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.PLANNEDSIZE }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.EXTHICKMIN }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.EXTHICKMAX }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.EXTHICKAVG }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.EXTHICKSD }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.EXWIDTHMIN }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.EXWIDTHMAX }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.EXWIDTHAVG }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.EXWIDTHSD }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FTAVG }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.CTAVG }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.PROFILEAVG }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FLATMIN }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FLATMAX }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FLATAVG }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.FLATSD }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">{{ row.DEST }}</td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ row.F12BENDAVG }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</div>
