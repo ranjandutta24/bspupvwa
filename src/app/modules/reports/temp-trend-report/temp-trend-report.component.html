@@ -191,61 +191,180 @@
                 Quality Parameter
               </h5>
               <div class="each_filter">
-                <!-- <mat-checkbox
-                  (click)="localFilter()"
-                  [checked]="isChecked(item)"
-                  (change)="onCheckboxChange($event, item)"
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 5px;
+                  "
                 >
-                  Min
-                </mat-checkbox> -->
-                <mat-checkbox
-                  (change)="onCheckboxChangeMin($event)"
-                  *ngIf="!max"
-                >
-                  Min
-                </mat-checkbox>
-                <mat-checkbox
-                  (change)="onCheckboxChangeMax($event)"
-                  *ngIf="!min"
-                >
-                  Max
-                </mat-checkbox>
+                  <p style="margin-left: 10px; font-weight: 800">Select</p>
 
-                <div style="display: flex; justify-content: space-between">
+                  <div style="margin-right: 15px; display: flex">
+                    <div class="cell_m">
+                      <span class="cnt">Overall</span>
+                    </div>
+                    <div class="cell_m">
+                      <span class="cnt">1</span>
+                    </div>
+                    <div class="cell_m">
+                      <span class="cnt">2</span>
+                    </div>
+                    <div class="cell_m">
+                      <span class="cnt">3</span>
+                    </div>
+                    <div class="cell_m">
+                      <span class="cnt">4</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  *ngIf="!max"
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 8px;
+                  "
+                >
+                  <mat-checkbox (change)="onCheckboxChangeMin($event)">
+                    Min Temp
+                  </mat-checkbox>
+                  <div style="margin-right: 15px; display: flex">
+                    <div class="cell">
+                      <span class="cnt">{{ minValue(0) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ minValue(1) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ minValue(2) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ minValue(3) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ minValue(4) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  *ngIf="!min"
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 8px;
+                  "
+                >
+                  <mat-checkbox (change)="onCheckboxChangeMax($event)">
+                    Max Temp
+                  </mat-checkbox>
+                  <div style="margin-right: 15px; display: flex">
+                    <div class="cell">
+                      <span class="cnt">{{ maxValue(0) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ maxValue(1) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ maxValue(2) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ maxValue(3) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ maxValue(4) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 8px;
+                  "
+                >
                   <mat-checkbox (change)="onCheckboxChange35($event)">
                     <p>< 35℃ %</p>
                   </mat-checkbox>
-                  <div style="margin-top: 8px; margin-right: 15px">
-                    <span class="cnt"> ({{ filter35percent(1) }}) </span>
-                    <span class="cnt"> ({{ filter35percent(2) }}) </span>
-                    <span class="cnt"> ({{ filter35percent(3) }}) </span>
-                    <span class="cnt"> ({{ filter35percent(4) }}) </span>
+                  <div style="margin-right: 15px; display: flex">
+                    <div class="cell">
+                      <span class="cnt">{{ filter35percentTotal() }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter35percent(1) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter35percent(2) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter35percent(3) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter35percent(4) }}</span>
+                    </div>
                   </div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 8px;
+                  "
+                >
                   <mat-checkbox (change)="onCheckboxChange140($event)">
-                    <p>< 1040℃ %</p>
+                    <p>> 1040℃ %</p>
                   </mat-checkbox>
 
-                  <div style="margin-top: 8px; margin-right: 15px">
-                    <span class="cnt"> ({{ filter1040percent(1) }}) </span>
-                    <span class="cnt"> ({{ filter1040percent(2) }}) </span>
-                    <span class="cnt"> ({{ filter1040percent(3) }}) </span>
-                    <span class="cnt"> ({{ filter1040percent(4) }}) </span>
+                  <div style="margin-right: 15px; display: flex">
+                    <div class="cell">
+                      <span class="cnt">{{ filter1040percent(0) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1040percent(1) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1040percent(2) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1040percent(3) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1040percent(4) }}</span>
+                    </div>
                   </div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 8px;
+                  "
+                >
                   <mat-checkbox (change)="onCheckboxChange160($event)">
-                    <p>< 1060℃ %</p>
+                    <p>> 1060℃ %</p>
                   </mat-checkbox>
 
-                  <div style="margin-top: 8px; margin-right: 15px">
-                    <span class="cnt"> ({{ filter1060percent(1) }}) </span>
-                    <span class="cnt"> ({{ filter1060percent(2) }}) </span>
-                    <span class="cnt"> ({{ filter1060percent(3) }}) </span>
-                    <span class="cnt"> ({{ filter1060percent(4) }}) </span>
+                  <div style="margin-right: 15px; display: flex">
+                    <div class="cell">
+                      <span class="cnt">{{ filter1060percent(0) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1060percent(1) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1060percent(2) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1060percent(3) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1060percent(4) }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -257,40 +376,120 @@
                 Temperature Parameter
               </h5>
               <div class="each_filter">
-                <div style="display: flex; justify-content: space-between">
-                  <mat-checkbox (change)="onCheckboxChange110($event)">
-                    <p>< 1010℃</p>
-                  </mat-checkbox>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 5px;
+                  "
+                >
+                  <p style="margin-left: 10px; font-weight: 800">Select</p>
 
-                  <div style="margin-top: 8px; margin-right: 15px">
-                    <span class="cnt"> ({{ filter1010percent(1) }}) </span>
-                    <span class="cnt"> ({{ filter1010percent(2) }}) </span>
-                    <span class="cnt"> ({{ filter1010percent(3) }}) </span>
-                    <span class="cnt"> ({{ filter1010percent(4) }}) </span>
+                  <div style="margin-right: 15px; display: flex">
+                    <div class="cell_m">
+                      <span class="cnt">overall</span>
+                    </div>
+                    <div class="cell_m">
+                      <span class="cnt">1</span>
+                    </div>
+                    <div class="cell_m">
+                      <span class="cnt">2</span>
+                    </div>
+                    <div class="cell_m">
+                      <span class="cnt">3</span>
+                    </div>
+                    <div class="cell_m">
+                      <span class="cnt">4</span>
+                    </div>
                   </div>
                 </div>
-                <div style="display: flex; justify-content: space-between">
+
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 5px;
+                  "
+                >
+                  <mat-checkbox (change)="onCheckboxChange110($event)">
+                    <p>> 1100℃</p>
+                  </mat-checkbox>
+
+                  <div style="margin-right: 15px; display: flex">
+                    <div class="cell">
+                      <span class="cnt">{{ filter1010percent(0) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1010percent(1) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1010percent(2) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1010percent(3) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1010percent(4) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 8px;
+                  "
+                >
                   <mat-checkbox (change)="onCheckboxChange140_2($event)">
                     <p>< 1040℃</p>
                   </mat-checkbox>
 
-                  <div style="margin-top: 8px; margin-right: 15px">
-                    <span class="cnt"> ({{ filter1040_2percent(1) }}) </span>
-                    <span class="cnt"> ({{ filter1040_2percent(2) }}) </span>
-                    <span class="cnt"> ({{ filter1040_2percent(3) }}) </span>
-                    <span class="cnt"> ({{ filter1040_2percent(4) }}) </span>
+                  <div style="margin-right: 15px; display: flex">
+                    <div class="cell">
+                      <span class="cnt">{{ filter1040_2percent(0) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1040_2percent(1) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1040_2percent(2) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1040_2percent(3) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1040_2percent(4) }}</span>
+                    </div>
                   </div>
                 </div>
-                <div style="display: flex; justify-content: space-between">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 8px;
+                  "
+                >
                   <mat-checkbox (change)="onCheckboxChange180($event)">
-                    <p>< 1080℃</p>
+                    <p>> 1080℃</p>
                   </mat-checkbox>
 
-                  <div style="margin-top: 8px; margin-right: 15px">
-                    <span class="cnt"> ({{ filter1080percent(1) }}) </span>
-                    <span class="cnt"> ({{ filter1080percent(2) }}) </span>
-                    <span class="cnt"> ({{ filter1080percent(3) }}) </span>
-                    <span class="cnt"> ({{ filter1080percent(4) }}) </span>
+                  <div style="margin-right: 15px; display: flex">
+                    <div class="cell">
+                      <span class="cnt">{{ filter1080percent(0) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1080percent(1) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1080percent(2) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1080percent(3) }}</span>
+                    </div>
+                    <div class="cell">
+                      <span class="cnt">{{ filter1080percent(4) }}</span>
+                    </div>
                   </div>
                 </div>
               </div>

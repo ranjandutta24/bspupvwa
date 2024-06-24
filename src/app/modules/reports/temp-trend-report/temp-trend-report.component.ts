@@ -249,7 +249,7 @@ export class TempTrendReportComponent {
       return 0;
     });
 
-    console.log(this.filteredData);
+    // console.log(this.filteredData);
 
     //this._changeDetectorRef.markForCheck();
   }
@@ -301,6 +301,35 @@ export class TempTrendReportComponent {
     this.updateAvailableOptions();
   }
 
+  maxValue(fn){
+    if(fn==0){
+      return Math.max(...this.filteredData.map(item => item.R5_TMP_AVG));
+    }
+    else{
+      const filtered = this.filteredData.filter(item => item.CHRGD_FUR_NO === fn);
+      if (filtered.length === 0) {
+          return 0; 
+      }
+      return Math.max(...filtered.map(item => item.R5_TMP_AVG));
+    }
+  }
+  minValue(fn){
+    if(fn==0){
+      const filtered = this.filteredData.filter(item =>item.R5_TMP_AVG!=null);
+  
+      return Math.min(...filtered.map(item => item.R5_TMP_AVG));
+      
+    }
+    else{
+      const filtered = this.filteredData.filter(item => item.CHRGD_FUR_NO === fn && item.R5_TMP_AVG!=null);
+      if (filtered.length === 0) {
+
+          return 0; 
+      }
+      return Math.min(...filtered.map(item => item.R5_TMP_AVG));
+    }
+  }
+
   filter35percent(fn) {
     let len = this.filteredData.filter((item) => {
       return (
@@ -315,79 +344,162 @@ export class TempTrendReportComponent {
     }).length;
     return ((len / tlen) * 100).toFixed(2);
   }
-  filter1040percent(fn) {
+  filter35percentTotal() {
     let len = this.filteredData.filter((item) => {
       return (
-        item.R5_TMP_AVG && item.R5_TMP_AVG < 1040 && item.CHRGD_FUR_NO == fn
+        item.RMTEMP_PEAKDIF &&
+        item.RMTEMP_PEAKDIF < 35 
       );
     }).length;
 
-    let tlen = this.detailsReport.filter((item) => {
-      return item.CHRGD_FUR_NO == fn;
-    }).length;
+    let tlen = this.detailsReport.length;
     return ((len / tlen) * 100).toFixed(2);
+  }
+
+
+
+  filter1040percent(fn) {
+    if(fn==0){
+      let len = this.filteredData.filter((item) => {
+        return (
+          item.R5_TMP_AVG && item.R5_TMP_AVG > 1040 
+        );
+      }).length;
+  
+      let tlen = this.detailsReport.length;
+      return ((len / tlen) * 100).toFixed(2);
+
+    }
+    else{
+      let len = this.filteredData.filter((item) => {
+        return (
+          item.R5_TMP_AVG && item.R5_TMP_AVG > 1040 && item.CHRGD_FUR_NO == fn
+        );
+      }).length;
+  
+      let tlen = this.detailsReport.filter((item) => {
+        return item.CHRGD_FUR_NO == fn;
+      }).length;
+      return ((len / tlen) * 100).toFixed(2);
+
+    }
   }
 
   filter1060percent(fn) {
+    if(fn==0){
+      
+      let len = this.filteredData.filter((item) => {
+        return (
+          item.R5_TMP_AVG &&
+          item.R5_TMP_AVG > 1060
+        );
+      }).length;
+  
+      let tlen = this.detailsReport.length;
+      return ((len / tlen) * 100).toFixed(2);
+    }
+    else{
+      let len = this.filteredData.filter((item) => {
+        return (
+          item.R5_TMP_AVG &&
+          // item.R5_TMP_AVG > 1040 &&
+          item.R5_TMP_AVG > 1060 &&
+          item.CHRGD_FUR_NO == fn
+        );
+      }).length;
+  
+      let tlen = this.detailsReport.filter((item) => {
+        return item.CHRGD_FUR_NO == fn;
+      }).length;
+      return ((len / tlen) * 100).toFixed(2);
+
+    }
+  }
+  filter1010percent(fn) {
+  if(fn==0){
     let len = this.filteredData.filter((item) => {
       return (
-        item.R5_TMP_AVG &&
-        item.R5_TMP_AVG > 1040 &&
-        item.R5_TMP_AVG < 1060 &&
-        item.CHRGD_FUR_NO == fn
+        item.R5_TMP_AVG && item.R5_TMP_AVG > 1100
       );
     }).length;
+    let tlen = this.detailsReport.length;
+    let result = len + " | "+ tlen 
+    return result;
 
+  }
+else{
+    let len = this.filteredData.filter((item) => {
+      return (
+        item.R5_TMP_AVG && item.R5_TMP_AVG > 1100 && item.CHRGD_FUR_NO == fn
+      );
+    }).length;
+    
     let tlen = this.detailsReport.filter((item) => {
       return item.CHRGD_FUR_NO == fn;
     }).length;
-    return ((len / tlen) * 100).toFixed(2);
+    let result = len + " | "+ tlen 
+    return result;
   }
-  filter1010percent(fn) {
-    let len = this.filteredData.filter((item) => {
-      return (
-        item.R5_TMP_AVG && item.R5_TMP_AVG < 1010 && item.CHRGD_FUR_NO == fn
-      );
-    }).length;
-
-    // let tlen = this.detailsReport.filter((item) => {
-    //   return item.CHRGD_FUR_NO == fn;
-    // }).length;
-    // return ((len / tlen) * 100).toFixed(2);
-    return len;
   }
   filter1040_2percent(fn) {
-    let len = this.filteredData.filter((item) => {
-      return (
-        item.R5_TMP_AVG &&
-        item.R5_TMP_AVG > 1010 &&
-        item.R5_TMP_AVG < 1040 &&
-        item.CHRGD_FUR_NO == fn
-      );
-    }).length;
 
-    // let tlen = this.detailsReport.filter((item) => {
-    //   return item.CHRGD_FUR_NO == fn;
-    // }).length;
-    // return ((len / tlen) * 100).toFixed(2);
-    return len;
+    if(fn==0){
+      let len = this.filteredData.filter((item) => {
+        return (
+          item.R5_TMP_AVG &&
+          item.R5_TMP_AVG < 1040
+        );
+      }).length;
+  
+      let tlen = this.detailsReport.length;
+      let result = len + " | "+ tlen 
+      return result;
+    }
+    else{
+      let len = this.filteredData.filter((item) => {
+        return (
+          item.R5_TMP_AVG &&
+          item.R5_TMP_AVG < 1040 &&
+          item.CHRGD_FUR_NO == fn
+        );
+      }).length;
+  
+      let tlen = this.detailsReport.filter((item) => {
+        return item.CHRGD_FUR_NO == fn;
+      }).length;
+      let result = len + " | "+ tlen 
+      return result;
+    }
   }
 
   filter1080percent(fn) {
-    let len = this.filteredData.filter((item) => {
-      return (
-        item.R5_TMP_AVG &&
-        item.R5_TMP_AVG > 1040 &&
-        item.R5_TMP_AVG < 1080 &&
-        item.CHRGD_FUR_NO == fn
-      );
-    }).length;
-
-    // let tlen = this.detailsReport.filter((item) => {
-    //   return item.CHRGD_FUR_NO == fn;
-    // }).length;
-    // return ((len / tlen) * 100).toFixed(2);
-    return len;
+    if(fn==0){
+      let len = this.filteredData.filter((item) => {
+        return (
+          item.R5_TMP_AVG &&
+          item.R5_TMP_AVG > 1080
+        );
+      }).length;
+  
+      let tlen = this.detailsReport.length;
+      let result = len + " | "+ tlen 
+      return result;
+    }
+    else{
+      let len = this.filteredData.filter((item) => {
+        return (
+          item.R5_TMP_AVG &&
+          item.R5_TMP_AVG > 1080 &&
+          item.CHRGD_FUR_NO == fn
+        );
+      }).length;
+  
+      let tlen = this.detailsReport.filter((item) => {
+        return item.CHRGD_FUR_NO == fn;
+      }).length;
+      let result = len + " | "+ tlen 
+      return result;
+    }
   }
 
   tempFilter(f35, f1040, f1060) {
@@ -395,11 +507,10 @@ export class TempTrendReportComponent {
       this.filteredData = this.filteredData.filter((item) => {
         return (
           (f35 && item.RMTEMP_PEAKDIF && item.RMTEMP_PEAKDIF < 35) ||
-          (f1040 && item.R5_TMP_AVG && item.R5_TMP_AVG < 1040) ||
+          (f1040 && item.R5_TMP_AVG && item.R5_TMP_AVG > 1040) ||
           (f1060 &&
             item.R5_TMP_AVG &&
-            item.R5_TMP_AVG > 1040 &&
-            item.R5_TMP_AVG < 1060)
+            item.R5_TMP_AVG > 1060 )
         );
       });
     } else {
@@ -410,15 +521,14 @@ export class TempTrendReportComponent {
     if (f1010 || f1040 || f1080) {
       this.filteredData = this.filteredData.filter((item) => {
         return (
-          (f1010 && item.R5_TMP_AVG && item.R5_TMP_AVG < 1010) ||
+          (f1010 && item.R5_TMP_AVG && item.R5_TMP_AVG > 1100) ||
           (f1040 &&
             item.R5_TMP_AVG &&
-            item.R5_TMP_AVG > 1010 &&
             item.R5_TMP_AVG < 1040) ||
           (f1080 &&
             item.R5_TMP_AVG &&
-            item.R5_TMP_AVG > 1040 &&
-            item.R5_TMP_AVG < 1080)
+            
+            item.R5_TMP_AVG > 1080)
         );
       });
     } else {
