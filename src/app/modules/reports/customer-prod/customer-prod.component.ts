@@ -43,6 +43,9 @@ export class CustomerProdComponent {
   detailsReport = [];
   destinations = [];
   plannedSizes = [];
+  options = ['Max', 'Avg'];
+  selectedOption = 'Max';
+  selectedValue = 0;
 
   ds_checkedItems: string[] = [];
   pl_checkedItems: string[] = [];
@@ -247,6 +250,11 @@ export class CustomerProdComponent {
     })
     console.log(this.filteredData);
 
+    this.selectedValue &&  this.maxFMTHCK(this.selectedValue)
+
+
+
+
     this.updateAvailableOptions();
   }
   filterCount(item, attr) {
@@ -298,4 +306,52 @@ export class CustomerProdComponent {
     console.log(this.pl_checkedItems);
 
   }
+
+  chngSelectedOpt(){
+    this.localFilter();
+  }
+
+
+  changeMax(event: any, item: number){
+    this.selectedValue=item
+    if (event.checked) {
+    
+     this.maxFMTHCK(item);
+    } else {
+      
+      this.selectedValue=0
+      
+    }
+    
+    this.localFilter();
+   
+  }
+
+
+
+  maxFMTHCK(value){
+    console.log("call");
+    
+     this.filteredData = this.filteredData.filter(item => {
+      // Extract the width from PLANNEDSIZE
+      const plannedSize = item.PLANNEDSIZE.split('X');
+      const width = parseFloat(plannedSize[1].trim());
+      
+      const adjustedWidth = width + value;
+    
+      
+      if(this.selectedOption == 'Max'){
+        return adjustedWidth >= item.EXWIDTHMAX;
+      }else{
+        return adjustedWidth >= item.EXWIDTHAVG;
+      }
+  });
+
+
+
+  
+  console.log(this.filteredData);
+  
+  }
+  
 }

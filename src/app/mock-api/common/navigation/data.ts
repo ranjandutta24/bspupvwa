@@ -56,8 +56,8 @@ export const defaultNavigation: FuseNavigationItem[] = [
     },
 
     {
-        id: 'human-resource',
-        title: 'Human Resource',
+        id: 'BSP',
+        title: 'BSP',
         type: 'collapsable',
         icon: 'people',
         privilege: ["View User", "View Role", "View Department", "View Designation"],

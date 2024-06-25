@@ -99,3 +99,26 @@
     tbody tr:nth-child(odd) {
         background-color: #ffffff; /* Replace with your desired color */
     }
+
+.header-with-dropdown {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #374151; /* Equivalent to border-slate-600 */
+    padding: 0.75rem; /* Equivalent to px-3 */
+    background-color: #1E3A8A; /* Equivalent to bg-blue-800 */
+    color: white;
+}
+
+.dropdown-field {
+    width: 75px; /* Adjust width as needed */
+    padding: 5px;
+    font-size: 14px;
+    border-radius: 5px; /* Curved edges */
+    border: 1px solid #ccc;
+    color: black; /* Border color */
+  }
+  
+  .dropdown-field option {
+    color: black; /* Font color for dropdown values */
+  }

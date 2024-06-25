@@ -202,6 +202,53 @@
                 </mat-checkbox>
               </div>
             </div>
+
+            <div class="pl_sz">
+              <h5
+                class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+              >
+                Min Tolerance
+              </h5>
+              <div class="each_filter">
+                <mat-checkbox> Min </mat-checkbox>
+              </div>
+            </div>
+            <div class="pl_sz">
+              <h5 class="header-with-dropdown">
+                Max Tolerance
+
+                <select
+                  class="dropdown-field"
+                  [(ngModel)]="selectedOption"
+                  (change)="chngSelectedOpt()"
+                >
+                  <option *ngFor="let option of options" [value]="option">
+                    {{ option }}
+                  </option>
+                </select>
+              </h5>
+
+              <div class="each_filter">
+                <mat-checkbox
+                  [checked]="selectedValue === 20"
+                  (change)="changeMax($event, 20)"
+                >
+                  20
+                </mat-checkbox>
+                <mat-checkbox
+                  [checked]="selectedValue === 25"
+                  (change)="changeMax($event, 25)"
+                >
+                  25
+                </mat-checkbox>
+                <mat-checkbox
+                  [checked]="selectedValue === 30"
+                  (change)="changeMax($event, 30)"
+                >
+                  30
+                </mat-checkbox>
+              </div>
+            </div>
           </div>
         </div>
         <div class="report_table">

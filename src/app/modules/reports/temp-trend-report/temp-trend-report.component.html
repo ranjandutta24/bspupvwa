@@ -501,6 +501,60 @@
             class="border-collapse border border-slate-500 w-full col-span-3"
           >
             <thead style="position: sticky; top: 0">
+              <tr>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  colspan="5"
+                ></th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  colspan="3"
+                >
+                  SLAB
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  colspan="3"
+                >
+                  R5
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                ></th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  colspan="9"
+                >
+                  FM
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  colspan="2"
+                >
+                  FIN
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                ></th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  colspan="2"
+                >
+                  FIN
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                  colspan="4"
+                >
+                  COIL
+                </th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                ></th>
+                <th
+                  class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+                ></th>
+              </tr>
               <tr
                 class="border-collapse border border-slate-500 bg-blue-800 text-white hover:bg-blue-300 hover:font-semibold ..."
               >
@@ -510,22 +564,22 @@
                 >
                   <div class="flex flex-row items-center">
                     {{ list.name }}
-                    <button
+                    <!-- <button
                       mat-icon-button
                       (click)="sortArrayByProperty(list.attr, rindex)"
                       *ngIf="list.arrowDownward && list.showBtn"
                       class="white-icon"
                     >
                       <mat-icon svgIcon="mat_outline:arrow_downward"></mat-icon>
-                    </button>
-                    <button
+                    </button> -->
+                    <!-- <button
                       mat-icon-button
                       (click)="sortArrayByPropertyReverse(list.attr, rindex)"
                       *ngIf="!list.arrowDownward && list.showBtn"
                       class="white-icon"
                     >
                       <mat-icon svgIcon="mat_outline:arrow_upward"></mat-icon>
-                    </button>
+                    </button> -->
                   </div>
                 </th>
               </tr>
@@ -553,9 +607,9 @@
                 <td class="border border-slate-700 px-3 ...">
                   {{ row.CHRGD_FUR_NO }}
                 </td>
-                <td class="border border-slate-700 px-3 ...">
+                <!-- <td class="border border-slate-700 px-3 ...">
                   {{ row.SLAB_THCK }}
-                </td>
+                </td> -->
                 <td class="border border-slate-700 px-3 ...">
                   {{ row.SLAB_WDTH }}
                 </td>

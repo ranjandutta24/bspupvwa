@@ -72,37 +72,37 @@ export class TempTrendReportComponent {
     { name: "SLABID" },
     { name: "GRADE" },
     { name: "FUR NO" },
-    {
-      name: "SLAB_THCK",
-      arrowDownward: true,
-      showBtn: false,
-      attr: "THCK_TOLR",
-    },
-    { name: "SLAB_WDTH" },
-    { name: "SLAB_LNTH" },
-    { name: "SLAB_WT" },
-    { name: "R5_TEMP_MIN" },
-    { name: "R5_TEMP_MAX" },
-    { name: "R5_TEMP_AVG" },
+    // {
+    //   name: "SLAB_THCK",
+    //   arrowDownward: true,
+    //   showBtn: false,
+    //   attr: "THCK_TOLR",
+    // },
+    { name: "WDTH" },
+    { name: "LNTH" },
+    { name: "WT" },
+    { name: "T_MIN" },
+    { name: "T_MAX" },
+    { name: "T_AVG" },
     { name: "RMTEMP_PEAKDIF" },
-    { name: "FM_EN_TEMP" },
-    { name: "FM_TEMP1" },
-    { name: "FM_TEMP2" },
-    { name: "FM_TEMP3" },
-    { name: "FM_TEMP4" },
-    { name: "FM_TEMP5" },
-    { name: "FM_TEMP6" },
-    { name: "FM_TEMP7" },
-    { name: "FM_EX_TEMP" },
-    { name: "FIN_TEMP_MIN" },
-    { name: "FIN_TEMP_MAX" },
+    { name: "EN_TEMP" },
+    { name: "TEMP1" },
+    { name: "TEMP2" },
+    { name: "TEMP3" },
+    { name: "TEMP4" },
+    { name: "TEMP5" },
+    { name: "TEMP6" },
+    { name: "TEMP7" },
+    { name: "EX_TEMP" },
+    { name: "T_MIN" },
+    { name: "T_MAX" },
     { name: "FMTEMP_PEAKDIFF" },
-    { name: "FIN_TEMP_AVG" },
-    { name: "FIN_TEMP_SD" },
-    { name: "COIL_TEMP_MIN" },
-    { name: "COIL_TEMP_MAX" },
-    { name: "COIL_TEMP_AVG" },
-    { name: "COIL_TEMP_SD" },
+    { name: "T_AVG" },
+    { name: "T_SD" },
+    { name: "T_MIN" },
+    { name: "T_MAX" },
+    { name: "T_AVG" },
+    { name: "T_SD" },
     { name: "FM_COIL_TEMP" },
     { name: "ACT_COILR_TEMP" },
   ];
@@ -236,40 +236,40 @@ export class TempTrendReportComponent {
     );
   }
 
-  sortArrayByProperty(property: string, columnIndex) {
-    this.tableHead[columnIndex].arrowDownward =
-      !this.tableHead[columnIndex].arrowDownward;
-    this.filteredData.sort((a, b) => {
-      if (a[property] < b[property]) {
-        return -1;
-      }
-      if (a[property] > b[property]) {
-        return 1;
-      }
-      return 0;
-    });
+  // sortArrayByProperty(property: string, columnIndex) {
+  //   this.tableHead[columnIndex].arrowDownward =
+  //     !this.tableHead[columnIndex].arrowDownward;
+  //   this.filteredData.sort((a, b) => {
+  //     if (a[property] < b[property]) {
+  //       return -1;
+  //     }
+  //     if (a[property] > b[property]) {
+  //       return 1;
+  //     }
+  //     return 0;
+  //   });
 
-    // console.log(this.filteredData);
+  //   // console.log(this.filteredData);
 
-    //this._changeDetectorRef.markForCheck();
-  }
+  //   //this._changeDetectorRef.markForCheck();
+  // }
 
-  sortArrayByPropertyReverse(property: string, columnIndex) {
-    this.tableHead[columnIndex].arrowDownward =
-      !this.tableHead[columnIndex].arrowDownward;
+  // sortArrayByPropertyReverse(property: string, columnIndex) {
+  //   this.tableHead[columnIndex].arrowDownward =
+  //     !this.tableHead[columnIndex].arrowDownward;
 
-    this.filteredData.sort((a, b) => {
-      if (a[property] < b[property]) {
-        return 1; // Reverse the order of comparison
-      }
-      if (a[property] > b[property]) {
-        return -1; // Reverse the order of comparison
-      }
-      return 0;
-    });
+  //   this.filteredData.sort((a, b) => {
+  //     if (a[property] < b[property]) {
+  //       return 1; // Reverse the order of comparison
+  //     }
+  //     if (a[property] > b[property]) {
+  //       return -1; // Reverse the order of comparison
+  //     }
+  //     return 0;
+  //   });
 
-    console.log(this.filteredData);
-  }
+  //   console.log(this.filteredData);
+  // }
 
   localFilter() {
     this.filteredData = this.detailsReport.filter((item) => {
@@ -342,7 +342,10 @@ export class TempTrendReportComponent {
     let tlen = this.detailsReport.filter((item) => {
       return item.CHRGD_FUR_NO == fn;
     }).length;
-    return ((len / tlen) * 100).toFixed(2);
+    if(tlen==0){
+      return 0
+    }
+    return (((len / tlen) * 100).toFixed(2)) ;
   }
   filter35percentTotal() {
     let len = this.filteredData.filter((item) => {
@@ -380,6 +383,9 @@ export class TempTrendReportComponent {
       let tlen = this.detailsReport.filter((item) => {
         return item.CHRGD_FUR_NO == fn;
       }).length;
+      if(tlen==0){
+        return 0
+      }
       return ((len / tlen) * 100).toFixed(2);
 
     }
@@ -411,6 +417,9 @@ export class TempTrendReportComponent {
       let tlen = this.detailsReport.filter((item) => {
         return item.CHRGD_FUR_NO == fn;
       }).length;
+      if(tlen==0){
+        return 0
+      }
       return ((len / tlen) * 100).toFixed(2);
 
     }
@@ -419,7 +428,7 @@ export class TempTrendReportComponent {
   if(fn==0){
     let len = this.filteredData.filter((item) => {
       return (
-        item.R5_TMP_AVG && item.R5_TMP_AVG > 1100
+        item.R5_TMP_MAX && item.R5_TMP_MAX > 1100
       );
     }).length;
     let tlen = this.detailsReport.length;
@@ -430,7 +439,7 @@ export class TempTrendReportComponent {
 else{
     let len = this.filteredData.filter((item) => {
       return (
-        item.R5_TMP_AVG && item.R5_TMP_AVG > 1100 && item.CHRGD_FUR_NO == fn
+        item.R5_TMP_MAX && item.R5_TMP_MAX > 1100 && item.CHRGD_FUR_NO == fn
       );
     }).length;
     
@@ -446,8 +455,8 @@ else{
     if(fn==0){
       let len = this.filteredData.filter((item) => {
         return (
-          item.R5_TMP_AVG &&
-          item.R5_TMP_AVG < 1040
+          item.R5_TMP_MIN &&
+          item.R5_TMP_MIN < 1040
         );
       }).length;
   
@@ -458,8 +467,8 @@ else{
     else{
       let len = this.filteredData.filter((item) => {
         return (
-          item.R5_TMP_AVG &&
-          item.R5_TMP_AVG < 1040 &&
+          item.R5_TMP_MIN &&
+          item.R5_TMP_MIN < 1040 &&
           item.CHRGD_FUR_NO == fn
         );
       }).length;
@@ -517,14 +526,14 @@ else{
       return;
     }
   }
-  tempFilter2(f1010, f1040, f1080) {
-    if (f1010 || f1040 || f1080) {
+  tempFilter2(f1100, f1040, f1080) {
+    if (f1100 || f1040 || f1080) {
       this.filteredData = this.filteredData.filter((item) => {
         return (
-          (f1010 && item.R5_TMP_AVG && item.R5_TMP_AVG > 1100) ||
+          (f1100 && item.R5_TMP_MAX && item.R5_TMP_MAX > 1100) ||
           (f1040 &&
-            item.R5_TMP_AVG &&
-            item.R5_TMP_AVG < 1040) ||
+            item.R5_TMP_MIN &&
+            item.R5_TMP_MIN < 1040) ||
           (f1080 &&
             item.R5_TMP_AVG &&
             

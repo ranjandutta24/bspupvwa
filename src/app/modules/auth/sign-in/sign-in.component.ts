@@ -80,15 +80,17 @@ export class AuthSignInComponent implements OnInit {
      * Sign in
      */
     signIn() {
-        if (this.user.userid.toLowerCase() == "admin" && this.user.password.toLowerCase() == "admin") {
-
-            this.navigateByUrl();
+        let obj = {
+            userid: this.user.userid,
+            password: this.user.password
         }
-        else {
-            console.log("guf");
-
-            this.commonService.showSnakBarMessage("Wrong userid or password", "error", 2000);
-        }
+        this.userService.signin(obj)
+            .subscribe(response=>{
+                console.log(response);
+                this.navigateByUrl();
+            },respError => {
+                this.commonService.showSnakBarMessage(respError, 'error', 2000);
+              })
     }
     signInUser(): void {
         // Return if the form is invalid

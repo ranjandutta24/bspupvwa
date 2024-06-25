@@ -27,8 +27,8 @@ export class CommonService {
   }
 
   // private apiUrl = 'http://localhost:4027/api';//Local API
-  // private apiUrl = 'http://10.150.50.23:4033/api';//Dev API
-  private apiUrl = "http://192.168.10.60:3000/api"; //Dev API
+  private apiUrl = 'http://10.150.50.23:4033/api';//Dev API
+  // private apiUrl = "http://192.168.10.60:3000/api"; //Dev API
   // private apiUrl = 'https://web.iroms.in/irtmaapi/api';//Prod API
   private authorization = "Bearer c2lzeFVQVkF1dGg6YjVQVTJPcFYyNCMxc24=";
   //For Sign up Link
