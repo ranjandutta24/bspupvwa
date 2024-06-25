@@ -327,8 +327,6 @@ export class CustomerProdComponent {
    
   }
 
-
-
   maxFMTHCK(value){
     console.log("call");
     
@@ -346,12 +344,26 @@ export class CustomerProdComponent {
         return adjustedWidth >= item.EXWIDTHAVG;
       }
   });
-
-
-
-  
   console.log(this.filteredData);
   
+  }
+
+  changeMin(event: any){
+    if (event.checked) {
+     this.minFMTHCK();
+    } else {
+      this.localFilter();
+    }
+  }
+
+  minFMTHCK(){
+    this.filteredData = this.filteredData.filter(item => {
+      const plannedSize = item.PLANNEDSIZE.split('X');
+      const width = parseFloat(plannedSize[1].trim());
+
+      return width > item.EXWIDTHMIN;
+    })
+    console.log(this.filteredData);
   }
   
 }
