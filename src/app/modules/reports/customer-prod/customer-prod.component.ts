@@ -49,6 +49,7 @@ export class CustomerProdComponent {
 
   ds_checkedItems: string[] = [];
   pl_checkedItems: string[] = [];
+  minFilter:boolean=false;
 
   loading = false;
   tableHead = [
@@ -248,8 +249,8 @@ export class CustomerProdComponent {
         (this.pl_checkedItems.length === 0 || this.pl_checkedItems.includes(item.PLANNEDSIZE))
 
     })
-    console.log(this.filteredData);
-
+   
+    this.minFilter && this.minFMTHCK();
     this.selectedValue &&  this.maxFMTHCK(this.selectedValue)
 
 
@@ -328,8 +329,6 @@ export class CustomerProdComponent {
   }
 
   maxFMTHCK(value){
-    console.log("call");
-    
      this.filteredData = this.filteredData.filter(item => {
       // Extract the width from PLANNEDSIZE
       const plannedSize = item.PLANNEDSIZE.split('X');
@@ -344,16 +343,41 @@ export class CustomerProdComponent {
         return adjustedWidth >= item.EXWIDTHAVG;
       }
   });
-  console.log(this.filteredData);
-  
   }
 
   changeMin(event: any){
     if (event.checked) {
-     this.minFMTHCK();
+      this.minFilter=true
     } else {
-      this.localFilter();
+      this.minFilter=false
     }
+    this.localFilter();
+  }
+
+  mincnt(){
+   return this.filteredData.filter(item => {
+      const plannedSize = item.PLANNEDSIZE.split('X');
+      const width = parseFloat(plannedSize[1].trim());
+
+      return width > item.EXWIDTHMIN;
+    }).length
+  }
+
+  maxcnt(value){
+    return this.filteredData.filter(item => {
+      // Extract the width from PLANNEDSIZE
+      const plannedSize = item.PLANNEDSIZE.split('X');
+      const width = parseFloat(plannedSize[1].trim());
+      
+      const adjustedWidth = width + value;
+    
+      
+      if(this.selectedOption == 'Max'){
+        return adjustedWidth >= item.EXWIDTHMAX;
+      }else{
+        return adjustedWidth >= item.EXWIDTHAVG;
+      }
+  }).length;
   }
 
   minFMTHCK(){

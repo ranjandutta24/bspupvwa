@@ -52,7 +52,7 @@ export class AuthSignInComponent implements OnInit {
         private commonService: CommonService,
         private userService: UserService,
         private roleService: RoleService,
-        private _snackBar: MatSnackBar
+        private _snackBar: MatSnackBar,
     ) {
     }
 
@@ -87,6 +87,8 @@ export class AuthSignInComponent implements OnInit {
         this.userService.signin(obj)
             .subscribe(response=>{
                 console.log(response);
+                let data = JSON.parse(JSON.stringify(response));
+                this.commonService.setItem('currentUser', data);
                 this.navigateByUrl();
             },respError => {
                 this.commonService.showSnakBarMessage(respError, 'error', 2000);

@@ -210,7 +210,10 @@
                 Min Tolerance
               </h5>
               <div class="each_filter">
-                <mat-checkbox (change)="changeMin($event)"> Min </mat-checkbox>
+                <mat-checkbox (change)="changeMin($event)">
+                  Min
+                  <span class="cnt">({{ mincnt() }})</span>
+                </mat-checkbox>
               </div>
             </div>
             <div class="pl_sz">
@@ -234,18 +237,21 @@
                   (change)="changeMax($event, 20)"
                 >
                   20
+                  <span class="cnt">({{ maxcnt(20) }})</span>
                 </mat-checkbox>
                 <mat-checkbox
                   [checked]="selectedValue === 25"
                   (change)="changeMax($event, 25)"
                 >
                   25
+                  <span class="cnt">({{ maxcnt(25) }})</span>
                 </mat-checkbox>
                 <mat-checkbox
                   [checked]="selectedValue === 30"
                   (change)="changeMax($event, 30)"
                 >
                   30
+                  <span class="cnt">({{ maxcnt(30) }})</span>
                 </mat-checkbox>
               </div>
             </div>
