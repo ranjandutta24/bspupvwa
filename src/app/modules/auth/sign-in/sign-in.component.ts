@@ -81,7 +81,7 @@ export class AuthSignInComponent implements OnInit {
      */
     signIn() {
         let obj = {
-            userid: this.user.userid,
+            userid: this.user.userid.toUpperCase(),
             password: this.user.password
         }
         this.userService.signin(obj)

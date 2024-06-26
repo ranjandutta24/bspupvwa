@@ -72,10 +72,11 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
      * @private
      */
     private _check(redirectURL: string): Observable<boolean> {
-        console.log(redirectURL);
-        return of(true);
+        // console.log(redirectURL);
+        // return of(true);
 
         let authUser = this.commonService.getItem('currentUser');
+        console.log(authUser);
 
         //let navigation = this.commonService.getItem('navigation');
 
@@ -87,29 +88,31 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
 
             // Prevent the access
             return of(false);
+        }else{
+            return of(true);
         }
-        return this.userService.verifyToken(authUser)
-            .pipe(switchMap((authenticated) => {
-                console.log(authenticated);
+        // return this.userService.verifyToken(authUser)
+        //     .pipe(switchMap((authenticated) => {
+        //         console.log(authenticated);
 
-                // If the user is not authenticated...
-                if (!authenticated) {
-                    // Redirect to the sign-in page
-                    this._router.navigate(['sign-in'], { queryParams: { redirectURL } });
+        //         // If the user is not authenticated...
+        //         if (!authenticated) {
+        //             // Redirect to the sign-in page
+        //             this._router.navigate(['sign-in'], { queryParams: { redirectURL } });
 
-                    // Prevent the access
-                    return of(false);
-                }
-                else {
-                    let type = this.commonService.getItem('selectedCategory');
+        //             // Prevent the access
+        //             return of(false);
+        //         }
+        //         else {
+        //             let type = this.commonService.getItem('selectedCategory');
 
-                    let userRole = this.commonService.getItem('currentRole');
-                    let nav = JSON.parse(JSON.stringify(defaultNavigation));
-                    this.navigation = [];
-                    nav.map(item => {
-                        this.navigation = this.navigation.concat(item.children);
-                    })
-                    console.log(this.navigation);
+        //             let userRole = this.commonService.getItem('currentRole');
+        //             let nav = JSON.parse(JSON.stringify(defaultNavigation));
+        //             this.navigation = [];
+        //             nav.map(item => {
+        //                 this.navigation = this.navigation.concat(item.children);
+        //             })
+        //             console.log(this.navigation);
 
 
                     // this._navigationService.navigation$
@@ -127,33 +130,33 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
 
                     //     });
                     //  console.log(this.navigation);
-                    return of(true);
+                    // return of(true);
 
-                    let index = this.navigation.filter(e => e.link).map(n => n.link).indexOf(redirectURL);
-                    console.log(index);
-                    if (index != -1) {
-                        if (this.navigation.length > 0) {
-                            if (this.navigation[index].privilege) {
-                                if (userRole.privilege.includes(this.navigation[index].privilege[0])) {
-                                    return of(true);
-                                }
-                                else {
-                                    this._router.navigate(['/files/files']);
-                                    return of(true);
-                                }
-                            }
+                    // let index = this.navigation.filter(e => e.link).map(n => n.link).indexOf(redirectURL);
+                    // console.log(index);
+                    // if (index != -1) {
+                    //     if (this.navigation.length > 0) {
+                    //         if (this.navigation[index].privilege) {
+                    //             if (userRole.privilege.includes(this.navigation[index].privilege[0])) {
+                    //                 return of(true);
+                    //             }
+                    //             else {
+                    //                 this._router.navigate(['/files/files']);
+                    //                 return of(true);
+                    //             }
+                    //         }
 
-                        }
-                    }
-                    return of(true);
+                    //     }
+                    // }
+                    // return of(true);
 
 
-                }
+                // }
 
                 // Allow the access
 
-            })
-            );
+            // })
+            // );
     }
     /* private _check(redirectURL: string): Observable<boolean>
     {

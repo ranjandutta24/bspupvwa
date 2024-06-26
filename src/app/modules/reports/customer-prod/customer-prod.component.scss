@@ -85,6 +85,15 @@
     height: 200px;
     overflow: scroll;
 }
+.each_filter_min {
+    height: 25%;
+    border: 1px solid black;
+    border-collapse: collapse;
+    display: flex;
+    flex-direction: column;
+    height: 100px;
+    overflow: scroll;
+}
 
 .white-icon .mat-icon {
     color: white !important;

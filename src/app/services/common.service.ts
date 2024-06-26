@@ -100,11 +100,18 @@ export class CommonService {
   setItem(key: string, value: any): void {
     this.storage.set(key, value);
   }
+  // setItem(key: string, value: any): void {
+  //   localStorage.setItem(key, JSON.stringify(value));
+  // }
 
   getItem(key: string): any {
     const value = this.storage.get(key) || undefined;
     return value;
   }
+  // getItem(key: string): any {
+  //   const value = localStorage.getItem(key) || undefined;
+  //   return value;
+  // }
 
   removeItem(key: string): void {
     this.storage.remove(key);
