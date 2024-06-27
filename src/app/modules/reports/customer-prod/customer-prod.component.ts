@@ -338,9 +338,9 @@ export class CustomerProdComponent {
     
       
       if(this.selectedOption == 'Max'){
-        return adjustedWidth >= item.EXWIDTHMAX;
+        return adjustedWidth < item.EXWIDTHMAX;
       }else{
-        return adjustedWidth >= item.EXWIDTHAVG;
+        return adjustedWidth < item.EXWIDTHAVG;
       }
   });
   }
@@ -373,9 +373,9 @@ export class CustomerProdComponent {
     
       
       if(this.selectedOption == 'Max'){
-        return adjustedWidth >= item.EXWIDTHMAX;
+        return adjustedWidth < item.EXWIDTHMAX;
       }else{
-        return adjustedWidth >= item.EXWIDTHAVG;
+        return adjustedWidth < item.EXWIDTHAVG;
       }
   }).length;
   }
