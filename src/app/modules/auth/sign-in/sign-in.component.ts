@@ -79,22 +79,9 @@ export class AuthSignInComponent implements OnInit {
     /**
      * Sign in
      */
-    signIn() {
-        let obj = {
-            userid: this.user.userid.toUpperCase(),
-            password: this.user.password
-        }
-        this.userService.signin(obj)
-            .subscribe(response=>{
-                console.log(response);
-                let data = JSON.parse(JSON.stringify(response));
-                this.commonService.setItem('currentUser', data);
-                this.navigateByUrl();
-            },respError => {
-                this.commonService.showSnakBarMessage(respError, 'error', 2000);
-              })
-    }
-    signInUser(): void {
+    
+    
+    signIn(): void {
         // Return if the form is invalid
         if (this.signInForm.invalid) {
             return;

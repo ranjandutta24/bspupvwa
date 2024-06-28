@@ -15,6 +15,7 @@ import { FuseVerticalNavigationGroupItemComponent } from '@fuse/components/navig
 import { FuseVerticalNavigationSpacerItemComponent } from '@fuse/components/navigation/vertical/components/spacer/spacer.component';
 import { FuseScrollbarDirective } from '@fuse/directives/scrollbar/scrollbar.directive';
 import { FuseUtilsService } from '@fuse/services/utils/utils.service';
+import { CommonService } from 'app/services/common.service';
 import { delay, filter, merge, ReplaySubject, Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
@@ -68,6 +69,8 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
     private _fuseScrollbarDirectivesSubscription: Subscription;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+    userRole: any;
+    currentUser:any;
     /**
      * Constructor
      */
@@ -81,6 +84,7 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
         private _scrollStrategyOptions: ScrollStrategyOptions,
         private _fuseNavigationService: FuseNavigationService,
         private _fuseUtilsService: FuseUtilsService,
+        private commonService: CommonService
     )
     {
         this._handleAsideOverlayClick = (): void =>
@@ -307,6 +311,11 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
      */
     ngOnInit(): void
     {
+        this.currentUser = this.commonService.getItem('currentUser');
+        console.log( '304 vertical',  this.currentUser);
+        //Get role of current user
+        this.userRole = this.commonService.getItem('currentRole');
+        console.log('307 vertical',this.userRole)
         // Make sure the name input is not an empty string
         if ( this.name === '' )
         {
@@ -338,6 +347,56 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
                     this.closeAside();
                 }
             });
+            if(this.userRole) this.setMenu();
+    }
+
+    setMenu() {
+        let menues = [];
+        console.log(this.navigation);
+        for (let i = 0; i < this.navigation.length; i++) {
+            let submenues = [];
+
+            for (let j = 0; j < this.navigation[i].children.length; j++) {
+                let subsubmenues = [];
+                if (this.navigation[i].children[j].children) {//alert('109')
+                    for (let k = 0; k < this.navigation[i].children[j].children.length; k++) {
+                        if (this.userRole != undefined) { //alert('111');
+                            if (this.userRole.privilege.indexOf(this.navigation[i].children[j].children[k].privilege[0]) >= 0) {//alert('112');
+                                subsubmenues.push(this.navigation[i].children[j].children[k]);
+                            }
+                        }
+                    }
+
+                    if (subsubmenues.length > 0) { //alert('118');
+                        this.navigation[i].children[j].children = subsubmenues;
+                        submenues.push(this.navigation[i].children[j])
+                    }
+                }
+                else { // alert('123');
+                    if (this.userRole != undefined) { //alert('124');
+                        if (this.navigation[i].children[j].privilege) { //alert('125');
+                            if (this.userRole.privilege.indexOf(this.navigation[i].children[j].privilege[0]) >= 0) { //alert('126');
+                                submenues.push(this.navigation[i].children[j])
+                            }
+                        }
+                        else submenues.push(this.navigation[i].children[j]);// alert('130');
+                    }
+                }
+            }
+            if (submenues.length > 0) { //alert('134');
+                this.navigation[i].children = submenues;
+                // if()
+                let index= this.currentUser.features.indexOf(this.navigation[i].feature[0])
+                if(index!=-1){
+                    menues.push(this.navigation[i]);
+                }
+                
+            }
+
+        }
+        console.log(menues);
+
+        this.navigation = menues;
     }
 
     /**

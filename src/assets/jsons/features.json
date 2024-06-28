@@ -1,10 +1,10 @@
 [
     {
-        "name": "Settings",
+        "name": "BSL",
         "default": true
     },
     {
-        "name": "File & Document Management",
-        "default": false
+        "name": "HSM",
+        "default": true
     }
 ]
