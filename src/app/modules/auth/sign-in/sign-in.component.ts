@@ -92,8 +92,13 @@ export class AuthSignInComponent implements OnInit {
 
         // Hide the alert
         this.showAlert = false;
+        let obj = {
+            userid: this.user.userid,
+            password: this.user.password
+        }
+        obj.userid = this.user.userid.toUpperCase();
 
-        this.userService.signin(this.signInForm.value)
+        this.userService.signin(obj)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((response) => {
                 let currentUser = JSON.parse(JSON.stringify(response));
