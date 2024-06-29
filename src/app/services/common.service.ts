@@ -168,19 +168,19 @@ export class CommonService {
   }
   getDefaultRole(): any {
     return this.http
-      .get(this.jsonUrl + "/defaultroles.json")
+      .get(this.jsonUrl + "/defaultrole_1.json")
       .pipe(map((response: Response) => response));
   }
 
   getPrivileges(): any {
     return this.http
-      .get(this.jsonUrl + "/privileges.json")
+      .get(this.jsonUrl + "/privilege_1.json")
       .pipe(map((response: Response) => response));
   }
 
   getFeatures(): any {
     return this.http
-      .get(this.jsonUrl + "/features.json")
+      .get(this.jsonUrl + "/feature_1.json")
       .pipe(map((response: Response) => response));
   }
 
