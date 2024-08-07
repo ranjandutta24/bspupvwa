@@ -46,6 +46,8 @@ export class CustomerProdComponent {
   options = ['Max', 'Avg'];
   selectedOption = 'Max';
   selectedValue = 0;
+  selectedWidth = 0;
+  
 
   ds_checkedItems: string[] = [];
   pl_checkedItems: string[] = [];
@@ -191,6 +193,7 @@ export class CustomerProdComponent {
         this.plannedSizes = this.cusProdReport.filters.plannedSize;
         this.filteredData = this.detailsReport;
         this.loading = false;
+        
         this.matDrawer.close();
 
       },
@@ -252,6 +255,8 @@ export class CustomerProdComponent {
    
     this.minFilter && this.minFMTHCK();
     this.selectedValue &&  this.maxFMTHCK(this.selectedValue)
+    this.selectedValue &&  this.maxFMTHCK(this.selectedValue)
+    this.selectedWidth &&  this.coil_width_filter(this.selectedWidth)
 
 
 
@@ -327,6 +332,26 @@ export class CustomerProdComponent {
     this.localFilter();
    
   }
+  change_coil_width_box(event: any, item: number){
+    if (event.checked) {
+      this.selectedWidth=2.5
+      
+    //  this.coil_width_filter(item);
+    } else {
+      
+      this.selectedWidth=0
+      
+    }
+    console.log(this.selectedWidth);
+    
+    this.localFilter();
+   
+  }
+  coil_width_filter(value){
+    this.filteredData = this.filteredData.filter(item => {
+     return item.EXTHICKAVG<=value
+    })
+  }
 
   maxFMTHCK(value){
      this.filteredData = this.filteredData.filter(item => {
@@ -377,6 +402,11 @@ export class CustomerProdComponent {
       }else{
         return adjustedWidth < item.EXWIDTHAVG;
       }
+  }).length;
+  }
+  coilthick(value){
+    return this.filteredData.filter(item => {
+        return  item.EXTHICKAVG<=value;
   }).length;
   }
 

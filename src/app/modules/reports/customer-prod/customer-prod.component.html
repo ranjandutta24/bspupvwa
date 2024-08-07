@@ -255,6 +255,35 @@
                 </mat-checkbox>
               </div>
             </div>
+
+            <div class="pl_sz">
+              <h5
+                class="border border-slate-600 px-3 bg-blue-800 text-white ..."
+              >
+                Avg Weight
+              </h5>
+              <div class="each_filter">
+                <div class="avg">
+                  <p>
+                    <span style="font-weight: bold">Avg Coil Weight:</span>
+                    {{ cusProdReport.avg_coil_weight }}
+                    <span class="cnt">(ton)</span>
+                  </p>
+                  <p>
+                    <span style="font-weight: bold">Avg Slab Length:</span>
+                    {{ cusProdReport.avg_slab_length }}
+                    <span class="cnt">(m)</span>
+                  </p>
+                </div>
+                <mat-checkbox
+                  [checked]="selectedWidth === 2.5"
+                  (change)="change_coil_width_box($event, 2.5)"
+                >
+                  % of Coil <= 2.5 mm
+                  <span class="cnt">({{ coilthick(2.5) }})</span>
+                </mat-checkbox>
+              </div>
+            </div>
           </div>
         </div>
         <div class="report_table">

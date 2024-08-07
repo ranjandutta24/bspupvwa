@@ -49,7 +49,7 @@
               {{ summaryData.exit_weight }}
             </td>
             <td class="border border-slate-300 px-3 ...">
-              {{ summaryData.yield.toFixed(2) }}
+              {{ summaryData.yield ? summaryData.yield.toFixed(2) : 0 }}
             </td>
           </tr>
         </tbody>
