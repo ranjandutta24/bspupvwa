@@ -260,11 +260,12 @@
               <h5
                 class="border border-slate-600 px-3 bg-blue-800 text-white ..."
               >
-                Avg Weight
+                <!-- Avg Weight -->
+                --
               </h5>
               <div class="each_filter">
                 <div class="avg">
-                  <p>
+                  <p style="margin-bottom: 10px">
                     <span style="font-weight: bold">Avg Coil Weight:</span>
                     {{ cusProdReport.avg_coil_weight }}
                     <span class="cnt">(ton)</span>
@@ -383,6 +384,9 @@
                 </td>
                 <td class="border border-slate-700 px-3 ...">
                   {{ row.COILID }}
+                </td>
+                <td class="border border-slate-700 px-3 ...">
+                  {{ (row.COIL_WEIGHT / 1000).toFixed(2) }}
                 </td>
                 <td class="border border-slate-700 px-3 ...">
                   {{ row.ROLLINGTIME | date : "MMM dd, HH:mm" }}

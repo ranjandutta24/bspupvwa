@@ -57,6 +57,7 @@ export class CustomerProdComponent {
   tableHead = [
     { name: 'No.' },
     { name: 'Coil ID' },
+    { name: 'Coil Weight' },
     { name: 'Rolling Time' },
     { name: 'Steel Grade' },
     { name: `Planned Size` },
@@ -405,9 +406,14 @@ export class CustomerProdComponent {
   }).length;
   }
   coilthick(value){
-    return this.filteredData.filter(item => {
+    let total_count = this.filteredData.length;
+
+
+    let filterCount = this.filteredData.filter(item => {
         return  item.EXTHICKAVG<=value;
   }).length;
+
+  return ((filterCount/total_count)*100.).toFixed(2)
   }
 
   minFMTHCK(){
