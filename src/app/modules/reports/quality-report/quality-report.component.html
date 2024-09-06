@@ -222,10 +222,10 @@
             <tbody class="bg-blue-50">
               <tr
                 class="hover:bg-blue-300"
-                *ngFor="let row of filteredData; let rindex = index"
+                *ngFor="let row of paginatedData; let rindex = index"
               >
                 <td class="border border-slate-700 px-3 ...">
-                  {{ rindex + 1 }}
+                  {{ (currentPage - 1) * 100 + (rindex + 1) }}
                 </td>
                 <td class="border border-slate-700 px-3 ...">
                   {{ row.COILID }}
@@ -313,6 +313,44 @@
               </tr>
             </tbody>
           </table>
+          <div class="pagination-controls">
+            <!-- Previous button -->
+            <button
+              (click)="changePage(currentPage - 1)"
+              [disabled]="currentPage === 1"
+            >
+              Previous
+            </button>
+
+            <!-- Show ellipsis before if there are previous pages not shown -->
+            <span *ngIf="getVisiblePageNumbers()[0] > 1">...</span>
+
+            <!-- Page numbers -->
+            <button
+              *ngFor="let page of getVisiblePageNumbers()"
+              [class.active]="currentPage === page"
+              (click)="changePage(page)"
+            >
+              {{ page }}
+            </button>
+
+            <!-- Show ellipsis after if there are more pages not shown -->
+            <span
+              *ngIf="
+                getVisiblePageNumbers()[getVisiblePageNumbers().length - 1] <
+                totalPages
+              "
+              >...</span
+            >
+
+            <!-- Next button -->
+            <button
+              (click)="changePage(currentPage + 1)"
+              [disabled]="currentPage === totalPages"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </mat-drawer-content>

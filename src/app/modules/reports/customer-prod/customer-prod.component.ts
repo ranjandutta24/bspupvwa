@@ -47,11 +47,11 @@ export class CustomerProdComponent {
   selectedOption = 'Max';
   selectedValue = 0;
   selectedWidth = 0;
-  
+
 
   ds_checkedItems: string[] = [];
   pl_checkedItems: string[] = [];
-  minFilter:boolean=false;
+  minFilter: boolean = false;
 
   loading = false;
   tableHead = [
@@ -193,16 +193,61 @@ export class CustomerProdComponent {
         this.destinations = this.cusProdReport.filters.destination;
         this.plannedSizes = this.cusProdReport.filters.plannedSize;
         this.filteredData = this.detailsReport;
+
+        this.currentPage = 1;
+
+        this.setPagination();
         this.loading = false;
-        
+
         this.matDrawer.close();
 
       },
-      respError => {
-        this.loading = false;
-        this.commonService.showSnakBarMessage(respError, 'error', 2000);
-      })
+        respError => {
+          this.loading = false;
+          this.commonService.showSnakBarMessage(respError, 'error', 2000);
+        })
   }
+
+  currentPage: number = 1;
+  pageSize: number = 100;  // Set the number of items per page
+  totalPages: number = 0;
+  paginatedData: any[] = [];
+  visiblePages: number = 5; // Number of page numbers to display in the pagination
+
+  // Method to initialize pagination
+  setPagination() {
+    this.totalPages = Math.ceil(this.filteredData.length / this.pageSize);
+    this.paginateData();
+  }
+
+  // Method to slice the filtered data based on the current page
+  paginateData() {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedData = this.filteredData.slice(start, end);
+  }
+
+  // Get the range of page numbers to show
+  getVisiblePageNumbers(): number[] {
+    const start = Math.max(1, this.currentPage - Math.floor(this.visiblePages / 2));
+    const end = Math.min(this.totalPages, start + this.visiblePages - 1);
+
+    const pages = [];
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  }
+
+  // Method to change pages
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.paginateData();
+    }
+  }
+
 
   sortArrayByProperty(property: string, columnIndex) {
     this.tableHead[columnIndex].arrowDownward = !this.tableHead[columnIndex].arrowDownward;
@@ -253,16 +298,19 @@ export class CustomerProdComponent {
         (this.pl_checkedItems.length === 0 || this.pl_checkedItems.includes(item.PLANNEDSIZE))
 
     })
-   
+
     this.minFilter && this.minFMTHCK();
-    this.selectedValue &&  this.maxFMTHCK(this.selectedValue)
-    this.selectedValue &&  this.maxFMTHCK(this.selectedValue)
-    this.selectedWidth &&  this.coil_width_filter(this.selectedWidth)
+    this.selectedValue && this.maxFMTHCK(this.selectedValue)
+    this.selectedValue && this.maxFMTHCK(this.selectedValue)
+    this.selectedWidth && this.coil_width_filter(this.selectedWidth)
 
 
 
 
     this.updateAvailableOptions();
+    this.currentPage = 1;
+
+    this.setPagination();
   }
   filterCount(item, attr) {
     // return this.filteredData.length;
@@ -314,74 +362,74 @@ export class CustomerProdComponent {
 
   }
 
-  chngSelectedOpt(){
+  chngSelectedOpt() {
     this.localFilter();
   }
 
 
-  changeMax(event: any, item: number){
-    this.selectedValue=item
+  changeMax(event: any, item: number) {
+    this.selectedValue = item
     if (event.checked) {
-    
-     this.maxFMTHCK(item);
+
+      this.maxFMTHCK(item);
     } else {
-      
-      this.selectedValue=0
-      
+
+      this.selectedValue = 0
+
     }
-    
+
     this.localFilter();
-   
+
   }
-  change_coil_width_box(event: any, item: number){
+  change_coil_width_box(event: any, item: number) {
     if (event.checked) {
-      this.selectedWidth=2.5
-      
-    //  this.coil_width_filter(item);
+      this.selectedWidth = 2.5
+
+      //  this.coil_width_filter(item);
     } else {
-      
-      this.selectedWidth=0
-      
+
+      this.selectedWidth = 0
+
     }
     console.log(this.selectedWidth);
-    
+
     this.localFilter();
-   
+
   }
-  coil_width_filter(value){
+  coil_width_filter(value) {
     this.filteredData = this.filteredData.filter(item => {
-     return item.EXTHICKAVG<=value
+      return item.EXTHICKAVG <= value
     })
   }
 
-  maxFMTHCK(value){
-     this.filteredData = this.filteredData.filter(item => {
+  maxFMTHCK(value) {
+    this.filteredData = this.filteredData.filter(item => {
       // Extract the width from PLANNEDSIZE
       const plannedSize = item.PLANNEDSIZE.split('X');
       const width = parseFloat(plannedSize[1].trim());
-      
+
       const adjustedWidth = width + value;
-    
-      
-      if(this.selectedOption == 'Max'){
+
+
+      if (this.selectedOption == 'Max') {
         return adjustedWidth < item.EXWIDTHMAX;
-      }else{
+      } else {
         return adjustedWidth < item.EXWIDTHAVG;
       }
-  });
+    });
   }
 
-  changeMin(event: any){
+  changeMin(event: any) {
     if (event.checked) {
-      this.minFilter=true
+      this.minFilter = true
     } else {
-      this.minFilter=false
+      this.minFilter = false
     }
     this.localFilter();
   }
 
-  mincnt(){
-   return this.filteredData.filter(item => {
+  mincnt() {
+    return this.filteredData.filter(item => {
       const plannedSize = item.PLANNEDSIZE.split('X');
       const width = parseFloat(plannedSize[1].trim());
 
@@ -389,34 +437,34 @@ export class CustomerProdComponent {
     }).length
   }
 
-  maxcnt(value){
+  maxcnt(value) {
     return this.filteredData.filter(item => {
       // Extract the width from PLANNEDSIZE
       const plannedSize = item.PLANNEDSIZE.split('X');
       const width = parseFloat(plannedSize[1].trim());
-      
+
       const adjustedWidth = width + value;
-    
-      
-      if(this.selectedOption == 'Max'){
+
+
+      if (this.selectedOption == 'Max') {
         return adjustedWidth < item.EXWIDTHMAX;
-      }else{
+      } else {
         return adjustedWidth < item.EXWIDTHAVG;
       }
-  }).length;
+    }).length;
   }
-  coilthick(value){
+  coilthick(value) {
     let total_count = this.filteredData.length;
 
 
     let filterCount = this.filteredData.filter(item => {
-        return  item.EXTHICKAVG<=value;
-  }).length;
+      return item.EXTHICKAVG <= value;
+    }).length;
 
-  return ((filterCount/total_count)*100.).toFixed(2)
+    return ((filterCount / total_count) * 100.).toFixed(2)
   }
 
-  minFMTHCK(){
+  minFMTHCK() {
     this.filteredData = this.filteredData.filter(item => {
       const plannedSize = item.PLANNEDSIZE.split('X');
       const width = parseFloat(plannedSize[1].trim());
@@ -425,5 +473,5 @@ export class CustomerProdComponent {
     })
     console.log(this.filteredData);
   }
-  
+
 }

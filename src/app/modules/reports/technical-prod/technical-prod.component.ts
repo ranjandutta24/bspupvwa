@@ -38,14 +38,14 @@ export class TechnicalProdComponent {
   start = '';
   end = '';
   detailsReport = [];
-  summaryData :any ;
-  filteredData = []; 
+  summaryData: any;
+  filteredData = [];
   techProdReport = { details: [], summary: {} };
   loading = false;
 
   tableHead = [
     { name: 'No.' },
-    {name: 'Type'},
+    { name: 'Type' },
     { name: 'Coil ID' },
     { name: 'Slab ID' },
     { name: 'Steelgrade' },
@@ -68,49 +68,49 @@ export class TechnicalProdComponent {
     { name: 'Roll Force F5 [MN]' },
     { name: 'Roll Force F6 [MN]' },
     { name: 'Roll Force F7 [MN]' },
-    {name: 'Bending F1 [MN]'},
-    {name: 'Bending F2 [MN]'},
-    {name: 'Bending F3 [MN]'},
-    {name: 'Bending F4 [MN]'},
-    {name: 'Bending F5 [MN]'},
-    {name: 'Bending F6 [MN]'},
-    {name: 'Bending F7 [MN]'},
-    {name: 'Torque F1 [KNm]'},
-    {name: 'Torque F2 [KNm]'},
-    {name: 'Torque F3 [KNm]'},
-    {name: 'Torque F4 [KNm]'},
-    {name: 'Torque F5 [KNm]'},
-    {name: 'Torque F6 [KNm]'},
-    {name: 'Torque F7 [KNm]'},
-    {name: 'Reduction F1 [%]'},
-    {name: 'Reduction F2 [%]'},
-    {name: 'Reduction F3 [%]'},
-    {name: 'Reduction F4 [%]'},
-    {name: 'Reduction F5 [%]'},
-    {name: 'Reduction F6 [%]'},
-    {name: 'Reduction F7 [%]'},
-    {name: 'Temp.F1 [degC]'},
-    {name: 'Temp.F2 [degC]'},
-    {name: 'Temp.F3 [degC]'},
-    {name: 'Temp.F4 [degC]'},
-    {name: 'Temp.F5 [degC]'},
-    {name: 'Temp.F6 [degC]'},
-    {name: 'Temp.F7 [degC]'},
-    {name: 'Entry Temp [degC]'},
-    {name: 'FM Ex Temp [degC]'},
-    {name: 'Coil Temp [degC]'},
-    {name: 'Desc. Flow En.'},
-    {name: 'Desc. Flow Ex.'},
-    {name: 'Speed F1 [m/s]'},
-    {name: 'Speed F2 [m/s]'},
-    {name: 'Speed F3 [m/s]'},
-    {name: 'Speed F4 [m/s]'},
-    {name: 'Speed F5 [m/s]'},
-    {name: 'Speed F6 [m/s]'},
-    {name: 'Speed F7 [m/s]'},
-    {name: 'Crown'},
-    {name: 'Wedge'},
-    {name: 'Comment'},
+    { name: 'Bending F1 [MN]' },
+    { name: 'Bending F2 [MN]' },
+    { name: 'Bending F3 [MN]' },
+    { name: 'Bending F4 [MN]' },
+    { name: 'Bending F5 [MN]' },
+    { name: 'Bending F6 [MN]' },
+    { name: 'Bending F7 [MN]' },
+    { name: 'Torque F1 [KNm]' },
+    { name: 'Torque F2 [KNm]' },
+    { name: 'Torque F3 [KNm]' },
+    { name: 'Torque F4 [KNm]' },
+    { name: 'Torque F5 [KNm]' },
+    { name: 'Torque F6 [KNm]' },
+    { name: 'Torque F7 [KNm]' },
+    { name: 'Reduction F1 [%]' },
+    { name: 'Reduction F2 [%]' },
+    { name: 'Reduction F3 [%]' },
+    { name: 'Reduction F4 [%]' },
+    { name: 'Reduction F5 [%]' },
+    { name: 'Reduction F6 [%]' },
+    { name: 'Reduction F7 [%]' },
+    { name: 'Temp.F1 [degC]' },
+    { name: 'Temp.F2 [degC]' },
+    { name: 'Temp.F3 [degC]' },
+    { name: 'Temp.F4 [degC]' },
+    { name: 'Temp.F5 [degC]' },
+    { name: 'Temp.F6 [degC]' },
+    { name: 'Temp.F7 [degC]' },
+    { name: 'Entry Temp [degC]' },
+    { name: 'FM Ex Temp [degC]' },
+    { name: 'Coil Temp [degC]' },
+    { name: 'Desc. Flow En.' },
+    { name: 'Desc. Flow Ex.' },
+    { name: 'Speed F1 [m/s]' },
+    { name: 'Speed F2 [m/s]' },
+    { name: 'Speed F3 [m/s]' },
+    { name: 'Speed F4 [m/s]' },
+    { name: 'Speed F5 [m/s]' },
+    { name: 'Speed F6 [m/s]' },
+    { name: 'Speed F7 [m/s]' },
+    { name: 'Crown' },
+    { name: 'Wedge' },
+    { name: 'Comment' },
   ];
 
   constructor(
@@ -155,6 +155,7 @@ export class TechnicalProdComponent {
     // console.log(this.getCurrentTimeIn12HourFormat());
 
     this.onFilter();
+
   }
 
   getCurrentTimeIn12HourFormat() {
@@ -206,7 +207,7 @@ export class TechnicalProdComponent {
       startDate: '',
       endDate: ''
     };
-   
+
     this.filterJson.sDate = this.commonService.createDateAsUTC(this.filterJson.sDate);
     this.filterJson.eDate = this.commonService.createDateAsUTC(this.filterJson.eDate);
     this.start = `${this.datePipe.transform(this.filterJson.sDate, 'dd/MM/yyyy')} ${this.convertTo24HourFormat(this.filterJson.startTime)}`;
@@ -220,58 +221,69 @@ export class TechnicalProdComponent {
         console.log(response);
 
         this.techProdReport = JSON.parse(JSON.stringify(response));
-        
+
         this.detailsReport = this.techProdReport.details;
 
         this.summaryData = this.techProdReport.summary;
-       
+
         this.filteredData = this.detailsReport;
 
+        // this.filteredData = this.filteredData.filter((item, index) => { return index < 101 });
+        this.currentPage = 1;
+
+        this.setPagination();
+
         this.loading = false;
-        
+
         this.matDrawer.close();
 
       },
-      respError => {
-        this.loading = false;
-        this.commonService.showSnakBarMessage(respError, 'error', 2000);
-      })
+        respError => {
+          this.loading = false;
+          this.commonService.showSnakBarMessage(respError, 'error', 2000);
+        })
   }
 
-  // sortArrayByProperty(property: string, columnIndex) {
-  //   this.tableHead[columnIndex].arrowDownward = !this.tableHead[columnIndex].arrowDownward;
-  //   this.filteredData.sort((a, b) => {
-  //     if (a[property] < b[property]) {
-  //       return -1;
-  //     }
-  //     if (a[property] > b[property]) {
-  //       return 1;
-  //     }
-  //     return 0;
-  //   });
 
-  //   console.log(this.filteredData);
+  // Pagination variables
+  currentPage: number = 1;
+  pageSize: number = 100;  // Set the number of items per page
+  totalPages: number = 0;
+  paginatedData: any[] = [];
+  visiblePages: number = 5; // Number of page numbers to display in the pagination
 
+  // Method to initialize pagination
+  setPagination() {
+    this.totalPages = Math.ceil(this.filteredData.length / this.pageSize);
+    this.paginateData();
+  }
 
-  //   //this._changeDetectorRef.markForCheck();
+  // Method to slice the filtered data based on the current page
+  paginateData() {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedData = this.filteredData.slice(start, end);
+  }
 
+  // Get the range of page numbers to show
+  getVisiblePageNumbers(): number[] {
+    const start = Math.max(1, this.currentPage - Math.floor(this.visiblePages / 2));
+    const end = Math.min(this.totalPages, start + this.visiblePages - 1);
 
-  // }
+    const pages = [];
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
 
-  // sortArrayByPropertyReverse(property: string, columnIndex) {
-  //   this.tableHead[columnIndex].arrowDownward = !this.tableHead[columnIndex].arrowDownward;
+    return pages;
+  }
 
-  //   this.filteredData.sort((a, b) => {
-  //     if (a[property] < b[property]) {
-  //       return 1; // Reverse the order of comparison
-  //     }
-  //     if (a[property] > b[property]) {
-  //       return -1; // Reverse the order of comparison
-  //     }
-  //     return 0;
-  //   });
+  // Method to change pages
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.paginateData();
+    }
+  }
 
-  //   console.log(this.filteredData);
-
-  // }
 }

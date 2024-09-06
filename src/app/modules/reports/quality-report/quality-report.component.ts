@@ -43,7 +43,7 @@ export class QualityReportComponent {
   detailsReport = [];
   destinations = [];
   plannedSizes = [];
-loading = false;
+  loading = false;
   ds_checkedItems: string[] = [];
   pl_checkedItems: string[] = [];
 
@@ -55,7 +55,7 @@ loading = false;
     { name: 'Steel Grade' },
     { name: 'Destination' },
     { name: `Param` },
-    { name: 'R5 Temp'},
+    { name: 'R5 Temp' },
     { name: 'R5 T' },
     { name: 'R5 W' },
     { name: 'FM EX T', },
@@ -63,9 +63,9 @@ loading = false;
     { name: 'FM EX Temp' },
     { name: 'Coil Temp' },
     { name: 'Profile', },
-    { name: 'Flatness',arrowDownward: true, showBtn: false, attr: 'THCK_TOLR' },
-   
-   
+    { name: 'Flatness', arrowDownward: true, showBtn: false, attr: 'THCK_TOLR' },
+
+
   ];
 
   constructor(
@@ -115,13 +115,13 @@ loading = false;
   getShiftValue() {
     const now = new Date();
     const hours = now.getHours();
-    
+
     if (hours >= 6 && hours < 14) {
-        return 1;
+      return 1;
     } else if (hours >= 14 && hours < 22) {
-        return 2;
+      return 2;
     } else {
-        return 3;
+      return 3;
     }
   }
 
@@ -190,13 +190,57 @@ loading = false;
         this.destinations = this.cusProdReport.filters.destination;
         this.plannedSizes = this.cusProdReport.filters.plannedSize;
         this.filteredData = this.detailsReport;
+        this.currentPage = 1;
+
+        this.setPagination();
         this.loading = false;
         this.matDrawer.close();
       },
-      respError => {
-        this.loading = false;
-        this.commonService.showSnakBarMessage(respError, 'error', 2000);
-      })
+        respError => {
+          this.loading = false;
+          this.commonService.showSnakBarMessage(respError, 'error', 2000);
+        })
+  }
+
+  // Pagination variables
+  currentPage: number = 1;
+  pageSize: number = 100;  // Set the number of items per page
+  totalPages: number = 0;
+  paginatedData: any[] = [];
+  visiblePages: number = 5; // Number of page numbers to display in the pagination
+
+  // Method to initialize pagination
+  setPagination() {
+    this.totalPages = Math.ceil(this.filteredData.length / this.pageSize);
+    this.paginateData();
+  }
+
+  // Method to slice the filtered data based on the current page
+  paginateData() {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedData = this.filteredData.slice(start, end);
+  }
+
+  // Get the range of page numbers to show
+  getVisiblePageNumbers(): number[] {
+    const start = Math.max(1, this.currentPage - Math.floor(this.visiblePages / 2));
+    const end = Math.min(this.totalPages, start + this.visiblePages - 1);
+
+    const pages = [];
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  }
+
+  // Method to change pages
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.paginateData();
+    }
   }
 
   sortArrayByProperty(property: string, columnIndex) {

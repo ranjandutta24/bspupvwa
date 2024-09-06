@@ -73,7 +73,7 @@
     // background-color: rgb(229, 255, 0);
     // border: 1px solid black;
     box-shadow: 0px 0px 10px 0px rgb(152 152 152);
-    height: calc(100vh - 160px);
+    height: calc(100vh - 196px);
     overflow: scroll;
 }
 .box_v{
@@ -179,3 +179,58 @@
     //   tbody .fixed-column-3 {
     //     z-index: 1;
     //   }
+
+    .pagination-controls {
+        position: fixed; /* Fix the position at the bottom of the table */
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: white; /* Background color to make it stand out */
+        padding: 10px;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow for effect */
+        z-index: 100; /* Ensure it stays on top */
+      }
+      
+      /* Styling the pagination buttons */
+      .pagination-controls button {
+        padding: 8px 15px;
+        margin: 0 5px;
+        font-size: 14px;
+        border: 1px solid #ddd;
+        background-color: white;
+        color: #007bff;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+      
+      .pagination-controls button.active {
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+      }
+      
+      .pagination-controls button:disabled {
+        background-color: #f5f5f5;
+        color: #aaa;
+        cursor: not-allowed;
+      }
+      
+      .pagination-controls button:hover:not(.active):not(:disabled) {
+        background-color: #f0f0f0;
+      }
+      
+      .pagination-controls span {
+        margin: 0 5px;
+        font-size: 16px;
+      }
+      
+      /* Make sure it stays aligned properly with the table */
+      .table-container table {
+        width: 100%;
+      }
+      
+      
