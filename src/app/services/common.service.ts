@@ -8,8 +8,8 @@ import {
   FuseNavigationService,
   FuseVerticalNavigationComponent,
 } from "@fuse/components/navigation";
-import { BehaviorSubject, Subject, throwError } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
+import { BehaviorSubject, Subject, throwError } from "rxjs";
+import { catchError, retry } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -27,9 +27,10 @@ export class CommonService {
     });
   }
 
-  // private apiUrl = 'http://localhost:4027/api';//Local API
+  private apiUrl = "http://localhost:4033/api"; //Local API
   // private apiUrl = 'http://10.150.50.23:4033/api';//Dev API
-  private apiUrl = "http://192.168.10.60:3000/api"; //Dev API
+  // private apiUrl = "http:localhost:4033/api"; //Dev API
+  // private apiUrl = "http://192.168.10.60:3000/api"; //Dev API
   // private apiUrl = 'https://web.iroms.in/irtmaapi/api';//Prod API
   private authorization = "Bearer c2lzeFVQVkF1dGg6YjVQVTJPcFYyNCMxc24=";
   //For Sign up Link
@@ -84,7 +85,6 @@ export class CommonService {
     }
     return -1;
   }
-  
 
   // showSnakBarMessage(message: string, type: string, duration: number, action?: string): void {
   //   this.snakBar.open(message, action, {
@@ -173,15 +173,13 @@ export class CommonService {
     //   .pipe(map((response: Response) => response));
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': this.authorization
-      })
+        "Content-Type": "application/json",
+        Authorization: this.authorization,
+      }),
     };
-    return this.http.get(this.getBaseUrl() + '/json/defaultroles', httpOptions)
-      .pipe(
-        retry(1),
-        catchError(this.errorHandler)
-      )
+    return this.http
+      .get(this.getBaseUrl() + "/json/defaultroles", httpOptions)
+      .pipe(retry(1), catchError(this.errorHandler));
   }
 
   getPrivileges(): any {
@@ -190,15 +188,13 @@ export class CommonService {
     //   .pipe(map((response: Response) => response));
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': this.authorization
-      })
+        "Content-Type": "application/json",
+        Authorization: this.authorization,
+      }),
     };
-    return this.http.get(this.getBaseUrl() + '/json/privileges', httpOptions)
-      .pipe(
-        retry(1),
-        catchError(this.errorHandler)
-      )
+    return this.http
+      .get(this.getBaseUrl() + "/json/privileges", httpOptions)
+      .pipe(retry(1), catchError(this.errorHandler));
   }
 
   getFeatures(): any {
@@ -207,22 +203,27 @@ export class CommonService {
     //   .pipe(map((response: Response) => response));
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': this.authorization
-      })
+        "Content-Type": "application/json",
+        Authorization: this.authorization,
+      }),
     };
-    return this.http.get(this.getBaseUrl() + '/json/features', httpOptions)
-      .pipe(
-        retry(1),
-        catchError(this.errorHandler)
-      )
+    return this.http
+      .get(this.getBaseUrl() + "/json/features", httpOptions)
+      .pipe(retry(1), catchError(this.errorHandler));
   }
 
   errorHandler(error: Response) {
     console.log(error);
-    let message = (error['error']) ? ((error['error'].error) ? error['error'].error : error['message']) : error['message'];
+    let message = error["error"]
+      ? error["error"].error
+        ? error["error"].error
+        : error["message"]
+      : error["message"];
     console.log(message);
-    return throwError(message || 'Remote server unreachable. Please check your Internet connection.');
+    return throwError(
+      message ||
+        "Remote server unreachable. Please check your Internet connection."
+    );
   }
 
   createDateAsUTC(d) {
@@ -231,7 +232,9 @@ export class CommonService {
       date.getFullYear(),
       date.getMonth(),
       date.getDate(),
-      0, 0, 0 // Setting hours, minutes, and seconds to 00:00:00
+      0,
+      0,
+      0 // Setting hours, minutes, and seconds to 00:00:00
     );
   }
 

@@ -1,5 +1,11 @@
 import { NgIf } from "@angular/common";
-import { Component, OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  ViewEncapsulation,
+} from "@angular/core";
 import {
   FormsModule,
   NgForm,
@@ -20,6 +26,7 @@ import { fuseAnimations } from "@fuse/animations";
 import { FuseAlertComponent, FuseAlertType } from "@fuse/components/alert";
 import { AuthService } from "app/core/auth/auth.service";
 import { CommonService } from "app/services/common.service";
+import { ReportService } from "app/services/report.service";
 import { RoleService } from "app/services/role.service";
 import { UserService } from "app/services/user.service";
 import { Subject, takeUntil } from "rxjs";
@@ -44,7 +51,7 @@ import { Subject, takeUntil } from "rxjs";
     MatProgressSpinnerModule,
   ],
 })
-export class AuthSignInComponent implements OnInit {
+export class AuthSignInComponent implements OnInit, OnDestroy {
   @ViewChild("signInNgForm") signInNgForm: NgForm;
   private _unsubscribeAll: Subject<any> = new Subject();
 
@@ -62,12 +69,19 @@ export class AuthSignInComponent implements OnInit {
   flag1: boolean = false;
   intervalId: any;
   intervalId1: any;
+  intervalld: any;
+  trackingData: any;
+  fur1: boolean;
+  fur2: boolean;
+  fur3: boolean;
+  fur4: boolean;
 
   /**
    * Constructor
    */
   constructor(
     private _activatedRoute: ActivatedRoute,
+    private reportService: ReportService,
     private _authService: AuthService,
     private _formBuilder: UntypedFormBuilder,
     private _router: Router,
@@ -91,6 +105,9 @@ export class AuthSignInComponent implements OnInit {
     this.intervalId1 = setInterval(() => {
       this.toggleFlag1();
     }, 3000); // 2000 milliseconds = 2 seconds
+    this.intervalld = setInterval(() => {
+      this.callTrackingapi();
+    }, 1000); // 2000 milliseconds = 2 seconds
 
     // Create the form
     this.signInForm = this._formBuilder.group({
@@ -98,6 +115,33 @@ export class AuthSignInComponent implements OnInit {
       password: ["", Validators.required],
       //rememberMe: [''],
     });
+    // setInterval(this.callTrackingapi, 1000);
+    // this.callTrackingapi();
+  }
+
+  callTrackingapi() {
+    this.reportService.tracking({}).subscribe(
+      (response) => {
+        let data = JSON.parse(JSON.stringify(response));
+        this.trackingData = data[0];
+        this.trackingData.FUR1STATUS == "0"
+          ? (this.fur1 = false)
+          : (this.fur1 = true);
+        this.trackingData.FUR2STATUS == "0"
+          ? (this.fur2 = false)
+          : (this.fur2 = true);
+        this.trackingData.FUR3STATUS == "0"
+          ? (this.fur3 = false)
+          : (this.fur3 = true);
+        this.trackingData.FUR4STATUS == "0"
+          ? (this.fur4 = false)
+          : (this.fur4 = true);
+      },
+      (respError) => {
+        // this.loading = false;
+        this.commonService.showSnakBarMessage(respError, "error", 2000);
+      }
+    );
   }
 
   // -----------------------------------------------------------------------------------------------------
