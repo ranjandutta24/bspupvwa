@@ -89,7 +89,7 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private roleService: RoleService,
     private _snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   // -----------------------------------------------------------------------------------------------------
   // @ Lifecycle hooks
@@ -115,7 +115,7 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
       password: ["", Validators.required],
       //rememberMe: [''],
     });
-    // setInterval(this.callTrackingapi, 1000);
+    setInterval(this.callTrackingapi, 1000);
     // this.callTrackingapi();
   }
 
