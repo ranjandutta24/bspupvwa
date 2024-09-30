@@ -166,6 +166,20 @@ export const appRoutes: Route[] = [
                 ]
             },
 
+            {
+                path: '',
+                children: [
+                    { path: 'tracking-page', loadChildren: () => import('app/modules/tracking-page/tracking-page') },
+                ]
+            },
+
+            {
+                path: '',
+                children: [
+                    { path: 'tracking-three-js', loadChildren: () => import('app/modules/tracking-three-js/tracking-three-js') },
+                ]
+            },
+
             // Apps
             {
                 path: 'apps', children: [

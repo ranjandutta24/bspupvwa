@@ -51,7 +51,7 @@ import { Subject, takeUntil } from "rxjs";
     MatProgressSpinnerModule,
   ],
 })
-export class AuthSignInComponent implements OnInit, OnDestroy {
+export class AuthSignInComponent implements OnInit {
   @ViewChild("signInNgForm") signInNgForm: NgForm;
   private _unsubscribeAll: Subject<any> = new Subject();
 
@@ -99,15 +99,6 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
    * On init
    */
   ngOnInit(): void {
-    this.intervalId = setInterval(() => {
-      this.toggleFlag();
-    }, 2000); // 2000 milliseconds = 2 seconds
-    this.intervalId1 = setInterval(() => {
-      this.toggleFlag1();
-    }, 3000); // 2000 milliseconds = 2 seconds
-    this.intervalld = setInterval(() => {
-      this.callTrackingapi();
-    }, 1000); // 2000 milliseconds = 2 seconds
 
     // Create the form
     this.signInForm = this._formBuilder.group({
@@ -115,48 +106,10 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
       password: ["", Validators.required],
       //rememberMe: [''],
     });
-    setInterval(this.callTrackingapi, 1000);
     // this.callTrackingapi();
   }
 
-  callTrackingapi() {
-    this.reportService.tracking({}).subscribe(
-      (response) => {
-        let data = JSON.parse(JSON.stringify(response));
-        this.trackingData = data[0];
-        this.trackingData.FUR1STATUS == "0"
-          ? (this.fur1 = false)
-          : (this.fur1 = true);
-        this.trackingData.FUR2STATUS == "0"
-          ? (this.fur2 = false)
-          : (this.fur2 = true);
-        this.trackingData.FUR3STATUS == "0"
-          ? (this.fur3 = false)
-          : (this.fur3 = true);
-        this.trackingData.FUR4STATUS == "0"
-          ? (this.fur4 = false)
-          : (this.fur4 = true);
-      },
-      (respError) => {
-        // this.loading = false;
-        this.commonService.showSnakBarMessage(respError, "error", 2000);
-      }
-    );
-  }
 
-  // -----------------------------------------------------------------------------------------------------
-  // @ Public methods
-  // -----------------------------------------------------------------------------------------------------
-
-  /**
-   * Sign in
-   */
-  ngOnDestroy(): void {
-    // Clear the interval to avoid memory leaks when the component is destroyed
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
-  }
 
   toggleFlag(): void {
     this.flag = !this.flag; // Toggle the flag's value

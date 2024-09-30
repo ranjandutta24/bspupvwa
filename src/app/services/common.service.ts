@@ -27,10 +27,10 @@ export class CommonService {
     });
   }
 
-  private apiUrl = "http://localhost:4033/api"; //Local API
+  // private apiUrl = "http://localhost:4033/api"; //Local API
   // private apiUrl = 'http://10.150.50.23:4033/api';//Dev API
   // private apiUrl = "http:localhost:4033/api"; //Dev API
-  // private apiUrl = "http://192.168.10.60:3000/api"; //Dev API
+  private apiUrl = "http://192.168.10.60:3000/api"; //Dev API
   // private apiUrl = 'https://web.iroms.in/irtmaapi/api';//Prod API
   private authorization = "Bearer c2lzeFVQVkF1dGg6YjVQVTJPcFYyNCMxc24=";
   //For Sign up Link
@@ -48,7 +48,7 @@ export class CommonService {
     public http: HttpClient,
     public snakBar: MatSnackBar,
     private _fuseNavigationService: FuseNavigationService
-  ) {}
+  ) { }
 
   /**
    * ***********************************************************************************
@@ -222,7 +222,7 @@ export class CommonService {
     console.log(message);
     return throwError(
       message ||
-        "Remote server unreachable. Please check your Internet connection."
+      "Remote server unreachable. Please check your Internet connection."
     );
   }
 
@@ -318,28 +318,28 @@ export class CommonService {
     let outputText =
       num[1] != 0
         ? (oneToTwenty[Number(num[1])] ||
-            `${tenth[num[1][0]]} ${oneToTwenty[num[1][1]]}`) + " million "
+          `${tenth[num[1][0]]} ${oneToTwenty[num[1][1]]}`) + " million "
         : "";
 
     outputText +=
       num[2] != 0
         ? (oneToTwenty[Number(num[2])] ||
-            `${tenth[num[2][0]]} ${oneToTwenty[num[2][1]]}`) + "hundred "
+          `${tenth[num[2][0]]} ${oneToTwenty[num[2][1]]}`) + "hundred "
         : "";
     outputText +=
       num[3] != 0
         ? (oneToTwenty[Number(num[3])] ||
-            `${tenth[num[3][0]]} ${oneToTwenty[num[3][1]]}`) + " thousand "
+          `${tenth[num[3][0]]} ${oneToTwenty[num[3][1]]}`) + " thousand "
         : "";
     outputText +=
       num[4] != 0
         ? (oneToTwenty[Number(num[4])] ||
-            `${tenth[num[4][0]]} ${oneToTwenty[num[4][1]]}`) + "hundred "
+          `${tenth[num[4][0]]} ${oneToTwenty[num[4][1]]}`) + "hundred "
         : "";
     outputText +=
       num[5] != 0
         ? oneToTwenty[Number(num[5])] ||
-          `${tenth[num[5][0]]} ${oneToTwenty[num[5][1]]} `
+        `${tenth[num[5][0]]} ${oneToTwenty[num[5][1]]} `
         : "";
 
     return outputText;

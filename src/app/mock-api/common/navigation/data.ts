@@ -31,7 +31,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link: '/human-resource/users',
                 privilege: ["View User"]
             },
-            
+
         ]
     },
 
@@ -92,11 +92,42 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 // privilege: ["View User"]
             },
         ]
-    }
+    },
+
+    {
+        id: 'tracking',
+        title: 'Tracking',
+        type: 'collapsable',
+        icon: 'people',
+        privilege: ["View User"],
+        features: ["BSL"],
+        children: [
+            {
+                id: 'tracking-page',
+                title: 'Tracking Page',
+                type: 'basic',
+                icon: 'people',
+                link: 'tracking-page',
+                privilege: ["View User"]
+            },
+
+        ]
+        // children: [
+        //     {
+        //         id: 'tracking-page',
+        //         title: 'Tracking Page',
+        //         type: 'basic',
+        //         icon: 'people',
+        //         link: 'tracking-three-js',
+        //         privilege: ["View User"]
+        //     },
+
+        // ]
+    },
 
 
 
-    
+
 ];
 export const compactNavigation: FuseNavigationItem[] = [
     {
