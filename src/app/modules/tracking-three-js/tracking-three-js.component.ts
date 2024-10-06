@@ -13,7 +13,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
   selector: "app-tracking-three-js",
   standalone: true,
   imports: [],
-  templateUrl: "./tracking-three-js.component.html",
+  // templateUrl: "./tracking-three-js.component.html",
+  template: "<canvas #canvas></canvas>",
   styleUrl: "./tracking-three-js.component.scss",
 })
 export class TrackingThreeJsComponent implements AfterViewInit {
@@ -23,6 +24,10 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   private renderer!: THREE.WebGLRenderer;
   private model!: THREE.Group;
   private controls!: OrbitControls; // Declare controls
+
+  private raycaster = new THREE.Raycaster();
+  private mouse = new THREE.Vector2();
+  private selectedPartName: string = ""; // Store the selected component's name
   flag: boolean = false;
   flag1: boolean = false;
   intervalId: any;
@@ -46,7 +51,18 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.initThreeJS();
     this.loadModel();
     this.animate();
+
     window.addEventListener("resize", this.onWindowResize.bind(this), false); // Add resize listener
+    // this.renderer.domElement.addEventListener(
+    //   "click",
+    //   this.onMouseClick.bind(this),
+    //   false
+    // );
+    this.canvasRef.nativeElement.addEventListener(
+      "click",
+      this.onMouseClick.bind(this),
+      false
+    );
   }
   ngOnDestroy(): void {
     window.removeEventListener("resize", this.onWindowResize.bind(this)); // Clean up listener
@@ -58,11 +74,47 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   toggleFlag1(): void {
     this.flag1 = !this.flag1; // Toggle the flag's value
   }
+
+  private onMouseClick(event: MouseEvent) {
+    // Convert mouse position to normalized device coordinates (-1 to +1) for raycasting
+    const rect = this.canvasRef.nativeElement.getBoundingClientRect();
+    this.mouse.x =
+      ((event.clientX - rect.left) / this.canvasRef.nativeElement.clientWidth) *
+        2 -
+      1;
+    this.mouse.y =
+      -(
+        (event.clientY - rect.top) /
+        this.canvasRef.nativeElement.clientHeight
+      ) *
+        2 +
+      1;
+
+    // Perform raycasting to find intersected objects
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    const intersects = this.raycaster.intersectObjects(
+      this.scene.children,
+      true
+    );
+
+    if (intersects.length > 0) {
+      const intersectedObject = intersects[0].object as THREE.Mesh;
+
+      // Display the name of the clicked object
+      this.selectedPartName = intersectedObject.name;
+      console.log("Clicked part:", this.selectedPartName);
+
+      // Show an alert or log the name
+      alert(`Clicked part: ${this.selectedPartName}`);
+    } else {
+      console.log("No part was clicked.");
+    }
+  }
   private initThreeJS() {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xffffff);
     this.camera = new THREE.PerspectiveCamera(
-      75,
+      60,
       window.innerWidth / window.innerHeight,
       0.1,
       1000
@@ -87,7 +139,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 
   private loadModel() {
     const loader = new GLTFLoader();
-    loader.load("assets/models/scene.gltf", (gltf) => {
+    loader.load("assets/models/scene (5).gltf", (gltf) => {
       this.model = gltf.scene;
       this.scene.add(this.model);
 
@@ -132,16 +184,16 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 
         if (mesh.name === "Furnace1") {
           if (this.flag == true) {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0xff773d);
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
             // mesh.rotation.y += 0.1;
           } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0xb0b0b0);
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0xbbbbbb);
           }
         }
         if (mesh.name === "R2UpB") {
           if (this.flag1 == true) {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0xff773d);
-            mesh.rotation.y += 0.01;
+            // (mesh.material as THREE.MeshStandardMaterial).color.set(0xff773d);
+            mesh.rotation.y += 0.03;
             // mesh.rotation.x += 0.1;
           } else {
             (mesh.material as THREE.MeshStandardMaterial).color.set(0xb0b0b0);

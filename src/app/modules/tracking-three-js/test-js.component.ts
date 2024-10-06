@@ -50,7 +50,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 
   private loadModel() {
     const loader = new GLTFLoader();
-    loader.load("assets/models/scene.gltf", (gltf) => {
+    loader.load("assets/models/scene (1).gltf", (gltf) => {
       this.model = gltf.scene;
       this.scene.add(this.model);
 
