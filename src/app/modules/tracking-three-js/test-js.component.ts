@@ -1,15 +1,24 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { AfterViewInit } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, ViewChild } from "@angular/core";
 
+@Component({
+  selector: "app-tracking-three-js",
+  template: "<canvas #canvas></canvas>",
+  styleUrls: ["./tracking-three-js.component.css"],
+})
 export class TrackingThreeJsComponent implements AfterViewInit {
-  // @ViewChild("canvas") canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild("canvas") canvasRef!: ElementRef<HTMLCanvasElement>;
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;
   private model!: THREE.Group;
   private controls!: OrbitControls;
+  private raycaster = new THREE.Raycaster();
+  private mouse = new THREE.Vector2();
+  private selectedPartName: string = ""; // Store the selected component's name
+  private ctx!: CanvasRenderingContext2D;
 
   constructor() {}
 
@@ -17,6 +26,13 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.initThreeJS();
     this.loadModel();
     this.animate();
+
+    // Add click event listener to the canvas element
+    this.canvasRef.nativeElement.addEventListener(
+      "click",
+      this.onMouseClick.bind(this),
+      false
+    );
   }
 
   private initThreeJS() {
@@ -29,12 +45,12 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       0.1,
       1000
     );
+    this.camera.position.z = 5;
 
     this.renderer = new THREE.WebGLRenderer({
-      // canvas: this.canvasRef.nativeElement,
+      canvas: this.canvasRef.nativeElement, // Use the canvas element
     });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.camera.position.z = 5;
 
     // Initialize OrbitControls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -42,7 +58,12 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.controls.dampingFactor = 0.25;
     this.controls.screenSpacePanning = false;
 
-    // Optional: Add lighting
+    // Get the 2D context from the canvas
+    this.ctx = this.canvasRef.nativeElement.getContext(
+      "2d"
+    ) as CanvasRenderingContext2D;
+
+    // Add lighting
     const light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(5, 5, 5).normalize();
     this.scene.add(light);
@@ -50,44 +71,89 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 
   private loadModel() {
     const loader = new GLTFLoader();
-    loader.load("assets/models/scene (1).gltf", (gltf) => {
+    loader.load("assets/models/scene.gltf", (gltf) => {
       this.model = gltf.scene;
-      this.scene.add(this.model);
 
-      // Traverse the model and change the color dynamically
+      // Traverse the model and log names, assign default names if missing
       this.model.traverse((child) => {
         if ((child as THREE.Mesh).isMesh) {
           const mesh = child as THREE.Mesh;
-
-          // Check for a specific part by name (optional)
-          if (mesh.name === "PartName") {
-            // Change material color dynamically
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0xff0000); // Set to red, or dynamically change color here
+          if (!mesh.name) {
+            mesh.name = "UnnamedMesh"; // Assign default name if missing
           }
+          console.log("Loaded Mesh Name:", mesh.name);
         }
       });
+
+      this.scene.add(this.model);
     });
   }
 
   private animate() {
     requestAnimationFrame(() => this.animate());
+
+    // Clear 2D canvas context to avoid overlapping
+    this.clearTextOverlay();
+
+    // Update controls and render the scene
     this.controls.update();
-    if (this.model) {
-      // Example: Rotate the model
-      // this.model.rotation.y += 0.01;
-    }
     this.renderer.render(this.scene, this.camera);
+
+    // Draw the selected part name
+    if (this.selectedPartName) {
+      this.drawTextOnCanvas(this.selectedPartName);
+    }
   }
 
-  // Dynamic color update based on external value
-  public updateModelColor(partName: string, color: string) {
-    this.model.traverse((child) => {
-      if ((child as THREE.Mesh).isMesh) {
-        const mesh = child as THREE.Mesh;
-        if (mesh.name === partName) {
-          (mesh.material as THREE.MeshStandardMaterial).color.set(color);
-        }
-      }
-    });
+  private onMouseClick(event: MouseEvent) {
+    console.log("click");
+
+    // Convert mouse position to normalized device coordinates (-1 to +1) for raycasting
+    const rect = this.canvasRef.nativeElement.getBoundingClientRect();
+    this.mouse.x =
+      ((event.clientX - rect.left) / this.canvasRef.nativeElement.clientWidth) *
+        2 -
+      1;
+    this.mouse.y =
+      -(
+        (event.clientY - rect.top) /
+        this.canvasRef.nativeElement.clientHeight
+      ) *
+        2 +
+      1;
+
+    // Perform raycasting to find intersected objects
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    const intersects = this.raycaster.intersectObjects(
+      this.scene.children,
+      true
+    );
+
+    if (intersects.length > 0) {
+      const intersectedObject = intersects[0].object as THREE.Mesh;
+
+      // Display the name of the clicked object
+      this.selectedPartName = intersectedObject.name;
+      console.log("Clicked part:", this.selectedPartName);
+    } else {
+      console.log("No part was clicked.");
+    }
+  }
+
+  // Clear the 2D canvas before drawing the new text
+  private clearTextOverlay() {
+    this.ctx.clearRect(
+      0,
+      0,
+      this.canvasRef.nativeElement.width,
+      this.canvasRef.nativeElement.height
+    );
+  }
+
+  // Draw text on canvas
+  private drawTextOnCanvas(text: string) {
+    this.ctx.font = "20px Arial";
+    this.ctx.fillStyle = "black";
+    this.ctx.fillText(text, 10, 30); // Display at top-left of the canvas
   }
 }

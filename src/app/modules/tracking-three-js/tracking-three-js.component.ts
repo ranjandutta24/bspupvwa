@@ -13,8 +13,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
   selector: "app-tracking-three-js",
   standalone: true,
   imports: [],
-  // templateUrl: "./tracking-three-js.component.html",
-  template: "<canvas #canvas></canvas>",
+  templateUrl: "./tracking-three-js.component.html",
+  // template: "<canvas #canvas></canvas>",
   styleUrl: "./tracking-three-js.component.scss",
 })
 export class TrackingThreeJsComponent implements AfterViewInit {
@@ -28,6 +28,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   private raycaster = new THREE.Raycaster();
   private mouse = new THREE.Vector2();
   private selectedPartName: string = ""; // Store the selected component's name
+  private ctx!: CanvasRenderingContext2D;
   flag: boolean = false;
   flag1: boolean = false;
   intervalId: any;
@@ -75,7 +76,25 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.flag1 = !this.flag1; // Toggle the flag's value
   }
 
+  // Clear the 2D canvas before drawing the new text
+  private clearTextOverlay() {
+    this.ctx.clearRect(
+      0,
+      0,
+      this.canvasRef.nativeElement.width,
+      this.canvasRef.nativeElement.height
+    );
+  }
+
+  // Draw text on canvas
+  private drawTextOnCanvas(text: string) {
+    this.ctx.font = "20px Arial";
+    this.ctx.fillStyle = "black";
+    this.ctx.fillText(text, 10, 30); // Display at top-left of the canvas
+  }
   private onMouseClick(event: MouseEvent) {
+    console.log("click");
+
     // Convert mouse position to normalized device coordinates (-1 to +1) for raycasting
     const rect = this.canvasRef.nativeElement.getBoundingClientRect();
     this.mouse.x =
@@ -103,9 +122,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       // Display the name of the clicked object
       this.selectedPartName = intersectedObject.name;
       console.log("Clicked part:", this.selectedPartName);
-
-      // Show an alert or log the name
-      alert(`Clicked part: ${this.selectedPartName}`);
+      if (this.selectedPartName) {
+        this.drawTextOnCanvas(this.selectedPartName);
+      }
     } else {
       console.log("No part was clicked.");
     }
@@ -170,6 +189,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     }
     this.renderer.render(this.scene, this.camera);
   }
+
   private onWindowResize() {
     // Update camera aspect ratio and renderer size
     this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -178,6 +198,10 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   }
 
   public updateModelColor() {
+    if (!this.model) {
+      // console.error("Model not loaded yet!");
+      return;
+    }
     this.model.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
