@@ -1,6 +1,45 @@
 canvas {
     display: block;
-    position: absolute;
+    // position: absolute;
     top: 0;
     left: 0;
   }
+  .main_con{
+    display: flex;
+
+  }
+  .canva{
+    // width: 80%;
+  }
+ 
+
+.main_con {
+    position: relative;
+    width: 100%;
+   
+}
+
+.canva {
+    width: 100%;
+   
+}
+
+canvas {
+    width: 100%;
+   
+    display: block; /* Removes the default inline block margin of canvas */
+}
+
+.console {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 120px;
+    height: 100%;
+  
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: rgba(67, 67, 67, 0.326);
+    color: rgb(80, 80, 80);
+    border: 1px solid rgb(114, 114, 114);
+}

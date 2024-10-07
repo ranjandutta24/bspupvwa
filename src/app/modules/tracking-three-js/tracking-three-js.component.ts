@@ -19,6 +19,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 })
 export class TrackingThreeJsComponent implements AfterViewInit {
   @ViewChild("canvas") canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('canvas2D') canvas2DRef!: ElementRef<HTMLCanvasElement>;
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;
@@ -27,7 +28,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 
   private raycaster = new THREE.Raycaster();
   private mouse = new THREE.Vector2();
-  private selectedPartName: string = ""; // Store the selected component's name
+   selectedPartName: string = ""; // Store the selected component's name
   private ctx!: CanvasRenderingContext2D;
   flag: boolean = false;
   flag1: boolean = false;
@@ -39,6 +40,21 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   fur2: boolean;
   fur3: boolean;
   fur4: boolean;
+  item="no";
+   items = new Map([
+    ["no", "No item selected"],
+    ["Furnace1", "Furnace 1"],
+    ["Furnace2", "Furnace 2"],
+    ["Furnace3", "Furnace 3"],
+    ["Furnace4", "Furnace 4"],
+    ["R1Up", "R1"],
+    ["R1Down", "R1"],
+    ["R2UpB", "R2"],
+    ["R2UpS", "R2"],
+    ["R2DownB", "R2"],
+    ["R2DownS", "R2"],
+    ["oranges", ""]
+    ]);
 
   constructor() {}
 
@@ -50,15 +66,12 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       this.toggleFlag1();
     }, 5000); // 2000 milliseconds = 2 seconds
     this.initThreeJS();
+    this.init2DCanvas();
     this.loadModel();
     this.animate();
 
     window.addEventListener("resize", this.onWindowResize.bind(this), false); // Add resize listener
-    // this.renderer.domElement.addEventListener(
-    //   "click",
-    //   this.onMouseClick.bind(this),
-    //   false
-    // );
+ 
     this.canvasRef.nativeElement.addEventListener(
       "click",
       this.onMouseClick.bind(this),
@@ -76,59 +89,51 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.flag1 = !this.flag1; // Toggle the flag's value
   }
 
-  // Clear the 2D canvas before drawing the new text
+// Draw text on 2D canvas
+private drawTextOnCanvas(text: string) {
+  if (this.ctx) {
+   
+    this.ctx.clearRect(0, 0, this.canvas2DRef.nativeElement.width, this.canvas2DRef.nativeElement.height);  // Clear previous text
+    this.ctx.font = '32px Arial';
+    this.ctx.fillStyle = 'black';
+     // Set background color to black
+     this.ctx.fillStyle = 'white';
+     this.ctx.fillRect(0, 0, this.canvas2DRef.nativeElement.width, this.canvas2DRef.nativeElement.height);
+ 
+     // Set font size and color
+     this.ctx.font = '100px Arial';
+     this.ctx.fillStyle = 'blue';  // Text color is now white to contrast with the black background
+    this.ctx.fillText(text, 10, 100);  // Draw text
+  }
+}
+
+// Clear the 2D canvas before drawing the new text
   private clearTextOverlay() {
-    this.ctx.clearRect(
-      0,
-      0,
-      this.canvasRef.nativeElement.width,
-      this.canvasRef.nativeElement.height
-    );
-  }
-
-  // Draw text on canvas
-  private drawTextOnCanvas(text: string) {
-    this.ctx.font = "20px Arial";
-    this.ctx.fillStyle = "black";
-    this.ctx.fillText(text, 10, 30); // Display at top-left of the canvas
-  }
-  private onMouseClick(event: MouseEvent) {
-    console.log("click");
-
-    // Convert mouse position to normalized device coordinates (-1 to +1) for raycasting
-    const rect = this.canvasRef.nativeElement.getBoundingClientRect();
-    this.mouse.x =
-      ((event.clientX - rect.left) / this.canvasRef.nativeElement.clientWidth) *
-        2 -
-      1;
-    this.mouse.y =
-      -(
-        (event.clientY - rect.top) /
-        this.canvasRef.nativeElement.clientHeight
-      ) *
-        2 +
-      1;
-
-    // Perform raycasting to find intersected objects
-    this.raycaster.setFromCamera(this.mouse, this.camera);
-    const intersects = this.raycaster.intersectObjects(
-      this.scene.children,
-      true
-    );
-
-    if (intersects.length > 0) {
-      const intersectedObject = intersects[0].object as THREE.Mesh;
-
-      // Display the name of the clicked object
-      this.selectedPartName = intersectedObject.name;
-      console.log("Clicked part:", this.selectedPartName);
-      if (this.selectedPartName) {
-        this.drawTextOnCanvas(this.selectedPartName);
-      }
+    if (this.ctx) {  // Ensure ctx is not undefined
+      this.ctx.clearRect(0, 0, this.canvas2DRef.nativeElement.width, this.canvas2DRef.nativeElement.height);
     } else {
-      console.log("No part was clicked.");
+      console.error('2D context is not initialized, cannot clear the canvas.');
     }
   }
+// Handle click event to display the object's name
+private onMouseClick(event: MouseEvent) {
+  const rect = this.canvasRef.nativeElement.getBoundingClientRect();
+  this.mouse.x = ((event.clientX - rect.left) / this.canvasRef.nativeElement.clientWidth) * 2 - 1;
+  this.mouse.y = -((event.clientY - rect.top) / this.canvasRef.nativeElement.clientHeight) * 2 + 1;
+
+  this.raycaster.setFromCamera(this.mouse, this.camera);
+  const intersects = this.raycaster.intersectObjects(this.scene.children, true);
+
+  if (intersects.length > 0) {
+    const intersectedObject = intersects[0].object as THREE.Mesh;
+    this.selectedPartName = intersectedObject.name;
+    // this.drawTextOnCanvas(`Clicked part: ${this.selectedPartName}`);
+    this.item= this.selectedPartName
+    
+  } else {
+    this.drawTextOnCanvas('No part was clicked.');
+  }
+}
   private initThreeJS() {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xffffff);
@@ -141,7 +146,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvasRef.nativeElement,
     });
-    this.renderer.setSize(window.innerWidth - 10, window.innerHeight - 40);
+    this.renderer.setSize(window.innerWidth - 2, window.innerHeight - 40);
     this.camera.position.z = 5;
 
     // Initialize OrbitControls
@@ -156,6 +161,22 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.scene.add(light);
   }
 
+
+  // Initialize the 2D canvas
+private init2DCanvas() {
+  if (this.canvas2DRef && this.canvas2DRef.nativeElement) {
+    const context = this.canvas2DRef.nativeElement.getContext('2d');
+    if (context) {
+      this.ctx = context;
+      this.canvas2DRef.nativeElement.width = window.innerWidth;
+      this.canvas2DRef.nativeElement.height = window.innerHeight;
+    } else {
+      console.error('2D context could not be obtained from the canvas element.');
+    }
+  } else {
+    console.error('2D canvas element is not available.');
+  }
+}
   private loadModel() {
     const loader = new GLTFLoader();
     loader.load("assets/models/scene (5).gltf", (gltf) => {
@@ -180,9 +201,11 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 
   private animate() {
     requestAnimationFrame(() => this.animate());
+
     // Update model parameters dynamically here if needed
     this.updateModelColor();
     this.controls.update();
+
     if (this.model) {
       // Example: Rotate the model
       // this.model.rotation.y += 0.01;
