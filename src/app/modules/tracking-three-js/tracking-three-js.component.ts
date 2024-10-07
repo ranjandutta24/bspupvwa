@@ -29,7 +29,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   private raycaster = new THREE.Raycaster();
   private mouse = new THREE.Vector2();
    selectedPartName: string = ""; // Store the selected component's name
-  private ctx!: CanvasRenderingContext2D;
+   isColapsed:boolean=true
   flag: boolean = false;
   flag1: boolean = false;
   intervalId: any;
@@ -43,6 +43,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   item="no";
    items = new Map([
     ["no", "No item selected"],
+    ["Belt", "Track"],
     ["Furnace1", "Furnace 1"],
     ["Furnace2", "Furnace 2"],
     ["Furnace3", "Furnace 3"],
@@ -53,6 +54,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     ["R2UpS", "R2"],
     ["R2DownB", "R2"],
     ["R2DownS", "R2"],
+    ["Box_5", "R2 Plate"],
     ["oranges", ""]
     ]);
 
@@ -66,7 +68,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       this.toggleFlag1();
     }, 5000); // 2000 milliseconds = 2 seconds
     this.initThreeJS();
-    this.init2DCanvas();
+ 
     this.loadModel();
     this.animate();
 
@@ -89,32 +91,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.flag1 = !this.flag1; // Toggle the flag's value
   }
 
-// Draw text on 2D canvas
-private drawTextOnCanvas(text: string) {
-  if (this.ctx) {
-   
-    this.ctx.clearRect(0, 0, this.canvas2DRef.nativeElement.width, this.canvas2DRef.nativeElement.height);  // Clear previous text
-    this.ctx.font = '32px Arial';
-    this.ctx.fillStyle = 'black';
-     // Set background color to black
-     this.ctx.fillStyle = 'white';
-     this.ctx.fillRect(0, 0, this.canvas2DRef.nativeElement.width, this.canvas2DRef.nativeElement.height);
- 
-     // Set font size and color
-     this.ctx.font = '100px Arial';
-     this.ctx.fillStyle = 'blue';  // Text color is now white to contrast with the black background
-    this.ctx.fillText(text, 10, 100);  // Draw text
-  }
-}
 
-// Clear the 2D canvas before drawing the new text
-  private clearTextOverlay() {
-    if (this.ctx) {  // Ensure ctx is not undefined
-      this.ctx.clearRect(0, 0, this.canvas2DRef.nativeElement.width, this.canvas2DRef.nativeElement.height);
-    } else {
-      console.error('2D context is not initialized, cannot clear the canvas.');
-    }
-  }
+
+
 // Handle click event to display the object's name
 private onMouseClick(event: MouseEvent) {
   const rect = this.canvasRef.nativeElement.getBoundingClientRect();
@@ -131,7 +110,7 @@ private onMouseClick(event: MouseEvent) {
     this.item= this.selectedPartName
     
   } else {
-    this.drawTextOnCanvas('No part was clicked.');
+    // this.drawTextOnCanvas('No part was clicked.');
   }
 }
   private initThreeJS() {
@@ -156,46 +135,18 @@ private onMouseClick(event: MouseEvent) {
     this.controls.screenSpacePanning = false;
 
     // Optional: Add lighting
-    const light = new THREE.DirectionalLight(0xffffff, 1);
+    const light = new THREE.DirectionalLight(0xffffff, 2);
     light.position.set(5, 5, 5).normalize();
     this.scene.add(light);
   }
 
 
-  // Initialize the 2D canvas
-private init2DCanvas() {
-  if (this.canvas2DRef && this.canvas2DRef.nativeElement) {
-    const context = this.canvas2DRef.nativeElement.getContext('2d');
-    if (context) {
-      this.ctx = context;
-      this.canvas2DRef.nativeElement.width = window.innerWidth;
-      this.canvas2DRef.nativeElement.height = window.innerHeight;
-    } else {
-      console.error('2D context could not be obtained from the canvas element.');
-    }
-  } else {
-    console.error('2D canvas element is not available.');
-  }
-}
+
   private loadModel() {
     const loader = new GLTFLoader();
     loader.load("assets/models/scene (5).gltf", (gltf) => {
       this.model = gltf.scene;
       this.scene.add(this.model);
-
-      this.model.traverse((child) => {
-        if ((child as THREE.Mesh).isMesh) {
-          const mesh = child as THREE.Mesh;
-
-          // Check for a specific part by name (optional)
-          if (mesh.name == "Furnace1" && this.flag == true) {
-            // console.log(mesh.name);
-
-            // Change material color dynamically
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00ff00); // Set to red, or dynamically change color here
-          }
-        }
-      });
     });
   }
 
@@ -213,6 +164,9 @@ private init2DCanvas() {
     this.renderer.render(this.scene, this.camera);
   }
 
+  colapse() {
+    this.isColapsed = !this.isColapsed;
+  }
   private onWindowResize() {
     // Update camera aspect ratio and renderer size
     this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -232,18 +186,44 @@ private init2DCanvas() {
         if (mesh.name === "Furnace1") {
           if (this.flag == true) {
             (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
-            // mesh.rotation.y += 0.1;
+          
           } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0xbbbbbb);
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x6666fa);
           }
         }
-        if (mesh.name === "R2UpB") {
+    
+        if (mesh.name === "Box_5") {
           if (this.flag1 == true) {
             // (mesh.material as THREE.MeshStandardMaterial).color.set(0xff773d);
-            mesh.rotation.y += 0.03;
+            mesh.visible = true;
             // mesh.rotation.x += 0.1;
           } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0xb0b0b0);
+            mesh.visible = false;
+          }
+        }
+        if (mesh.name === "R1Plate") {
+          if (this.flag1 == false) {
+          
+              mesh.visible = true;
+   
+          } else {
+            mesh.visible = false;
+          }
+        }
+
+
+        if (this.flag1 == true) {
+          if (mesh.name === "R2UpB" || mesh.name === "R2UpS") {
+            mesh.rotation.y += 0.03;
+          } else if(mesh.name === "R2DownB" || mesh.name === "R2DownS") {
+            mesh.rotation.y -= 0.03;
+          }
+        }
+        if (this.flag1 == false) {
+          if (mesh.name === "R1Up" ) {
+            mesh.rotation.y += 0.03;
+          } else if(mesh.name === "R1Down") {
+            mesh.rotation.y -= 0.03;
           }
         }
       }

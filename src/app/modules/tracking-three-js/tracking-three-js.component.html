@@ -4,9 +4,20 @@
         <canvas #canvas></canvas> <!-- WebGL canvas for 3D rendering -->
         
     </div>
-    <div class="console">
+    <div class="console" [class.collapsible]="isColapsed" [class.collapsible--expanded]="!isColapsed" >
         <h1>Console</h1>
-        <h2>{{items.get(item)}}</h2>
+       
+
+
+
+     
+
+        <button mat-raised-button type="button" class="flat_button" (click)="colapse()">click
+         
+        </button>
+
+        <div class="collapsible__content"> <h2>{{items.get(item)}}</h2></div>
+  
     </div>
 
 

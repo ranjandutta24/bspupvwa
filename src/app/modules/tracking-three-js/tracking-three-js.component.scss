@@ -35,11 +35,23 @@ canvas {
     top: 0;
     right: 0;
     width: 120px;
-    height: 100%;
+    // height: 100%;
   
     padding: 10px;
     box-sizing: border-box;
     background-color: rgba(67, 67, 67, 0.326);
     color: rgb(80, 80, 80);
     border: 1px solid rgb(114, 114, 114);
+}
+.collapsible__content {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.3s;
+}
+
+.collapsible--expanded .collapsible__content {
+  height: 100vh;
+  opacity: 1;
+  padding-bottom: 2rem;
 }
