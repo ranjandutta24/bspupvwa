@@ -19,7 +19,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 })
 export class TrackingThreeJsComponent implements AfterViewInit {
   @ViewChild("canvas") canvasRef!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('canvas2D') canvas2DRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild("canvas2D") canvas2DRef!: ElementRef<HTMLCanvasElement>;
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;
@@ -28,8 +28,8 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 
   private raycaster = new THREE.Raycaster();
   private mouse = new THREE.Vector2();
-   selectedPartName: string = ""; // Store the selected component's name
-   isColapsed:boolean=true
+  selectedPartName: string = ""; // Store the selected component's name
+  isColapsed: boolean = true;
   flag: boolean = false;
   flag1: boolean = false;
   intervalId: any;
@@ -40,8 +40,8 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   fur2: boolean;
   fur3: boolean;
   fur4: boolean;
-  item="no";
-   items = new Map([
+  item = "no";
+  items = new Map([
     ["no", "No item selected"],
     ["Belt", "Track"],
     ["Furnace1", "Furnace 1"],
@@ -54,9 +54,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     ["R2UpS", "R2"],
     ["R2DownB", "R2"],
     ["R2DownS", "R2"],
-    ["Box_5", "R2 Plate"],
-    ["oranges", ""]
-    ]);
+    ["R2Plate", "R2 Plate"],
+    ["oranges", ""],
+  ]);
 
   constructor() {}
 
@@ -68,12 +68,12 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       this.toggleFlag1();
     }, 5000); // 2000 milliseconds = 2 seconds
     this.initThreeJS();
- 
+
     this.loadModel();
     this.animate();
 
     window.addEventListener("resize", this.onWindowResize.bind(this), false); // Add resize listener
- 
+
     this.canvasRef.nativeElement.addEventListener(
       "click",
       this.onMouseClick.bind(this),
@@ -91,28 +91,36 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.flag1 = !this.flag1; // Toggle the flag's value
   }
 
+  // Handle click event to display the object's name
+  private onMouseClick(event: MouseEvent) {
+    const rect = this.canvasRef.nativeElement.getBoundingClientRect();
+    this.mouse.x =
+      ((event.clientX - rect.left) / this.canvasRef.nativeElement.clientWidth) *
+        2 -
+      1;
+    this.mouse.y =
+      -(
+        (event.clientY - rect.top) /
+        this.canvasRef.nativeElement.clientHeight
+      ) *
+        2 +
+      1;
 
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    const intersects = this.raycaster.intersectObjects(
+      this.scene.children,
+      true
+    );
 
-
-// Handle click event to display the object's name
-private onMouseClick(event: MouseEvent) {
-  const rect = this.canvasRef.nativeElement.getBoundingClientRect();
-  this.mouse.x = ((event.clientX - rect.left) / this.canvasRef.nativeElement.clientWidth) * 2 - 1;
-  this.mouse.y = -((event.clientY - rect.top) / this.canvasRef.nativeElement.clientHeight) * 2 + 1;
-
-  this.raycaster.setFromCamera(this.mouse, this.camera);
-  const intersects = this.raycaster.intersectObjects(this.scene.children, true);
-
-  if (intersects.length > 0) {
-    const intersectedObject = intersects[0].object as THREE.Mesh;
-    this.selectedPartName = intersectedObject.name;
-    // this.drawTextOnCanvas(`Clicked part: ${this.selectedPartName}`);
-    this.item= this.selectedPartName
-    
-  } else {
-    // this.drawTextOnCanvas('No part was clicked.');
+    if (intersects.length > 0) {
+      const intersectedObject = intersects[0].object as THREE.Mesh;
+      this.selectedPartName = intersectedObject.name;
+      // this.drawTextOnCanvas(`Clicked part: ${this.selectedPartName}`);
+      this.item = this.selectedPartName;
+    } else {
+      // this.drawTextOnCanvas('No part was clicked.');
+    }
   }
-}
   private initThreeJS() {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xffffff);
@@ -135,16 +143,17 @@ private onMouseClick(event: MouseEvent) {
     this.controls.screenSpacePanning = false;
 
     // Optional: Add lighting
-    const light = new THREE.DirectionalLight(0xffffff, 2);
+    const light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(5, 5, 5).normalize();
     this.scene.add(light);
+    const light2 = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(-5, -5, -5).normalize();
+    this.scene.add(light2);
   }
-
-
 
   private loadModel() {
     const loader = new GLTFLoader();
-    loader.load("assets/models/scene (5).gltf", (gltf) => {
+    loader.load("assets/models/scene.gltf", (gltf) => {
       this.model = gltf.scene;
       this.scene.add(this.model);
     });
@@ -183,16 +192,15 @@ private onMouseClick(event: MouseEvent) {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
 
-        if (mesh.name === "Furnace1") {
+        if (mesh.name === "Furnace4") {
           if (this.flag == true) {
             (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
-          
           } else {
             (mesh.material as THREE.MeshStandardMaterial).color.set(0x6666fa);
           }
         }
-    
-        if (mesh.name === "Box_5") {
+
+        if (mesh.name === "R2Plate") {
           if (this.flag1 == true) {
             // (mesh.material as THREE.MeshStandardMaterial).color.set(0xff773d);
             mesh.visible = true;
@@ -201,28 +209,25 @@ private onMouseClick(event: MouseEvent) {
             mesh.visible = false;
           }
         }
-        if (mesh.name === "R1Plate") {
+        if (mesh.name === "R3Plate") {
           if (this.flag1 == false) {
-          
-              mesh.visible = true;
-   
+            mesh.visible = true;
           } else {
             mesh.visible = false;
           }
         }
 
-
         if (this.flag1 == true) {
           if (mesh.name === "R2UpB" || mesh.name === "R2UpS") {
             mesh.rotation.y += 0.03;
-          } else if(mesh.name === "R2DownB" || mesh.name === "R2DownS") {
+          } else if (mesh.name === "R2DownB" || mesh.name === "R2DownS") {
             mesh.rotation.y -= 0.03;
           }
         }
         if (this.flag1 == false) {
-          if (mesh.name === "R1Up" ) {
+          if (mesh.name === "R1Up") {
             mesh.rotation.y += 0.03;
-          } else if(mesh.name === "R1Down") {
+          } else if (mesh.name === "R1Down") {
             mesh.rotation.y -= 0.03;
           }
         }
