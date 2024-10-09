@@ -5,17 +5,21 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
+import { CommonService } from "app/services/common.service";
+import { ReportService } from "app/services/report.service";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { CommonModule } from "@angular/common";
 
 @Component({
   selector: "app-tracking-three-js",
   standalone: true,
-  imports: [],
+
   templateUrl: "./tracking-three-js.component.html",
   // template: "<canvas #canvas></canvas>",
   styleUrl: "./tracking-three-js.component.scss",
+  imports: [CommonModule], // Import CommonModule here
 })
 export class TrackingThreeJsComponent implements AfterViewInit {
   @ViewChild("canvas") canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -36,10 +40,10 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   intervalId1: any;
   intervalld: any;
   trackingData: any;
-  fur1: boolean;
-  fur2: boolean;
-  fur3: boolean;
-  fur4: boolean;
+  fur1: boolean = false;
+  fur2: boolean = false;
+  fur3: boolean = false;
+  fur4: boolean = false;
   item = "no";
   items = new Map([
     ["no", "No item selected"],
@@ -57,8 +61,14 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     ["R2Plate", "R2 Plate"],
     ["oranges", ""],
   ]);
+  rollingseq = [];
+  loading = true;
+  status = "";
 
-  constructor() {}
+  constructor(
+    private reportService: ReportService,
+    private commonService: CommonService
+  ) {}
 
   ngAfterViewInit(): void {
     this.intervalId = setInterval(() => {
@@ -68,6 +78,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       this.toggleFlag1();
     }, 5000); // 2000 milliseconds = 2 seconds
     this.initThreeJS();
+    this.intervalld = setInterval(() => {
+      this.callTrackingapi();
+    }, 3000); // 2000 milliseconds = 2 seconds
 
     this.loadModel();
     this.animate();
@@ -81,7 +94,11 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     );
   }
   ngOnDestroy(): void {
+    console.log("Component destroyed");
     window.removeEventListener("resize", this.onWindowResize.bind(this)); // Clean up listener
+    if (this.intervalld) {
+      clearInterval(this.intervalld);
+    }
   }
 
   toggleFlag(): void {
@@ -153,7 +170,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 
   private loadModel() {
     const loader = new GLTFLoader();
-    loader.load("assets/models/scene.gltf", (gltf) => {
+    loader.load("assets/models/scene (5).gltf", (gltf) => {
       this.model = gltf.scene;
       this.scene.add(this.model);
     });
@@ -193,7 +210,28 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         const mesh = child as THREE.Mesh;
 
         if (mesh.name === "Furnace4") {
-          if (this.flag == true) {
+          if (this.fur4 == true) {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
+          } else {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x6666fa);
+          }
+        }
+        if (mesh.name === "Furnace3") {
+          if (this.fur3 == true) {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
+          } else {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x6666fa);
+          }
+        }
+        if (mesh.name === "Furnace2") {
+          if (this.fur2 == true) {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
+          } else {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x6666fa);
+          }
+        }
+        if (mesh.name === "Furnace1") {
+          if (this.fur1 == true) {
             (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
           } else {
             (mesh.material as THREE.MeshStandardMaterial).color.set(0x6666fa);
@@ -233,6 +271,49 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         }
       }
     });
+  }
+
+  callTrackingapi() {
+    this.reportService.tracking({}).subscribe(
+      (response) => {
+        let data = JSON.parse(JSON.stringify(response));
+        this.trackingData = data[0];
+        this.trackingData.FUR1STATUS == "0"
+          ? (this.fur1 = false)
+          : (this.fur1 = true);
+        this.trackingData.FUR2STATUS == "0"
+          ? (this.fur2 = false)
+          : (this.fur2 = true);
+        this.trackingData.FUR3STATUS == "0"
+          ? (this.fur3 = false)
+          : (this.fur3 = true);
+        this.trackingData.FUR4STATUS == "0"
+          ? (this.fur4 = false)
+          : (this.fur4 = true);
+
+        if (this.trackingData.ROLLINGSEQ != "") {
+          this.rollingseq = this.trackingData.ROLLINGSEQ.split("|");
+        } else {
+          this.rollingseq = Array(20).fill("__");
+        }
+
+        if (this.trackingData.MILLSTATUS == 6) {
+          this.status = "Production L3";
+        } else if (this.trackingData.MILLSTATUS == 3) {
+          this.status = "FM Roll Change";
+        } else if (this.trackingData.MILLSTATUS == 2) {
+          this.status = "FM Caliberation";
+        } else {
+          this.status = "Maintenance";
+        }
+
+        this.loading = false;
+      },
+      (respError) => {
+        // this.loading = false;
+        this.commonService.showSnakBarMessage(respError, "error", 2000);
+      }
+    );
   }
 }
 

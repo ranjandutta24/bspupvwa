@@ -1,14 +1,14 @@
-import { Component } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { CommonService } from 'app/services/common.service';
-import { ReportService } from 'app/services/report.service';
+import { Component } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { CommonService } from "app/services/common.service";
+import { ReportService } from "app/services/report.service";
 
 @Component({
-  selector: 'app-tracking-page',
+  selector: "app-tracking-page",
   standalone: true,
   imports: [],
-  templateUrl: './tracking-page.component.html',
-  styleUrl: './tracking-page.component.scss'
+  templateUrl: "./tracking-page.component.html",
+  styleUrl: "./tracking-page.component.scss",
 })
 export class TrackingPageComponent {
   flag: boolean = false;
@@ -25,14 +25,14 @@ export class TrackingPageComponent {
   constructor(
     private reportService: ReportService,
     private _formBuilder: UntypedFormBuilder,
-    private commonService: CommonService,
-  ) { }
+    private commonService: CommonService
+  ) {}
 
   ngOnInit(): void {
     this.intervalld = setInterval(() => {
       this.callTrackingapi();
-    }, 1000); // 2000 milliseconds = 2 seconds
-    setInterval(this.callTrackingapi, 1000);
+    }, 3000); // 2000 milliseconds = 2 seconds
+    setInterval(this.callTrackingapi, 3000);
     // this.callTrackingapi();
   }
 
@@ -60,6 +60,4 @@ export class TrackingPageComponent {
       }
     );
   }
-
-
 }

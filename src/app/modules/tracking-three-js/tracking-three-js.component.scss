@@ -34,24 +34,38 @@ canvas {
     position: absolute;
     top: 0;
     right: 0;
-    width: 120px;
+    width: 280px;
     // height: 100%;
   
-    padding: 10px;
+    // padding: 10px;
     box-sizing: border-box;
     background-color: rgba(67, 67, 67, 0.326);
     color: rgb(80, 80, 80);
     border: 1px solid rgb(114, 114, 114);
 }
 .collapsible__content {
-  max-height: 0;
+  max-height: 0px;
   overflow: hidden;
   opacity: 0;
-  transition: all 0.3s;
+  transition: all 0.5s;
+  padding: 0 10px;
 }
 
 .collapsible--expanded .collapsible__content {
-  height: 100vh;
+  max-height: 100%;
   opacity: 1;
   padding-bottom: 2rem;
+ 
+}
+.collapsible--expanded {
+  height: calc(100vh - 40px);
+
+}
+.rolseq{
+  font-size: 10px;
+}
+#console{
+  background-color: rgba(218, 218, 218, 0.811);
+  color: gray;
+  text-align: center;
 }
