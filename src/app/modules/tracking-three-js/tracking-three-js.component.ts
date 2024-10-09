@@ -44,6 +44,26 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   fur2: boolean = false;
   fur3: boolean = false;
   fur4: boolean = false;
+  dischargedPlate: string = "";
+  r1Plate: string = "";
+  r2Plate: string = "";
+  r3Plate: string = "";
+  r4Plate: string = "";
+  r5Plate: string = "";
+  d1Plate: string = "";
+  d2Plate: string = "";
+  shearPlate: string = "";
+  f6Plate: string = "";
+  f7Plate: string = "";
+  f8Plate: string = "";
+  f9Plate: string = "";
+  f10Plate: string = "";
+  f11Plate: string = "";
+  f12Plate: string = "";
+  c1Plate: string = "";
+  c2Plate: string = "";
+  c3Plate: string = "";
+
   item = "no";
   items = new Map([
     ["no", "No item selected"],
@@ -64,6 +84,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   rollingseq = [];
   loading = true;
   status = "";
+  millsStandStatus = "";
 
   constructor(
     private reportService: ReportService,
@@ -170,7 +191,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 
   private loadModel() {
     const loader = new GLTFLoader();
-    loader.load("assets/models/scene (5).gltf", (gltf) => {
+    loader.load("assets/models/scene.gltf", (gltf) => {
       this.model = gltf.scene;
       this.scene.add(this.model);
     });
@@ -208,7 +229,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.model.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
-
+        // # UPDATE FURNACE
         if (mesh.name === "Furnace4") {
           if (this.fur4 == true) {
             (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
@@ -237,35 +258,180 @@ export class TrackingThreeJsComponent implements AfterViewInit {
             (mesh.material as THREE.MeshStandardMaterial).color.set(0x6666fa);
           }
         }
+        // #UPDATE PLATES
 
+        if (mesh.name === "Discharged") {
+          this.dischargedPlate == "" || this.dischargedPlate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "R1Plate") {
+          this.r1Plate == "" || this.r1Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
         if (mesh.name === "R2Plate") {
-          if (this.flag1 == true) {
-            // (mesh.material as THREE.MeshStandardMaterial).color.set(0xff773d);
-            mesh.visible = true;
-            // mesh.rotation.x += 0.1;
-          } else {
-            mesh.visible = false;
-          }
+          this.r2Plate == "" || this.r2Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
         }
         if (mesh.name === "R3Plate") {
-          if (this.flag1 == false) {
-            mesh.visible = true;
-          } else {
-            mesh.visible = false;
-          }
+          this.r3Plate == "" || this.r3Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "R4Plate") {
+          this.r4Plate == "" || this.r4Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "R5Plate") {
+          this.r5Plate == "" || this.r5Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "Delay1") {
+          this.d1Plate == "" || this.d1Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "Delay2") {
+          this.d2Plate == "" || this.d2Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "ShearPlate") {
+          this.shearPlate == "" || this.shearPlate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "F6Plate") {
+          this.f6Plate == "" || this.f6Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "F7Plate") {
+          this.f7Plate == "" || this.f7Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "F8Plate") {
+          this.f8Plate == "" || this.f8Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "F9Plate") {
+          this.f9Plate == "" || this.f9Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "F10Plate") {
+          this.f10Plate == "" || this.f10Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "F11Plate") {
+          this.f11Plate == "" || this.f11Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "F12Plate") {
+          this.f12Plate == "" || this.f12Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "C1Plate") {
+          this.c1Plate == "" || this.c1Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "C2Plate") {
+          this.c2Plate == "" || this.c2Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
+        }
+        if (mesh.name === "C3Plate") {
+          this.c3Plate == "" || this.c3Plate == null
+            ? (mesh.visible = false)
+            : (mesh.visible = true);
         }
 
-        if (this.flag1 == true) {
+        // # UPDATE Roller
+        if (this.r2Plate) {
           if (mesh.name === "R2UpB" || mesh.name === "R2UpS") {
             mesh.rotation.y += 0.03;
           } else if (mesh.name === "R2DownB" || mesh.name === "R2DownS") {
             mesh.rotation.y -= 0.03;
           }
         }
-        if (this.flag1 == false) {
-          if (mesh.name === "R1Up") {
+        if (this.r3Plate) {
+          if (mesh.name === "R3UpB" || mesh.name === "R3UpS") {
             mesh.rotation.y += 0.03;
-          } else if (mesh.name === "R1Down") {
+          } else if (mesh.name === "R3DownB" || mesh.name === "R3DownS") {
+            mesh.rotation.y -= 0.03;
+          }
+        }
+        if (this.r4Plate) {
+          if (mesh.name === "R4UpB" || mesh.name === "R4UpS") {
+            mesh.rotation.y += 0.03;
+          } else if (mesh.name === "R4DownB" || mesh.name === "R4DownS") {
+            mesh.rotation.y -= 0.03;
+          }
+        }
+
+        if (this.r5Plate) {
+          if (mesh.name === "R5UpB" || mesh.name === "R5UpS") {
+            mesh.rotation.y += 0.03;
+          } else if (mesh.name === "R5DownB" || mesh.name === "R5DownS") {
+            mesh.rotation.y -= 0.03;
+          }
+        }
+        if (this.f6Plate) {
+          if (mesh.name === "F6UpB" || mesh.name === "F6UpS") {
+            mesh.rotation.y += 0.03;
+          } else if (mesh.name === "F6DownB" || mesh.name === "F6DownS") {
+            mesh.rotation.y -= 0.03;
+          }
+        }
+        if (this.f7Plate) {
+          if (mesh.name === "F7UpB" || mesh.name === "F7UpS") {
+            mesh.rotation.y += 0.03;
+          } else if (mesh.name === "F7DownB" || mesh.name === "F7DownS") {
+            mesh.rotation.y -= 0.03;
+          }
+        }
+        if (this.f8Plate) {
+          if (mesh.name === "F8UpB" || mesh.name === "F8UpS") {
+            mesh.rotation.y += 0.03;
+          } else if (mesh.name === "F8DownB" || mesh.name === "F8DownS") {
+            mesh.rotation.y -= 0.03;
+          }
+        }
+        if (this.f9Plate) {
+          if (mesh.name === "F9UpB" || mesh.name === "F9UpS") {
+            mesh.rotation.y += 0.03;
+          } else if (mesh.name === "F9DownB" || mesh.name === "F9DownS") {
+            mesh.rotation.y -= 0.03;
+          }
+        }
+        if (this.f10Plate) {
+          if (mesh.name === "F10UpB" || mesh.name === "F10UpS") {
+            mesh.rotation.y += 0.03;
+          } else if (mesh.name === "F10DownB" || mesh.name === "F10DownS") {
+            mesh.rotation.y -= 0.03;
+          }
+        }
+        if (this.f11Plate) {
+          if (mesh.name === "F11UpB" || mesh.name === "F11UpS") {
+            mesh.rotation.y += 0.03;
+          } else if (mesh.name === "F11DownB" || mesh.name === "F11DownS") {
+            mesh.rotation.y -= 0.03;
+          }
+        }
+        if (this.f12Plate) {
+          if (mesh.name === "F12UpB" || mesh.name === "F12UpS") {
+            mesh.rotation.y += 0.3;
+          } else if (mesh.name === "F12DownB" || mesh.name === "F12DownS") {
             mesh.rotation.y -= 0.03;
           }
         }
@@ -306,6 +472,27 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         } else {
           this.status = "Maintenance";
         }
+
+        this.dischargedPlate = this.trackingData.POS8;
+        this.r1Plate = this.trackingData.POS9;
+        this.r2Plate = this.trackingData.POS10;
+        this.r3Plate = this.trackingData.POS11;
+        this.r4Plate = this.trackingData.POS12;
+        this.r5Plate = this.trackingData.POS13;
+        this.d1Plate = this.trackingData.POS14;
+        this.d2Plate = this.trackingData.POS15;
+        this.millsStandStatus = this.trackingData.MILLSTANDSTATUS;
+        this.shearPlate = this.trackingData.POS16;
+        this.f6Plate = this.trackingData.POS17;
+        this.f7Plate = this.trackingData.POS18;
+        this.f8Plate = this.trackingData.POS19;
+        this.f9Plate = this.trackingData.POS20;
+        this.f10Plate = this.trackingData.POS21;
+        this.f11Plate = this.trackingData.POS22;
+        this.f12Plate = this.trackingData.POS23;
+        this.c1Plate = this.trackingData.POS24;
+        this.c2Plate = this.trackingData.POS25;
+        this.c3Plate = this.trackingData.POS26;
 
         this.loading = false;
       },
