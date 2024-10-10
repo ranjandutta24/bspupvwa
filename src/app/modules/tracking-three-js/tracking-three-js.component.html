@@ -24,18 +24,27 @@
 
     <div *ngIf="!loading" class="collapsible__content">
       <h1>Status: {{ status }}</h1>
-      <h2>{{ selectedPartName }}</h2>
+      <h2>Selected part:{{ selectedPartName }}</h2>
       <!-- <h2>{{ items.get(item) }}</h2> -->
       <h2>Rolling seq:</h2>
       <h1 *ngFor="let item of rollingseq; let i = index" class="rolseq">
         {{ i + 1 }}. {{ item }}
       </h1>
-      <h1>r1{{ r1Plate }}</h1>
+      <!-- <h1>r1{{ coil4 }}</h1>
       <h1>r2{{ r2Plate }}</h1>
       <h1>r3{{ r2Plate }}</h1>
       <h1>r4{{ r2Plate }}</h1>
       <h1>r5{{ r2Plate }}</h1>
-      <h1>r5{{ millsStandStatus }}</h1>
+      <h1>r5{{ millsStandStatus }}</h1> -->
+      <button
+        id="reset"
+        mat-raised-button
+        type="button"
+        class="flat_button"
+        (click)="resetCamera()"
+      >
+        Reset camera
+      </button>
     </div>
   </div>
 </div>
