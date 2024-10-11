@@ -71,14 +71,13 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   coil2: string = "";
   coil3: string = "";
   coil4: string = "";
-  stand6Status = "1";
+  stand6Status = "0";
   stand7Status = "1";
   stand8Status = "1";
   stand9Status = "1";
   stand10Status = "1";
   stand11Status = "1";
   stand12Status = "1";
-  stansStatus = [];
 
   item = "no";
   items = new Map([
@@ -108,9 +107,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   ) {}
 
   ngAfterViewInit(): void {
-    // this.intervalId = setInterval(() => {
-    //   this.toggleFlag();
-    // }, 2000); // 2000 milliseconds = 2 seconds
+    this.intervalId = setInterval(() => {
+      this.toggleFlag();
+    }, 2000); // 2000 milliseconds = 2 seconds
     // this.intervalId1 = setInterval(() => {
     //   this.toggleFlag1();
     // }, 5000); // 2000 milliseconds = 2 seconds
@@ -138,9 +137,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     }
   }
 
-  // toggleFlag(): void {
-  //   this.flag = !this.flag; // Toggle the flag's value
-  // }
+  toggleFlag(): void {
+    this.flag = !this.flag; // Toggle the flag's value
+  }
   // toggleFlag1(): void {
   //   this.flag1 = !this.flag1; // Toggle the flag's value
   // }
@@ -201,12 +200,31 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.controls.screenSpacePanning = false;
 
     // Optional: Add lighting
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(5, 5, 5).normalize();
-    this.scene.add(light);
-    const light2 = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(-5, -5, -5).normalize();
-    this.scene.add(light2);
+    // const light = new THREE.DirectionalLight(0xffffff, 1);
+    // light.position.set(5, 5, 5).normalize();
+    // this.scene.add(light);
+    // const light2 = new THREE.DirectionalLight(0xffffff, 1);
+    // light.position.set(-5, -5, -5).normalize();
+    // this.scene.add(light2);
+
+    // Add violet directional light
+    // const violetLight = new THREE.DirectionalLight(0x8a2be2, 1); // Violet color (hex code: #8a2be2)
+    // violetLight.position.set(5, 5, 5);
+    // this.scene.add(violetLight);
+
+    // Add yellow directional light
+    const yellowLight = new THREE.DirectionalLight(0xffff00, 1); // Yellow color (hex code: #ffff00)
+    yellowLight.position.set(-5, 5, 5);
+    this.scene.add(yellowLight);
+
+    // Add orange directional light
+    const orangeLight = new THREE.DirectionalLight(0xffa500, 2); // Orange color (hex code: #ffa500)
+    orangeLight.position.set(5, -5, 5);
+    this.scene.add(orangeLight);
+
+    // Add an ambient light for overall soft lighting (light blue color)
+    const ambientLight = new THREE.AmbientLight(0xadd8e6, 0.5); // Light blue (hex code: #add8e6)
+    this.scene.add(ambientLight);
   }
   resetCamera() {
     this.camera.position.z = 5.690522470597121;
@@ -219,7 +237,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   }
   private loadModel() {
     const loader = new GLTFLoader();
-    loader.load("assets/models/scene (9).gltf", (gltf) => {
+    loader.load("assets/models/scene.gltf", (gltf) => {
       this.model = gltf.scene;
       this.scene.add(this.model);
     });
@@ -514,6 +532,85 @@ export class TrackingThreeJsComponent implements AfterViewInit {
             mesh.rotation.y -= 0.03;
           }
         }
+
+        if (mesh.name === "F6R") {
+          if (this.stand6Status == "0") {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
+          } else {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
+          }
+        }
+        if (mesh.name === "F7R") {
+          if (this.stand7Status == "0") {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
+          } else {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
+          }
+        }
+        if (mesh.name === "F8R") {
+          if (this.stand8Status == "0") {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
+          } else {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
+          }
+        }
+        if (mesh.name === "F9R") {
+          if (this.stand9Status == "0") {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
+          } else {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
+          }
+        }
+        if (mesh.name === "F10R") {
+          if (this.stand10Status == "0") {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
+          } else {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
+          }
+        }
+        if (mesh.name === "F11R") {
+          if (this.stand11Status == "0") {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
+          } else {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
+          }
+        }
+        if (mesh.name === "F12R") {
+          if (this.stand12Status == "0") {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
+          } else {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
+          }
+        }
+        if (mesh.name === "coilend") {
+          const textureLoader = new THREE.TextureLoader();
+          let texture;
+
+          // Load the appropriate texture based on the condition
+          if (this.flag) {
+            const textureLoader = new THREE.TextureLoader();
+            textureLoader.load("assets/models/r.jpg", (newTexture) => {
+              // Apply the new texture to the material
+              (mesh.material as THREE.MeshStandardMaterial).map = newTexture;
+              (mesh.material as THREE.MeshStandardMaterial).metalnessMap =
+                newTexture;
+
+              // Ensure the material is updated with the new texture
+              (mesh.material as THREE.MeshStandardMaterial).needsUpdate = true;
+            });
+          } else {
+            const textureLoader = new THREE.TextureLoader();
+            textureLoader.load("assets/models/b1.jpg", (newTexture) => {
+              // Apply the new texture to the material
+              (mesh.material as THREE.MeshStandardMaterial).map = newTexture;
+              (mesh.material as THREE.MeshStandardMaterial).metalnessMap =
+                newTexture;
+
+              // Ensure the material is updated with the new texture
+              (mesh.material as THREE.MeshStandardMaterial).needsUpdate = true;
+            });
+          }
+        }
       }
     });
   }
@@ -560,7 +657,15 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.r5Plate = this.trackingData.POS13;
         this.d1Plate = this.trackingData.POS14;
         this.d2Plate = this.trackingData.POS15;
-        this.millsStandStatus = this.trackingData.MILLSTANDSTATUS;
+        // this.millsStandStatus = this.trackingData.MILLSTANDSTATUS;
+
+        this.stand6Status = this.trackingData.MILLSTANDSTATUS[0];
+        this.stand7Status = this.trackingData.MILLSTANDSTATUS[1];
+        this.stand8Status = this.trackingData.MILLSTANDSTATUS[2];
+        this.stand9Status = this.trackingData.MILLSTANDSTATUS[3];
+        this.stand10Status = this.trackingData.MILLSTANDSTATUS[4];
+        this.stand11Status = this.trackingData.MILLSTANDSTATUS[5];
+        this.stand12Status = this.trackingData.MILLSTANDSTATUS[6];
         this.shearPlate = this.trackingData.POS16;
         this.f6Plate = this.trackingData.POS17;
         this.f7Plate = this.trackingData.POS18;

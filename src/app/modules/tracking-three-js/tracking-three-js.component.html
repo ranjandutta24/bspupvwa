@@ -13,15 +13,6 @@
       <h1 (click)="colapse()" style="cursor: pointer">Console ⬇️</h1>
     </div>
 
-    <!-- <button
-      mat-raised-button
-      type="button"
-      class="flat_button"
-      (click)="colapse()"
-    >
-      click
-    </button> -->
-
     <div *ngIf="!loading" class="collapsible__content">
       <h1>Status: {{ status }}</h1>
       <h2>Selected part:{{ selectedPartName }}</h2>
@@ -45,7 +36,10 @@
       >
         Reset camera
       </button>
+
+      <h1>hold left click and move to rotate</h1>
+      <h1>hold right click and move to pan</h1>
+      <h1>Scroll to zoom</h1>
     </div>
   </div>
 </div>
-<!-- <canvas #canvas2D style=" height: 100px; border: 1px solid gray;"></canvas>  -->
