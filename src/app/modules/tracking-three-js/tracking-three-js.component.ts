@@ -1,3 +1,7 @@
+// http://192.168.10.101:8077/Hotmill
+// http://192.168.10.101:8082/api/hsmcc/hsm
+// ranjan
+// bsl@123
 import {
   AfterViewInit,
   Component,
@@ -71,6 +75,14 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   coil2: string = "";
   coil3: string = "";
   coil4: string = "";
+  coiler1Strapper: string = "";
+  coiler1Tilter: string = "";
+  coiler2Strapper: string = "";
+  coiler2Tilter: string = "";
+  coiler3Strapper: string = "";
+  coiler3Tilter: string = "";
+  coiler4Strapper: string = "";
+  coiler4Tilter: string = "";
   stand6Status = "0";
   stand7Status = "1";
   stand8Status = "1";
@@ -269,6 +281,22 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
+  updateEndCoil(mesh, meshName, meshCore, flag) {
+    if (mesh.name == meshName) {
+      if (flag) {
+        mesh.visible = true;
+      } else {
+        mesh.visible = false;
+      }
+    }
+    if (mesh.name == meshCore) {
+      if (flag) {
+        mesh.visible = true;
+      } else {
+        mesh.visible = false;
+      }
+    }
+  }
   public updateModelColor() {
     if (!this.model) {
       // console.error("Model not loaded yet!");
@@ -452,6 +480,15 @@ export class TrackingThreeJsComponent implements AfterViewInit {
             ? (mesh.visible = false)
             : ((mesh.visible = true), (mesh.rotation.y -= 0.3));
         }
+
+        this.updateEndCoil(mesh, "coilend1A", "Core1A", this.coiler1Strapper);
+        this.updateEndCoil(mesh, "coilend1B", "Core1B", this.coiler1Tilter);
+        this.updateEndCoil(mesh, "coilend2A", "Core2A", this.coiler2Strapper);
+        this.updateEndCoil(mesh, "coilend2B", "Core2B", this.coiler2Tilter);
+        this.updateEndCoil(mesh, "coilend3A", "Core3A", this.coiler3Strapper);
+        this.updateEndCoil(mesh, "coilend3B", "Core3B", this.coiler3Tilter);
+        this.updateEndCoil(mesh, "coilend4A", "Core4A", this.coiler4Strapper);
+        this.updateEndCoil(mesh, "coilend4B", "Core4B", this.coiler4Tilter);
 
         // # UPDATE Roller
         if (this.r2Plate) {
@@ -681,7 +718,15 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.coil2 = this.trackingData.POS28;
         this.coil3 = this.trackingData.POS29;
         this.coil4 = this.trackingData.POS30;
-        this.millsStandStatus = this.trackingData.POS30;
+        this.coiler1Strapper = this.trackingData.POS32;
+        this.coiler1Tilter = this.trackingData.POS33;
+        this.coiler2Strapper = this.trackingData.POS34;
+        this.coiler2Tilter = this.trackingData.POS35;
+        this.coiler3Strapper = this.trackingData.POS36;
+        this.coiler3Tilter = this.trackingData.POS37;
+        this.coiler4Strapper = this.trackingData.POS38;
+        this.coiler4Tilter = this.trackingData.POS39;
+        this.millsStandStatus = this.trackingData.POS3;
 
         this.loading = false;
       },
