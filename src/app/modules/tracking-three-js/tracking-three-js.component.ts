@@ -83,6 +83,25 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   coiler3Tilter: string = "";
   coiler4Strapper: string = "";
   coiler4Tilter: string = "";
+  coilFinal1: string = "";
+  coilFinal2: string = "";
+  coilFinal3: string = "";
+  coilFinal4: string = "";
+  coilFinal5: string = "";
+  coilFinal6: string = "";
+  coilFinal7: string = "";
+  coilFinal8: string = "";
+  coilFinal9: string = "";
+  coilFinal10: string = "";
+  coilFinal11: string = "";
+  coilFinal12: string = "";
+  coilFinal13: string = "";
+  coilFinal14: string = "";
+  coilFinal15: string = "";
+  coilFinal16: string = "";
+  coilFinal17: string = "";
+  coilFinal18: string = "";
+  coilFinal19: string = "";
   stand6Status = "0";
   stand7Status = "1";
   stand8Status = "1";
@@ -249,7 +268,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   }
   private loadModel() {
     const loader = new GLTFLoader();
-    loader.load("assets/models/scene.gltf", (gltf) => {
+    loader.load("assets/models/scenee.gltf", (gltf) => {
       this.model = gltf.scene;
       this.scene.add(this.model);
     });
@@ -285,6 +304,12 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     if (mesh.name == meshName) {
       if (flag) {
         mesh.visible = true;
+        let parts = flag.split("-");
+        if (parts[parts.length - 1][0] == "C") {
+          (mesh.material as THREE.MeshStandardMaterial).color.set(0xff8888);
+        } else {
+          (mesh.material as THREE.MeshStandardMaterial).color.set(0x7788ff);
+        }
       } else {
         mesh.visible = false;
       }
@@ -489,6 +514,75 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.updateEndCoil(mesh, "coilend3B", "Core3B", this.coiler3Tilter);
         this.updateEndCoil(mesh, "coilend4A", "Core4A", this.coiler4Strapper);
         this.updateEndCoil(mesh, "coilend4B", "Core4B", this.coiler4Tilter);
+        this.updateEndCoil(mesh, "finalcoil1", "finalCore1", this.coilFinal1);
+        this.updateEndCoil(mesh, "finalcoil2", "finalCore2", this.coilFinal2);
+        this.updateEndCoil(mesh, "finalcoil3", "finalCore3", this.coilFinal3);
+        this.updateEndCoil(mesh, "finalcoil4", "finalCore4", this.coilFinal4);
+        this.updateEndCoil(mesh, "finalcoil5", "finalCore5", this.coilFinal5);
+        this.updateEndCoil(mesh, "finalcoil6", "finalCore6", this.coilFinal6);
+        this.updateEndCoil(mesh, "finalcoil7", "finalCore7", this.coilFinal7);
+        this.updateEndCoil(mesh, "finalcoil8", "finalCore8", this.coilFinal8);
+        this.updateEndCoil(mesh, "finalcoil9", "finalCore9", this.coilFinal9);
+        this.updateEndCoil(
+          mesh,
+          "finalcoil10",
+          "finalCore10",
+          this.coilFinal10
+        );
+        this.updateEndCoil(
+          mesh,
+          "finalcoil11",
+          "finalCore11",
+          this.coilFinal11
+        );
+        this.updateEndCoil(
+          mesh,
+          "finalcoil12",
+          "finalCore12",
+          this.coilFinal12
+        );
+        this.updateEndCoil(
+          mesh,
+          "finalcoil13",
+          "finalCore13",
+          this.coilFinal13
+        );
+        this.updateEndCoil(
+          mesh,
+          "finalcoil14",
+          "finalCore14",
+          this.coilFinal14
+        );
+        this.updateEndCoil(
+          mesh,
+          "finalcoil15",
+          "finalCore15",
+          this.coilFinal15
+        );
+        this.updateEndCoil(
+          mesh,
+          "finalcoil16",
+          "finalCore16",
+          this.coilFinal16
+        );
+        this.updateEndCoil(
+          mesh,
+          "finalcoil17",
+          "finalCore17",
+          this.coilFinal17
+        );
+        this.updateEndCoil(
+          mesh,
+          "finalcoil18",
+          "finalCore18",
+          this.coilFinal18
+        );
+        this.updateEndCoil(
+          mesh,
+          "finalcoil19",
+          "finalCore19",
+          this.coilFinal19
+        );
 
         // # UPDATE Roller
         if (this.r2Plate) {
@@ -727,6 +821,25 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.coiler4Strapper = this.trackingData.POS38;
         this.coiler4Tilter = this.trackingData.POS39;
         this.millsStandStatus = this.trackingData.POS3;
+        this.coilFinal1 = this.trackingData.POS40;
+        this.coilFinal2 = this.trackingData.POS41;
+        this.coilFinal3 = this.trackingData.POS42;
+        this.coilFinal4 = this.trackingData.POS43;
+        this.coilFinal5 = this.trackingData.POS44;
+        this.coilFinal6 = this.trackingData.POS45;
+        this.coilFinal7 = this.trackingData.POS46;
+        this.coilFinal8 = this.trackingData.POS47;
+        this.coilFinal9 = this.trackingData.POS48;
+        this.coilFinal10 = this.trackingData.POS49;
+        this.coilFinal11 = this.trackingData.POS50;
+        this.coilFinal12 = this.trackingData.POS51;
+        this.coilFinal13 = this.trackingData.POS52;
+        this.coilFinal14 = this.trackingData.POS53;
+        this.coilFinal15 = this.trackingData.POS54;
+        this.coilFinal16 = this.trackingData.POS55;
+        this.coilFinal17 = this.trackingData.POS56;
+        this.coilFinal18 = this.trackingData.POS57;
+        this.coilFinal19 = this.trackingData.ttc4;
 
         this.loading = false;
       },
