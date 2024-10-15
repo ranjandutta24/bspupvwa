@@ -2,13 +2,20 @@
 <div class="main_con">
   <div class="canva">
     <canvas #canvas></canvas>
-    <!-- WebGL canvas for 3D rendering -->
+    <div>
+      <!-- <canvas
+        #canvas2D
+        style="position: absolute; top: 0; left: 0; width: 50%; height: 100%"
+      ></canvas> -->
+    </div>
   </div>
   <div
     class="console"
     [class.collapsible]="isColapsed"
     [class.collapsible--expanded]="!isColapsed"
   >
+    <h1 class="r5">{{ r5Plate }}</h1>
+
     <div id="console">
       <h1 (click)="colapse()" style="cursor: pointer">Console ⬇️</h1>
     </div>
@@ -36,10 +43,19 @@
       >
         Reset camera
       </button>
+      <button
+        id="reset"
+        mat-raised-button
+        type="button"
+        class="flat_button"
+        (click)="showTag()"
+      >
+        show tag
+      </button>
 
-      <h1>hold left click and move to rotate</h1>
+      <!-- <h1>hold left click and move to rotate</h1>
       <h1>hold right click and move to pan</h1>
-      <h1>Scroll to zoom</h1>
+      <h1>Scroll to zoom</h1> -->
     </div>
   </div>
 </div>

@@ -15,6 +15,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { CommonModule } from "@angular/common";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 
 @Component({
   selector: "app-tracking-three-js",
@@ -28,6 +30,7 @@ import { CommonModule } from "@angular/common";
 export class TrackingThreeJsComponent implements AfterViewInit {
   @ViewChild("canvas") canvasRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild("canvas2D") canvas2DRef!: ElementRef<HTMLCanvasElement>;
+  private ctx!: CanvasRenderingContext2D;
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;
@@ -38,6 +41,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   private mouse = new THREE.Vector2();
   selectedPartName: string = ""; // Store the selected component's name
   isColapsed: boolean = true;
+  tag: boolean = false;
   flag: boolean = false;
   flag1: boolean = false;
   intervalId: any;
@@ -137,6 +141,49 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     private commonService: CommonService
   ) {}
 
+  // Initialize the 2D canvas context
+  private initCanvasContext(): void {
+    if (this.canvas2DRef && this.canvas2DRef.nativeElement) {
+      const context = this.canvas2DRef.nativeElement.getContext("2d");
+      if (context) {
+        this.ctx = context as CanvasRenderingContext2D;
+      } else {
+        console.error(
+          "2D context could not be obtained from the canvas element."
+        );
+      }
+    }
+  }
+
+  // Draw text on the 2D canvas
+  private drawTextOnCanvas(text: string): void {
+    if (this.ctx) {
+      const canvasWidth = this.canvas2DRef.nativeElement.width;
+      const canvasHeight = this.canvas2DRef.nativeElement.height;
+
+      // Clear the canvas
+      this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+      // this.ctx.fillRect(canvasWidth - 300, canvasHeight - 100, 300, 100);
+
+      // Set text properties
+      this.ctx.font = "10px Arial";
+      this.ctx.fillStyle = "black"; // Text color
+
+      // Align text to the right (end) and draw it
+      this.ctx.textAlign = "end";
+      this.ctx.fillText(text, canvasWidth - 20, canvasHeight - 30); // Text near bottom-right corner
+    }
+  }
+
+  // Example function to dynamically update the text
+  private updateDynamicText(): void {
+    setInterval(() => {
+      const dynamicText = `Time: ${new Date().toLocaleTimeString()}`; // Dynamic text example
+      this.drawTextOnCanvas(dynamicText); // Call function to draw dynamic text
+    });
+  }
+
   ngAfterViewInit(): void {
     this.intervalId = setInterval(() => {
       this.toggleFlag();
@@ -205,9 +252,11 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       // this.drawTextOnCanvas('No part was clicked.');
     }
   }
+
   private initThreeJS() {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xffffff);
+    // this.scene.background = null;
     this.camera = new THREE.PerspectiveCamera(
       60,
       window.innerWidth / window.innerHeight,
@@ -286,6 +335,28 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       // this.model.rotation.y += 0.01;
     }
     this.renderer.render(this.scene, this.camera);
+  }
+  showTag() {
+    this.tag = !this.tag;
+
+    // if (this.tag) {
+    //   // If tag is true, create the canvas and show the text
+    //   this.initCanvasContext();
+    //   this.updateDynamicText();
+    // } else {
+    //   // If tag is false, remove the 2D canvas
+    //   if (this.canvas2DRef && this.ctx) {
+    //     const canvas2DElement = this.canvas2DRef.nativeElement;
+
+    //     // Remove the 2D canvas from DOM by setting display to 'none'
+    //     canvas2DElement.style.display = "none";
+
+    //     // Clear the canvas content
+    //     const canvasWidth = canvas2DElement.width;
+    //     const canvasHeight = canvas2DElement.height;
+    //     this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    //   }
+    // }
   }
 
   colapse() {
