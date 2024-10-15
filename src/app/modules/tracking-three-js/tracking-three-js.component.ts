@@ -139,7 +139,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   constructor(
     private reportService: ReportService,
     private commonService: CommonService
-  ) {}
+  ) { }
 
   // Initialize the 2D canvas context
   private initCanvasContext(): void {
@@ -227,14 +227,14 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     const rect = this.canvasRef.nativeElement.getBoundingClientRect();
     this.mouse.x =
       ((event.clientX - rect.left) / this.canvasRef.nativeElement.clientWidth) *
-        2 -
+      2 -
       1;
     this.mouse.y =
       -(
         (event.clientY - rect.top) /
         this.canvasRef.nativeElement.clientHeight
       ) *
-        2 +
+      2 +
       1;
 
     this.raycaster.setFromCamera(this.mouse, this.camera);
@@ -377,9 +377,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         mesh.visible = true;
         let parts = flag.split("-");
         if (parts[parts.length - 1][0] == "C") {
-          (mesh.material as THREE.MeshStandardMaterial).color.set(0xff8888);
+          (mesh.material as THREE.MeshStandardMaterial).color.set(0xC64D00);
         } else {
-          (mesh.material as THREE.MeshStandardMaterial).color.set(0x7788ff);
+          (mesh.material as THREE.MeshStandardMaterial).color.set(0x1E69B1);
         }
       } else {
         mesh.visible = false;
