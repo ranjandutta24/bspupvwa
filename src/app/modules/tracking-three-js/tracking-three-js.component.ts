@@ -19,7 +19,6 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { CdkDropListGroup } from "@angular/cdk/drag-drop";
 
-
 @Component({
   selector: "app-tracking-three-js",
   standalone: true,
@@ -145,9 +144,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   constructor(
     private reportService: ReportService,
     private commonService: CommonService
-  ) { }
-
-
+  ) {}
 
   ngAfterViewInit(): void {
     this.intervalId = setInterval(() => {
@@ -192,14 +189,14 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     const rect = this.canvasRef.nativeElement.getBoundingClientRect();
     this.mouse.x =
       ((event.clientX - rect.left) / this.canvasRef.nativeElement.clientWidth) *
-      2 -
+        2 -
       1;
     this.mouse.y =
       -(
         (event.clientY - rect.top) /
         this.canvasRef.nativeElement.clientHeight
       ) *
-      2 +
+        2 +
       1;
 
     this.raycaster.setFromCamera(this.mouse, this.camera);
@@ -211,7 +208,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     if (intersects.length > 0) {
       const intersectedObject = intersects[0].object as THREE.Mesh;
       this.selectedPartName = intersectedObject.name;
-      console.log(intersectedObject)
+      console.log(intersectedObject);
       // this.drawTextOnCanvas(`Clicked part: ${this.selectedPartName}`);
       this.item = this.selectedPartName;
     } else {
@@ -222,31 +219,39 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   private initCameras() {
     // Initialize Perspective Camera
     this.camera = new THREE.PerspectiveCamera(
-        60,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
+      60,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
     );
-    this.camera.position.set(1.0053592648786294, 6.805748555764769, 5.690522470597121);
-    
+    this.camera.position.set(
+      1.0053592648786294,
+      6.805748555764769,
+      5.690522470597121
+    );
+
     // Initialize Orthographic Camera
     const aspect = window.innerWidth / window.innerHeight;
     const frustumSize = 10; // Adjust this value to change the size of the view frustum
     this.orcamera = new THREE.OrthographicCamera(
-        frustumSize * aspect / -2, // left
-        frustumSize * aspect / 2,  // right
-        frustumSize / 2,           // top
-        frustumSize / -2,          // bottom
-        0.1,                       // near plane
-        1000                       // far plane
+      (frustumSize * aspect) / -2, // left
+      (frustumSize * aspect) / 2, // right
+      frustumSize / 2, // top
+      frustumSize / -2, // bottom
+      0.1, // near plane
+      1000 // far plane
     );
-    this.orcamera.position.set(1.0053592648786294, 6.805748555764769, 5.690522470597121);
-    
-    // Set the initial active camera
-    this.currentCamera = this.camera; 
-}
+    this.orcamera.position.set(
+      1.0053592648786294,
+      6.805748555764769,
+      5.690522470597121
+    );
 
-private toggleCamera() {
+    // Set the initial active camera
+    this.currentCamera = this.camera;
+  }
+
+  private toggleCamera() {
     this.useOrthographic = !this.useOrthographic; // Toggle the flag
 
     // Set the current camera based on the flag
@@ -254,32 +259,24 @@ private toggleCamera() {
 
     // If needed, adjust the controls to work with the current camera
     this.controls.object = this.currentCamera;
-}
-
-
+  }
 
   private initThreeJS() {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xffffff);
     // this.scene.background = null;
-    this.initCameras()
+    this.initCameras();
 
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: this.canvasRef.nativeElement,
+    });
+    this.renderer.setSize(window.innerWidth - 2, window.innerHeight - 40);
 
-
-    
-        this.renderer = new THREE.WebGLRenderer({
-            canvas: this.canvasRef.nativeElement,
-        });
-        this.renderer.setSize(window.innerWidth - 2, window.innerHeight - 40);
-
-
-       
-            // // Initialize OrbitControls
+    // // Initialize OrbitControls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
     this.controls.dampingFactor = 0.25;
     this.controls.screenSpacePanning = false;
-
 
     // Add yellow directional light
     const yellowLight = new THREE.DirectionalLight(0xffff00, 1); // Yellow color (hex code: #ffff00)
@@ -294,40 +291,52 @@ private toggleCamera() {
     // Add an ambient light for overall soft lighting (light blue color)
     const ambientLight = new THREE.AmbientLight(0xadd8e6, 0.5); // Light blue (hex code: #add8e6)
     this.scene.add(ambientLight);
-
-
-  
-  
   }
   resetCamera() {
     this.camera.position.z = 5.690522470597121;
     this.camera.position.x = 1.0053592648786294;
     this.camera.position.y = 6.805748555764769;
-    this.orcamera.position.set(1.7747427605749255, 7.387531416655268, 3.711868119160359);
-    this.controls.target.set(-0.028482466462984878, 1.2318590585064277e-17, -1.0884730652746188); 
+    this.orcamera.position.set(
+      3.1552823130450722,
+      6.178599430348983,
+      4.617582318835524
+    );
+    this.controls.target.set(
+      -0.028482466462984878,
+      1.2318590585064277e-17,
+      -1.0884730652746188
+    );
     if (this.orcamera instanceof THREE.OrthographicCamera) {
       const aspect = window.innerWidth / window.innerHeight;
       const frustumSize = 10; // Base size
       // Adjust frustum size based on the zoom factor
-      this.orcamera.left = (frustumSize * aspect / -2) ;
-      this.orcamera.right = (frustumSize * aspect / 2) ;
-      this.orcamera.top = frustumSize / 2 ;
-      this.orcamera.bottom = frustumSize / -2 ;
-      this.orcamera.zoom=1;
-      this.orcamera.updateProjectionMatrix(); 
-  }
+      this.orcamera.left = (frustumSize * aspect) / -2;
+      this.orcamera.right = (frustumSize * aspect) / 2;
+      this.orcamera.top = frustumSize / 2;
+      this.orcamera.bottom = frustumSize / -2;
+      this.orcamera.zoom = 1;
+      this.orcamera.updateProjectionMatrix();
+    }
     this.controls.update();
   }
-  zoomView(){
-
-    this.orcamera.position.set( 8.40194719278616,  7.862986526100946, 3.9672717138291755);
-    this.orcamera.zoom=2;
-    this.controls.target.set( 5.84282973405875,  4.0861666065376056e-17, -1.542720771805631); 
-    this.orcamera.updateProjectionMatrix(); 
+  zoomView() {
+    this.orcamera.position.set(
+      8.40194719278616,
+      7.862986526100946,
+      3.9672717138291755
+    );
+    this.orcamera.zoom = 2;
+    this.controls.target.set(
+      5.84282973405875,
+      4.0861666065376056e-17,
+      -1.542720771805631
+    );
+    this.orcamera.updateProjectionMatrix();
     this.controls.update();
   }
-
-
+  log() {
+    console.log(this.orcamera.position);
+  }
 
   private loadModel() {
     const loader = new GLTFLoader();
@@ -352,79 +361,213 @@ private toggleCamera() {
   }
   showTag() {
     this.tag = !this.tag;
-    // console.log(this.orcamera,this.controls);
-    if(this.tag){
-      this.resetCamera()
+    if (this.tag) {
+      this.resetCamera();
       const loader = new FontLoader();
-      loader.load(
-         "assets/models/font.json",
-        (font) => {
-          const textGeometry = new TextGeometry("F1", {
-            font: font,
-            size: 0.3, // Keep size small
-            height: 0.007, // Very thin text
-            curveSegments: 20, // More segments for smoothness
-            bevelEnabled: true, // Keep bevel for a sharp edge
-            bevelThickness: 0.001, // Minimal bevel thickness
-            bevelSize: 0.005, // Small bevel size for sharpness
-            bevelOffset: 0,
-            bevelSegments: 2, // Lower bevel segments for sharper edges
-          });
-  
-          // Create a material
-          const textMaterial = new THREE.MeshBasicMaterial({ color: 0x222222 });
-  
-          // Create a mesh
-          const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-          textMesh.name = 'myTextMesh';
-  
-          // Set the position of the text
-          textMesh.position.set(-1.0655337040991406, 1, 0); // Center the text
-          const xRotation = THREE.MathUtils.degToRad(-60); // -60 degrees to radians
-          const yRotation = THREE.MathUtils.degToRad(23);  // 23 degrees to radians
-          const zRotation = THREE.MathUtils.degToRad(25);
-          textMesh.rotation.set(xRotation, yRotation, zRotation); // Center the text
-  
-          
-  
-  
-          // Add text to the scene
-          this.scene.add(textMesh);
-        },
-        undefined,
-        (error) => {
-          console.error("An error occurred while loading the font:", error);
-        }
+
+      // Function to create text mesh
+      const createTextMesh = (text, position, rotation) => {
+        const font = loader.load(
+          "assets/models/font.json",
+          (font) => {
+            const textGeometry = new TextGeometry(text, {
+              font: font,
+              size: 0.2, // Keep size small
+              height: 0.005, // Thinner text height
+              curveSegments: 50, // More segments for smoothness
+              bevelEnabled: true, // Keep bevel for a sharp edge
+              bevelThickness: 0.0005, // Decreased bevel thickness for less boldness
+              bevelSize: 0.0025, // Decreased bevel size for sharper edges
+              bevelOffset: 0,
+              bevelSegments: 2, // Lower bevel segments for sharper edges
+            });
+
+            // Create a material
+            const textMaterial = new THREE.MeshBasicMaterial({
+              // color: 0x222222,
+              color: 0x137625,
+            });
+
+            // Create a mesh
+            const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+            textMesh.name = `${text}Mesh`; // Unique name for each text mesh
+
+            // Set the position and rotation of the text
+            textMesh.position.set(...position);
+            textMesh.rotation.set(...rotation);
+
+            // Add text to the scene
+            this.scene.add(textMesh);
+          },
+          undefined,
+          (error) => {
+            console.error("An error occurred while loading the font:", error);
+          }
+        );
+      };
+
+      // Create first text mesh
+      createTextMesh(
+        "F6",
+        [-1.0, 1, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
       );
+
+      // Create second text mesh
+      createTextMesh(
+        "F7",
+        [-0.888787628226152, -1.3, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "F8",
+        [0.188787628226152, 1, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "F9",
+        [0.288787628226152, -1.4, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "F10",
+        [1.288787628226152, 1, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "F11",
+        [1.9, -0.3, 1],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "F12",
+        [2.3, 0.98, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "DS1",
+        [-6.2, -1.4, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "RR2",
+        [-5, 1.1, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "R3",
+        [-4.8, -1.5, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "R4",
+        [-3.7, 1, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "R5",
+        [-3.5, -1.5, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+
+      // this.controls.enableRotate = false;
+
       // this.controls.enabled = false;
-      // this.controls.update();
-    }else{
-      const meshToRemove = this.scene.getObjectByName('myTextMesh');
-
-      // Check if the object exists, then remove it
-      if (meshToRemove) {
-        // Remove from the scene
-        this.scene.remove(meshToRemove);
-        
-        // Dispose of its geometry and material
-        meshToRemove.geometry.dispose();
-        meshToRemove.material.dispose();
-      }
       this.controls.update();
+    } else {
+      // Remove both text meshes
+      const meshToRemove1 = this.scene.getObjectByName("F6Mesh");
+      const meshToRemove2 = this.scene.getObjectByName("F7Mesh");
+      const meshToRemove3 = this.scene.getObjectByName("F8Mesh");
+      const meshToRemove4 = this.scene.getObjectByName("F9Mesh");
+      const meshToRemove5 = this.scene.getObjectByName("F10Mesh");
+      const meshToRemove6 = this.scene.getObjectByName("F11Mesh");
+      const meshToRemove7 = this.scene.getObjectByName("F12Mesh");
+      const meshToRemove8 = this.scene.getObjectByName("DS1Mesh");
+      const meshToRemove9 = this.scene.getObjectByName("RR2Mesh");
+      const meshToRemove10 = this.scene.getObjectByName("R3Mesh");
+      const meshToRemove11 = this.scene.getObjectByName("R4Mesh");
+      const meshToRemove12 = this.scene.getObjectByName("R5Mesh");
 
-    //  this.scene.
-    
+      // Function to remove a mesh
+      const removeMesh = (mesh) => {
+        if (mesh) {
+          this.scene.remove(mesh);
+          mesh.geometry.dispose();
+          mesh.material.dispose();
+        }
+      };
+
+      removeMesh(meshToRemove1);
+      removeMesh(meshToRemove2);
+      removeMesh(meshToRemove3);
+      removeMesh(meshToRemove4);
+      removeMesh(meshToRemove5);
+      removeMesh(meshToRemove6);
+      removeMesh(meshToRemove7);
+      removeMesh(meshToRemove8);
+      removeMesh(meshToRemove9);
+      removeMesh(meshToRemove10);
+      removeMesh(meshToRemove11);
+      removeMesh(meshToRemove12);
+
+      // this.controls.enabled = true;
+      this.controls.enableRotate = true;
+      this.controls.update();
     }
-
-
-
-  
   }
 
   colapse() {
-
     this.isColapsed = !this.isColapsed;
-    console.log(this.status,this.loading)
+    console.log(this.status, this.loading);
   }
   private onWindowResize() {
     // Update camera aspect ratio and renderer size
@@ -439,9 +582,9 @@ private toggleCamera() {
         mesh.visible = true;
         let parts = flag.split("-");
         if (parts[parts.length - 1][0] == "C") {
-          (mesh.material as THREE.MeshStandardMaterial).color.set(0xC64D00);
+          (mesh.material as THREE.MeshStandardMaterial).color.set(0xc64d00);
         } else {
-          (mesh.material as THREE.MeshStandardMaterial).color.set(0x1E69B1);
+          (mesh.material as THREE.MeshStandardMaterial).color.set(0x1e69b1);
         }
       } else {
         mesh.visible = false;
@@ -884,20 +1027,27 @@ private toggleCamera() {
       (response) => {
         let data = JSON.parse(JSON.stringify(response));
         this.trackingData = data[0];
-        this.trackingData.FUR1STATUS == "0"
+        this.trackingData.FUR1STATUS == "0" ||
+        this.trackingData.FUR1STATUS == null
           ? (this.fur1 = false)
           : (this.fur1 = true);
-        this.trackingData.FUR2STATUS == "0"
+        this.trackingData.FUR2STATUS == "0" ||
+        this.trackingData.FUR2STATUS == null
           ? (this.fur2 = false)
           : (this.fur2 = true);
-        this.trackingData.FUR3STATUS == "0"
+        this.trackingData.FUR3STATUS == "0" ||
+        this.trackingData.FUR3STATUS == null
           ? (this.fur3 = false)
           : (this.fur3 = true);
-        this.trackingData.FUR4STATUS == "0"
+        this.trackingData.FUR4STATUS == "0" ||
+        this.trackingData.FUR4STATUS == null
           ? (this.fur4 = false)
           : (this.fur4 = true);
 
-        if (this.trackingData.ROLLINGSEQ == "" || this.trackingData.ROLLINGSEQ == null ) {
+        if (
+          this.trackingData.ROLLINGSEQ == "" ||
+          this.trackingData.ROLLINGSEQ == null
+        ) {
           this.rollingseq = Array(20).fill("__");
         } else {
           this.rollingseq = this.trackingData.ROLLINGSEQ.split("|");

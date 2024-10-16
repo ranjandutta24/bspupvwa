@@ -14,9 +14,8 @@
     [class.collapsible]="isColapsed"
     [class.collapsible--expanded]="!isColapsed"
   >
-    <h1 class="r5">{{ r5Plate }}</h1>
-    <h1 class="r5">show tag</h1>
-
+    <!-- <h1 class="r5">{{ r5Plate }}</h1>
+    <h1 class="r5">show tag</h1> -->
 
     <div id="console">
       <h1 (click)="colapse()" style="cursor: pointer">Console ⬇️</h1>
@@ -36,7 +35,8 @@
       <h1>r4{{ r2Plate }}</h1>
       <h1>r5{{ r2Plate }}</h1>
       <h1>r5{{ millsStandStatus }}</h1> -->
-      <button style="margin: 5px;"
+      <button
+        style="margin: 5px"
         id="reset"
         mat-raised-button
         type="button"
@@ -45,28 +45,32 @@
       >
         Reset camera
       </button>
-      <button style="margin: 5px;"
-      id="reset"
-      mat-raised-button
-      type="button"
-      class="flat_button"
-      (click)="toggleCamera()"
-    >
-      {{useOrthographic ==true? "Perspective off": "Perspective on"}}
-    </button>
-      <button style="margin: 5px;"
-      [disabled]="!useOrthographic"
+      <button
+        [disabled]="tag"
+        style="margin: 5px"
+        id="reset"
+        mat-raised-button
+        type="button"
+        class="flat_button"
+        (click)="toggleCamera()"
+      >
+        {{ useOrthographic == true ? "Perspective off" : "Perspective on" }}
+      </button>
+      <button
+        style="margin: 5px"
+        [disabled]="!useOrthographic"
         id="reset"
         mat-raised-button
         type="button"
         class="flat_button"
         (click)="showTag()"
       >
-        {{tag==true? "Hide Tag": "Show Tag"}}
+        {{ tag == true ? "Hide Tag" : "Show Tag" }}
       </button>
-     
-      <button style="margin: 5px;"
-       [disabled]="!useOrthographic"
+
+      <button
+        style="margin: 5px"
+        [disabled]="!useOrthographic"
         id="reset"
         mat-raised-button
         type="button"
@@ -74,6 +78,17 @@
         (click)="zoomView()"
       >
         zoom view
+      </button>
+      <button
+        style="margin: 5px"
+        [disabled]="!useOrthographic"
+        id="reset"
+        mat-raised-button
+        type="button"
+        class="flat_button"
+        (click)="log()"
+      >
+        log
       </button>
 
       <!-- <h1>hold left click and move to rotate</h1>
