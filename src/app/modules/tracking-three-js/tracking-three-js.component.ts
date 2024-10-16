@@ -17,6 +17,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { CommonModule } from "@angular/common";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
+import { CdkDropListGroup } from "@angular/cdk/drag-drop";
+
 
 @Component({
   selector: "app-tracking-three-js",
@@ -32,7 +34,10 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   @ViewChild("canvas2D") canvas2DRef!: ElementRef<HTMLCanvasElement>;
   private ctx!: CanvasRenderingContext2D;
   private scene!: THREE.Scene;
+  private orcamera!: THREE.OrthographicCamera;
   private camera!: THREE.PerspectiveCamera;
+  private currentCamera: THREE.Camera; // Variable to hold the current camera
+  private useOrthographic: boolean = false;
   private renderer!: THREE.WebGLRenderer;
   private model!: THREE.Group;
   private controls!: OrbitControls; // Declare controls
@@ -42,6 +47,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   selectedPartName: string = ""; // Store the selected component's name
   isColapsed: boolean = true;
   tag: boolean = false;
+  zoom: boolean = false;
   flag: boolean = false;
   flag1: boolean = false;
   intervalId: any;
@@ -141,48 +147,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     private commonService: CommonService
   ) { }
 
-  // Initialize the 2D canvas context
-  private initCanvasContext(): void {
-    if (this.canvas2DRef && this.canvas2DRef.nativeElement) {
-      const context = this.canvas2DRef.nativeElement.getContext("2d");
-      if (context) {
-        this.ctx = context as CanvasRenderingContext2D;
-      } else {
-        console.error(
-          "2D context could not be obtained from the canvas element."
-        );
-      }
-    }
-  }
 
-  // Draw text on the 2D canvas
-  private drawTextOnCanvas(text: string): void {
-    if (this.ctx) {
-      const canvasWidth = this.canvas2DRef.nativeElement.width;
-      const canvasHeight = this.canvas2DRef.nativeElement.height;
-
-      // Clear the canvas
-      this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-      // this.ctx.fillRect(canvasWidth - 300, canvasHeight - 100, 300, 100);
-
-      // Set text properties
-      this.ctx.font = "10px Arial";
-      this.ctx.fillStyle = "black"; // Text color
-
-      // Align text to the right (end) and draw it
-      this.ctx.textAlign = "end";
-      this.ctx.fillText(text, canvasWidth - 20, canvasHeight - 30); // Text near bottom-right corner
-    }
-  }
-
-  // Example function to dynamically update the text
-  private updateDynamicText(): void {
-    setInterval(() => {
-      const dynamicText = `Time: ${new Date().toLocaleTimeString()}`; // Dynamic text example
-      this.drawTextOnCanvas(dynamicText); // Call function to draw dynamic text
-    });
-  }
 
   ngAfterViewInit(): void {
     this.intervalId = setInterval(() => {
@@ -246,6 +211,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     if (intersects.length > 0) {
       const intersectedObject = intersects[0].object as THREE.Mesh;
       this.selectedPartName = intersectedObject.name;
+      console.log(intersectedObject)
       // this.drawTextOnCanvas(`Clicked part: ${this.selectedPartName}`);
       this.item = this.selectedPartName;
     } else {
@@ -253,44 +219,67 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     }
   }
 
+  private initCameras() {
+    // Initialize Perspective Camera
+    this.camera = new THREE.PerspectiveCamera(
+        60,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+    );
+    this.camera.position.set(1.0053592648786294, 6.805748555764769, 5.690522470597121);
+    
+    // Initialize Orthographic Camera
+    const aspect = window.innerWidth / window.innerHeight;
+    const frustumSize = 10; // Adjust this value to change the size of the view frustum
+    this.orcamera = new THREE.OrthographicCamera(
+        frustumSize * aspect / -2, // left
+        frustumSize * aspect / 2,  // right
+        frustumSize / 2,           // top
+        frustumSize / -2,          // bottom
+        0.1,                       // near plane
+        1000                       // far plane
+    );
+    this.orcamera.position.set(1.0053592648786294, 6.805748555764769, 5.690522470597121);
+    
+    // Set the initial active camera
+    this.currentCamera = this.camera; 
+}
+
+private toggleCamera() {
+    this.useOrthographic = !this.useOrthographic; // Toggle the flag
+
+    // Set the current camera based on the flag
+    this.currentCamera = this.useOrthographic ? this.orcamera : this.camera;
+
+    // If needed, adjust the controls to work with the current camera
+    this.controls.object = this.currentCamera;
+}
+
+
+
   private initThreeJS() {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xffffff);
     // this.scene.background = null;
-    this.camera = new THREE.PerspectiveCamera(
-      60,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    this.renderer = new THREE.WebGLRenderer({
-      canvas: this.canvasRef.nativeElement,
-    });
-    this.renderer.setSize(window.innerWidth - 2, window.innerHeight - 40);
-    this.camera.position.z = 5.690522470597121;
-    this.camera.position.x = 1.0053592648786294;
-    this.camera.position.y = 6.805748555764769;
-    // {x: 2.6215825537250534, y: 5.757049781132278, z: 5.6704628060047595}
-    // {x: 1.0053592648786294, y: 6.805748555764769, z: 5.690522470597121}
+    this.initCameras()
 
-    // Initialize OrbitControls
+
+
+    
+        this.renderer = new THREE.WebGLRenderer({
+            canvas: this.canvasRef.nativeElement,
+        });
+        this.renderer.setSize(window.innerWidth - 2, window.innerHeight - 40);
+
+
+       
+            // // Initialize OrbitControls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
     this.controls.dampingFactor = 0.25;
     this.controls.screenSpacePanning = false;
 
-    // Optional: Add lighting
-    // const light = new THREE.DirectionalLight(0xffffff, 1);
-    // light.position.set(5, 5, 5).normalize();
-    // this.scene.add(light);
-    // const light2 = new THREE.DirectionalLight(0xffffff, 1);
-    // light.position.set(-5, -5, -5).normalize();
-    // this.scene.add(light2);
-
-    // Add violet directional light
-    // const violetLight = new THREE.DirectionalLight(0x8a2be2, 1); // Violet color (hex code: #8a2be2)
-    // violetLight.position.set(5, 5, 5);
-    // this.scene.add(violetLight);
 
     // Add yellow directional light
     const yellowLight = new THREE.DirectionalLight(0xffff00, 1); // Yellow color (hex code: #ffff00)
@@ -305,16 +294,41 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     // Add an ambient light for overall soft lighting (light blue color)
     const ambientLight = new THREE.AmbientLight(0xadd8e6, 0.5); // Light blue (hex code: #add8e6)
     this.scene.add(ambientLight);
+
+
+  
+  
   }
   resetCamera() {
     this.camera.position.z = 5.690522470597121;
     this.camera.position.x = 1.0053592648786294;
     this.camera.position.y = 6.805748555764769;
-    this.controls.target.set(0, 0, 0); // Reset target to origin (or any point you want)
-
-    // Notify the controls that they should update their internal state
+    this.orcamera.position.set(1.7747427605749255, 7.387531416655268, 3.711868119160359);
+    this.controls.target.set(-0.028482466462984878, 1.2318590585064277e-17, -1.0884730652746188); 
+    if (this.orcamera instanceof THREE.OrthographicCamera) {
+      const aspect = window.innerWidth / window.innerHeight;
+      const frustumSize = 10; // Base size
+      // Adjust frustum size based on the zoom factor
+      this.orcamera.left = (frustumSize * aspect / -2) ;
+      this.orcamera.right = (frustumSize * aspect / 2) ;
+      this.orcamera.top = frustumSize / 2 ;
+      this.orcamera.bottom = frustumSize / -2 ;
+      this.orcamera.zoom=1;
+      this.orcamera.updateProjectionMatrix(); 
+  }
     this.controls.update();
   }
+  zoomView(){
+
+    this.orcamera.position.set( 8.40194719278616,  7.862986526100946, 3.9672717138291755);
+    this.orcamera.zoom=2;
+    this.controls.target.set( 5.84282973405875,  4.0861666065376056e-17, -1.542720771805631); 
+    this.orcamera.updateProjectionMatrix(); 
+    this.controls.update();
+  }
+
+
+
   private loadModel() {
     const loader = new GLTFLoader();
     loader.load("assets/models/scenee.gltf", (gltf) => {
@@ -334,33 +348,80 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       // Example: Rotate the model
       // this.model.rotation.y += 0.01;
     }
-    this.renderer.render(this.scene, this.camera);
+    this.renderer.render(this.scene, this.currentCamera);
   }
   showTag() {
     this.tag = !this.tag;
+    // console.log(this.orcamera,this.controls);
+    if(this.tag){
+      this.resetCamera()
+      const loader = new FontLoader();
+      loader.load(
+         "assets/models/font.json",
+        (font) => {
+          const textGeometry = new TextGeometry("F1", {
+            font: font,
+            size: 0.3, // Keep size small
+            height: 0.007, // Very thin text
+            curveSegments: 20, // More segments for smoothness
+            bevelEnabled: true, // Keep bevel for a sharp edge
+            bevelThickness: 0.001, // Minimal bevel thickness
+            bevelSize: 0.005, // Small bevel size for sharpness
+            bevelOffset: 0,
+            bevelSegments: 2, // Lower bevel segments for sharper edges
+          });
+  
+          // Create a material
+          const textMaterial = new THREE.MeshBasicMaterial({ color: 0x222222 });
+  
+          // Create a mesh
+          const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+          textMesh.name = 'myTextMesh';
+  
+          // Set the position of the text
+          textMesh.position.set(-1.0655337040991406, 1, 0); // Center the text
+          const xRotation = THREE.MathUtils.degToRad(-60); // -60 degrees to radians
+          const yRotation = THREE.MathUtils.degToRad(23);  // 23 degrees to radians
+          const zRotation = THREE.MathUtils.degToRad(25);
+          textMesh.rotation.set(xRotation, yRotation, zRotation); // Center the text
+  
+          
+  
+  
+          // Add text to the scene
+          this.scene.add(textMesh);
+        },
+        undefined,
+        (error) => {
+          console.error("An error occurred while loading the font:", error);
+        }
+      );
+      // this.controls.enabled = false;
+      // this.controls.update();
+    }else{
+      const meshToRemove = this.scene.getObjectByName('myTextMesh');
 
-    // if (this.tag) {
-    //   // If tag is true, create the canvas and show the text
-    //   this.initCanvasContext();
-    //   this.updateDynamicText();
-    // } else {
-    //   // If tag is false, remove the 2D canvas
-    //   if (this.canvas2DRef && this.ctx) {
-    //     const canvas2DElement = this.canvas2DRef.nativeElement;
+      // Check if the object exists, then remove it
+      if (meshToRemove) {
+        // Remove from the scene
+        this.scene.remove(meshToRemove);
+        
+        // Dispose of its geometry and material
+        meshToRemove.geometry.dispose();
+        meshToRemove.material.dispose();
+      }
+      this.controls.update();
 
-    //     // Remove the 2D canvas from DOM by setting display to 'none'
-    //     canvas2DElement.style.display = "none";
+    //  this.scene.
+    
+    }
 
-    //     // Clear the canvas content
-    //     const canvasWidth = canvas2DElement.width;
-    //     const canvasHeight = canvas2DElement.height;
-    //     this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-    //   }
-    // }
+
+
+  
   }
 
   colapse() {
-    console.log(this.camera.position);
 
     this.isColapsed = !this.isColapsed;
     console.log(this.status,this.loading)
