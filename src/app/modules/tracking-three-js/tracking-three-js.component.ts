@@ -363,6 +363,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     console.log(this.camera.position);
 
     this.isColapsed = !this.isColapsed;
+    console.log(this.status,this.loading)
   }
   private onWindowResize() {
     // Update camera aspect ratio and renderer size
@@ -835,10 +836,10 @@ export class TrackingThreeJsComponent implements AfterViewInit {
           ? (this.fur4 = false)
           : (this.fur4 = true);
 
-        if (this.trackingData.ROLLINGSEQ != "") {
-          this.rollingseq = this.trackingData.ROLLINGSEQ.split("|");
-        } else {
+        if (this.trackingData.ROLLINGSEQ == "" || this.trackingData.ROLLINGSEQ == null ) {
           this.rollingseq = Array(20).fill("__");
+        } else {
+          this.rollingseq = this.trackingData.ROLLINGSEQ.split("|");
         }
 
         if (this.trackingData.MILLSTATUS == 6) {
