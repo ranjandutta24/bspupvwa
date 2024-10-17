@@ -182,6 +182,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     if (this.intervalld) {
       clearInterval(this.intervalld);
     }
+    if (this.tag) {
+      this.showTag();
+    }
   }
 
   toggleFlag(): void {
@@ -1175,7 +1178,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.stand11Status = this.trackingData.MILLSTANDSTATUS[5];
         this.stand12Status = this.trackingData.MILLSTANDSTATUS[6];
         this.shearPlate = this.trackingData.POS16;
-        // this.f6Plate = this.trackingData.POS17;
+        this.f6Plate = this.trackingData.POS17;
         // this.f6Plate = "sassa";
         this.f7Plate = this.trackingData.POS18;
         this.f8Plate = this.trackingData.POS19;
