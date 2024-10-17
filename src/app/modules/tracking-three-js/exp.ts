@@ -36,7 +36,6 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   @ViewChild("canvas") canvasRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild("canvas2D") canvas2DRef!: ElementRef<HTMLCanvasElement>;
   private ctx!: CanvasRenderingContext2D;
-  private labels: CSS2DObject[] = [];
   private scene!: THREE.Scene;
   private orcamera!: THREE.OrthographicCamera;
   private camera!: THREE.PerspectiveCamera;
@@ -51,7 +50,6 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   private mouse = new THREE.Vector2();
   selectedPartName: string = ""; // Store the selected component's name
   isColapsed: boolean = true;
-  updateTag: any;
   tag: boolean = false;
   zoom: boolean = false;
   flag: boolean = false;
@@ -168,7 +166,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.loadModel();
     this.animate();
 
-    // window.addEventListener("resize", this.onWindowResize.bind(this), false); // Add resize listener
+    window.addEventListener("resize", this.onWindowResize.bind(this), false); // Add resize listener
 
     this.canvasRef.nativeElement.addEventListener(
       "click",
@@ -214,10 +212,8 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 
     if (intersects.length > 0) {
       const intersectedObject = intersects[0].object as THREE.Mesh;
-      const intersectionPoint = intersects[0].point;
       this.selectedPartName = intersectedObject.name;
-      // console.log(intersectedObject);
-      console.log("Click Position in 3D Space:", intersectionPoint);
+      console.log(intersectedObject);
       // this.drawTextOnCanvas(`Clicked part: ${this.selectedPartName}`);
       this.item = this.selectedPartName;
     } else {
@@ -261,9 +257,12 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   }
 
   private toggleCamera() {
-    this.resetCamera();
-    this.useOrthographic = !this.useOrthographic;
+    this.useOrthographic = !this.useOrthographic; // Toggle the flag
+
+    // Set the current camera based on the flag
     this.currentCamera = this.useOrthographic ? this.orcamera : this.camera;
+
+    // If needed, adjust the controls to work with the current camera
     this.controls.object = this.currentCamera;
   }
 
@@ -277,25 +276,35 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       canvas: this.canvasRef.nativeElement,
     });
     this.renderer.setSize(window.innerWidth - 2, window.innerHeight - 40);
-    this.renderer.setPixelRatio(window.devicePixelRatio); // Handle high DPI screens
 
-    // Handle resizing the window dynamically
-    window.addEventListener("resize", () => this.onWindowResize());
-
-    // Initialize the CSS2DRenderer for labels
-    this.labelRenderer = new CSS2DRenderer();
-    this.labelRenderer.setSize(window.innerWidth - 2, window.innerHeight - 40);
+    // CSS2DRenderer setup
+    // this.labelRenderer = new CSS2DRenderer();
+    this.labelRenderer.setSize(window.innerWidth, window.innerHeight);
     this.labelRenderer.domElement.style.position = "absolute";
     this.labelRenderer.domElement.style.top = "0px";
-    this.labelRenderer.domElement.style.pointerEvents = "none";
-    document.body.appendChild(this.labelRenderer.domElement);
+    this.canvasRef.nativeElement.appendChild(this.labelRenderer.domElement);
+
+    // const geometry = new THREE.BoxGeometry();
+    // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    // const cube = new THREE.Mesh(geometry, material);
+    // this.scene.add(cube);
+
+    // Create an HTML element (a label) to overlay on the cube
+    const div = document.createElement("div");
+    div.className = "label";
+    div.textContent = "Hello, Cube!";
+    div.style.color = "blue";
+
+    // Create a CSS2DObject and attach it to the cube
+    const label = new CSS2DObject(div);
+    label.position.set(3, 2, 0); // Position label relative to the cube
+    // cube.add(label);
 
     // // Initialize OrbitControls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
     this.controls.dampingFactor = 0.25;
     this.controls.screenSpacePanning = false;
-    this.controls.update(); // Ensure controls are updated for damping
 
     // Add yellow directional light
     const yellowLight = new THREE.DirectionalLight(0xffff00, 1); // Yellow color (hex code: #ffff00)
@@ -312,32 +321,33 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.scene.add(ambientLight);
   }
   resetCamera() {
-    this.camera.position.z = 5.4415139840108715;
-    this.camera.position.x = 5.80241900127863;
-    this.camera.position.y = 4.575380122497185;
-
+    this.camera.position.z = 5.690522470597121;
+    this.camera.position.x = 1.0053592648786294;
+    this.camera.position.y = 6.805748555764769;
     this.orcamera.position.set(
-      7.985137535537665,
-      3.4136345801138646,
-      5.76447500418364
+      3.1552823130450722,
+      6.178599430348983,
+      4.617582318835524
     );
-
     this.controls.target.set(
-      2.8224093597773567,
-      -2.082825686254486e-16,
-      -0.24810180529617526
+      -0.028482466462984878,
+      1.2318590585064277e-17,
+      -1.0884730652746188
     );
-    this.orcamera.zoom = 1.2277376631548256;
-
-    this.orcamera.updateProjectionMatrix();
-    this.camera.updateProjectionMatrix();
+    if (this.orcamera instanceof THREE.OrthographicCamera) {
+      const aspect = window.innerWidth / window.innerHeight;
+      const frustumSize = 10; // Base size
+      // Adjust frustum size based on the zoom factor
+      this.orcamera.left = (frustumSize * aspect) / -2;
+      this.orcamera.right = (frustumSize * aspect) / 2;
+      this.orcamera.top = frustumSize / 2;
+      this.orcamera.bottom = frustumSize / -2;
+      this.orcamera.zoom = 1;
+      this.orcamera.updateProjectionMatrix();
+    }
     this.controls.update();
   }
   zoomView() {
-    this.zoom = true;
-    if (this.tag == true) {
-      this.showTag();
-    }
     this.orcamera.position.set(
       8.40194719278616,
       7.862986526100946,
@@ -353,11 +363,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.controls.update();
   }
   log() {
-    // console.log(this.orcamera.position);
-    // console.log(this.orcamera.zoom);
-    console.log(this.controls.target);
-    console.log(this.camera.position);
-    console.log(this.camera.zoom);
+    console.log(this.orcamera.position);
   }
 
   private loadModel() {
@@ -383,239 +389,207 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.labelRenderer.render(this.scene, this.camera);
   }
   showTag() {
-    this.resetCamera();
     this.tag = !this.tag;
     if (this.tag) {
+      this.resetCamera();
+      const loader = new FontLoader();
+
       // Function to create text mesh
-      const createDiv = (text, className) => {
-        const div = document.createElement("div");
-        div.className = className;
-        div.textContent = text;
-        div.style.color = "blue";
-        return div;
-      };
-      // const createDynamicDiv = (text, className) => {
-      //   const div = document.createElement("div");
-      //   div.className = className;
-      //   div.textContent = text;
-      //   div.style.color = "green";
-      //   return div;
-      // };
+      const createTextMesh = (text, position, rotation) => {
+        const font = loader.load(
+          "assets/models/font.json",
+          (font) => {
+            const textGeometry = new TextGeometry(text, {
+              font: font,
+              size: 0.2, // Keep size small
+              height: 0.005, // Thinner text height
+              curveSegments: 50, // More segments for smoothness
+              bevelEnabled: true, // Keep bevel for a sharp edge
+              bevelThickness: 0.0005, // Decreased bevel thickness for less boldness
+              bevelSize: 0.0025, // Decreased bevel size for sharper edges
+              bevelOffset: 0,
+              bevelSegments: 2, // Lower bevel segments for sharper edges
+            });
 
-      const createDynamicDiv = (
-        text: string,
-        className: string,
-        part: boolean
-      ): HTMLDivElement => {
-        const div = document.createElement("div");
-        div.className = className;
+            // Create a material
+            const textMaterial = new THREE.MeshBasicMaterial({
+              // color: 0x222222,
+              color: 0x137625,
+            });
 
-        if (text) {
-          part == true
-            ? (div.innerHTML = text.replace(/-/g, "-<br>"))
-            : (div.innerHTML = text);
-        }
+            // Create a mesh
+            const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+            textMesh.name = `${text}Mesh`; // Unique name for each text mesh
 
-        div.style.color = "green"; // Example style
-        return div;
-      };
+            // Set the position and rotation of the text
+            textMesh.position.set(...position);
+            textMesh.rotation.set(...rotation);
 
-      const material = new THREE.LineBasicMaterial({ color: 0x333333 }); // Red color
-
-      const createLine = (start, end) => {
-        const points = [];
-        points.push(new THREE.Vector3(...start)); // Start point of the line (origin)
-        points.push(new THREE.Vector3(...end)); // End point of the line
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        const line = new THREE.Line(geometry, material);
-        return line;
+            // Add text to the scene
+            this.scene.add(textMesh);
+          },
+          undefined,
+          (error) => {
+            console.error("An error occurred while loading the font:", error);
+          }
+        );
       };
 
-      // Create an HTML label and attach it to the cube
-      const div = createDiv("F6", "label");
-      const div1 = createDiv("F7", "label");
-      const div2 = createDiv("F8", "label");
-      const div3 = createDiv("F9", "label");
-      const div4 = createDiv("F10", "label");
-      const div5 = createDiv("F11", "label");
-      const div6 = createDiv("F12", "label");
-      const div7 = createDiv("DS1", "label");
-      const div8 = createDiv("RR2", "label");
-      const div9 = createDiv("R3", "label");
-      const div10 = createDiv("R4", "label");
-      const div11 = createDiv("R5", "label");
-      const div12 = createDiv("C1", "label");
-      const div13 = createDiv("C2", "label");
-      const div14 = createDiv("C3", "label");
-      const div15 = createDiv("C4", "label");
-
-      const div16 = createDynamicDiv(
-        this.dischargedPlate,
-        "label_dynamic",
-        true
+      // Create first text mesh
+      createTextMesh(
+        "F6",
+        [-1.0, 1, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
       );
-      let secondPlate =
-        this.r2Plate ||
-        this.r2Plate ||
-        this.r3Plate ||
-        this.r4Plate ||
-        this.r5Plate ||
-        " ";
-      let thirdPlate =
-        this.d1Plate ||
-        this.d2Plate ||
-        this.shearPlate ||
-        this.f6Plate ||
-        this.f7Plate ||
-        this.f8Plate ||
-        this.f9Plate ||
-        this.f10Plate ||
-        this.f11Plate ||
-        this.f12Plate ||
-        " ";
 
-      const div17 = createDynamicDiv(secondPlate, "label_dynamic", false);
-      const div18 = createDynamicDiv(thirdPlate, "label_dynamic", false);
-      this.updateTag = setInterval(() => {
-        div16.innerHTML = this.dischargedPlate
-          ? this.dischargedPlate.replace(/-/g, "-<br>")
-          : "";
-        div17.innerHTML =
-          this.r2Plate ||
-          this.r2Plate ||
-          this.r3Plate ||
-          this.r4Plate ||
-          this.r5Plate ||
-          " ";
-        div18.innerHTML =
-          this.d1Plate ||
-          this.d2Plate ||
-          this.shearPlate ||
-          this.f6Plate ||
-          this.f7Plate ||
-          this.f8Plate ||
-          this.f9Plate ||
-          this.f10Plate ||
-          this.f11Plate ||
-          this.f12Plate ||
-          " ";
-      }, 3000);
-
-      const label1 = new CSS2DObject(div);
-      label1.position.set(-1.3, 1, -0.35);
-      const label2 = new CSS2DObject(div1);
-      label2.position.set(-1.6, -2, 0.369);
-      const label3 = new CSS2DObject(div2);
-      label3.position.set(0.091, 0.88, -0.34);
-      const label4 = new CSS2DObject(div3);
-      label4.position.set(0, -1.99, 0.36);
-      const label5 = new CSS2DObject(div4);
-      label5.position.set(1.25, 0.88, -0.35);
-      const label6 = new CSS2DObject(div5);
-      label6.position.set(1.45, -1.83, 0.36);
-      const label7 = new CSS2DObject(div6);
-      label7.position.set(2.4, 0.75, -0.35);
-
-      const label8 = new CSS2DObject(div7);
-      label8.position.set(-13.65, -2.8, 0.35);
-      const label9 = new CSS2DObject(div8);
-      label9.position.set(-11.5, -2.8, 0.36);
-      const label10 = new CSS2DObject(div9);
-      label10.position.set(-9.5, -2.6, 0.36);
-      const label11 = new CSS2DObject(div10);
-      label11.position.set(-5.5, 1.3, -0.35);
-      const label12 = new CSS2DObject(div11);
-      label12.position.set(-4.5, 1.2, -0.35);
-      const label13 = new CSS2DObject(div12);
-      label13.position.set(3.6, -0.98, 0.49);
-      const label14 = new CSS2DObject(div13);
-      label14.position.set(4.1, -0.98, 0.49);
-      const label15 = new CSS2DObject(div14);
-      label15.position.set(4.7, -0.98, 0.49);
-      const label16 = new CSS2DObject(div15);
-      label16.position.set(6.3, -0.8, 0.49);
-
-      const label17 = new CSS2DObject(div16);
-      label17.position.set(-16, -2, 0.49);
-      const label18 = new CSS2DObject(div17);
-      label18.position.set(-12.2, -4, 0.49);
-      const label19 = new CSS2DObject(div18);
-      label19.position.set(0.18, 2, 0.49);
-
-      const line = createLine([-1.03, 0.47, -0.35], [-1.03, 0.87, -0.35]);
-      const line1 = createLine([-0.48, -0.413, 0.369], [-0.48, -0.813, 0.369]);
-      const line2 = createLine([0.091, 0.48, -0.34], [0.091, 0.88, -0.34]);
-      const line3 = createLine([0.65, -0.42, 0.36], [0.65, -0.82, 0.36]);
-      const line4 = createLine([1.19, 0.48, -0.35], [1.19, 0.88, -0.35]);
-      const line5 = createLine([1.74, -0.43, 0.36], [1.74, -0.83, 0.36]);
-      const line6 = createLine([2.29, 0.48, -0.35], [2.29, 0.88, -0.35]);
-      const line7 = createLine([-5.65, -0.36, 0.35], [-5.65, -0.76, 0.35]); //ds1
-      const line8 = createLine([-5.01, -0.42, 0.36], [-5.01, -0.82, 0.36]);
-      const line9 = createLine([-4.41, -0.43, 0.36], [-4.41, -0.83, 0.36]);
-      const line10 = createLine([-3.8, 0.48, -0.35], [-3.8, 0.88, -0.35]);
-      const line11 = createLine([-3.19, 0.48, -0.35], [-3.19, 0.88, -0.35]);
-
-      const labels = [
-        label1,
-        label2,
-        label3,
-        label4,
-        label5,
-        label6,
-        label7,
-        label8,
-        label9,
-        label10,
-        label11,
-        label12,
-        label13,
-        label14,
-        label15,
-        label16,
-        label17,
-        label18,
-        label19,
-      ];
-
-      const lines = [
-        line,
-        line1,
-        line2,
-        line3,
-        line4,
-        line5,
-        line6,
-        line7,
-        line8,
-        line9,
-        line10,
-        line11,
-      ];
-
-      labels.forEach((label) => {
-        this.scene.add(label);
-        this.labels.push(label);
-      });
-
-      lines.forEach((line) => {
-        this.scene.add(line);
-        this.labels.push(line);
-      });
+      // Create second text mesh
+      createTextMesh(
+        "F7",
+        [-0.888787628226152, -1.3, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "F8",
+        [0.188787628226152, 1, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "F9",
+        [0.288787628226152, -1.4, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "F10",
+        [1.288787628226152, 1, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "F11",
+        [1.9, -0.3, 1],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "F12",
+        [2.3, 0.98, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "DS1",
+        [-6.2, -1.4, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "RR2",
+        [-5, 1.1, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "R3",
+        [-4.8, -1.5, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "R4",
+        [-3.7, 1, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
+      createTextMesh(
+        "R5",
+        [-3.5, -1.5, 0],
+        [
+          THREE.MathUtils.degToRad(-60),
+          THREE.MathUtils.degToRad(23),
+          THREE.MathUtils.degToRad(25),
+        ]
+      );
 
       // this.controls.enableRotate = false;
 
-      this.controls.enabled = false;
+      // this.controls.enabled = false;
       this.controls.update();
     } else {
-      this.labels.forEach((label) => {
-        this.scene.remove(label);
-      });
-      if (this.updateTag) {
-        clearInterval(this.updateTag);
-      }
+      // Remove both text meshes
+      const meshToRemove1 = this.scene.getObjectByName("F6Mesh");
+      const meshToRemove2 = this.scene.getObjectByName("F7Mesh");
+      const meshToRemove3 = this.scene.getObjectByName("F8Mesh");
+      const meshToRemove4 = this.scene.getObjectByName("F9Mesh");
+      const meshToRemove5 = this.scene.getObjectByName("F10Mesh");
+      const meshToRemove6 = this.scene.getObjectByName("F11Mesh");
+      const meshToRemove7 = this.scene.getObjectByName("F12Mesh");
+      const meshToRemove8 = this.scene.getObjectByName("DS1Mesh");
+      const meshToRemove9 = this.scene.getObjectByName("RR2Mesh");
+      const meshToRemove10 = this.scene.getObjectByName("R3Mesh");
+      const meshToRemove11 = this.scene.getObjectByName("R4Mesh");
+      const meshToRemove12 = this.scene.getObjectByName("R5Mesh");
 
-      this.controls.enabled = true;
-      // this.controls.enableRotate = true;
+      // Function to remove a mesh
+      const removeMesh = (mesh) => {
+        if (mesh) {
+          this.scene.remove(mesh);
+          mesh.geometry.dispose();
+          mesh.material.dispose();
+        }
+      };
+
+      removeMesh(meshToRemove1);
+      removeMesh(meshToRemove2);
+      removeMesh(meshToRemove3);
+      removeMesh(meshToRemove4);
+      removeMesh(meshToRemove5);
+      removeMesh(meshToRemove6);
+      removeMesh(meshToRemove7);
+      removeMesh(meshToRemove8);
+      removeMesh(meshToRemove9);
+      removeMesh(meshToRemove10);
+      removeMesh(meshToRemove11);
+      removeMesh(meshToRemove12);
+
+      // this.controls.enabled = true;
+      this.controls.enableRotate = true;
       this.controls.update();
     }
   }
@@ -628,15 +602,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     // Update camera aspect ratio and renderer size
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth - 2, window.innerHeight - 40);
-
-    // If you are using a CSS2DRenderer for labels, update its size as well
-    if (this.labelRenderer) {
-      this.labelRenderer.setSize(
-        window.innerWidth - 2,
-        window.innerHeight - 40
-      );
-    }
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
   updateEndCoil(mesh, meshName, meshCore, flag) {
@@ -1007,77 +973,49 @@ export class TrackingThreeJsComponent implements AfterViewInit {
           if (this.stand6Status == "0") {
             (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
           } else {
-            if (this.f6Plate) {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0xfb9e14);
-            } else {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-            }
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
           }
         }
         if (mesh.name === "F7R") {
           if (this.stand7Status == "0") {
             (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
           } else {
-            if (this.f7Plate) {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0xfb9e14);
-            } else {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-            }
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
           }
         }
         if (mesh.name === "F8R") {
           if (this.stand8Status == "0") {
             (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
           } else {
-            if (this.f8Plate) {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0xfb9e14);
-            } else {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-            }
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
           }
         }
         if (mesh.name === "F9R") {
           if (this.stand9Status == "0") {
             (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
           } else {
-            if (this.f9Plate) {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0xfb9e14);
-            } else {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-            }
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
           }
         }
         if (mesh.name === "F10R") {
           if (this.stand10Status == "0") {
             (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
           } else {
-            if (this.f10Plate) {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0xfb9e14);
-            } else {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-            }
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
           }
         }
         if (mesh.name === "F11R") {
           if (this.stand11Status == "0") {
             (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
           } else {
-            if (this.f11Plate) {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0xfb9e14);
-            } else {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-            }
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
           }
         }
         if (mesh.name === "F12R") {
           if (this.stand12Status == "0") {
             (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
           } else {
-            if (this.f12Plate) {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0xfb9e14);
-            } else {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-            }
+            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
           }
         }
         if (mesh.name === "coilend") {
@@ -1155,9 +1093,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         }
 
         this.dischargedPlate = this.trackingData.POS8;
-        // this.dischargedPlate = "1084250-3.45-1280-PCR1K";
         this.r1Plate = this.trackingData.POS9;
-        // this.r2Plate = "1084250-3.45-1280-PCR1K";
         this.r2Plate = this.trackingData.POS10;
         this.r3Plate = this.trackingData.POS11;
         this.r4Plate = this.trackingData.POS12;
@@ -1170,13 +1106,11 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.stand7Status = this.trackingData.MILLSTANDSTATUS[1];
         this.stand8Status = this.trackingData.MILLSTANDSTATUS[2];
         this.stand9Status = this.trackingData.MILLSTANDSTATUS[3];
-
         this.stand10Status = this.trackingData.MILLSTANDSTATUS[4];
         this.stand11Status = this.trackingData.MILLSTANDSTATUS[5];
         this.stand12Status = this.trackingData.MILLSTANDSTATUS[6];
         this.shearPlate = this.trackingData.POS16;
-        // this.f6Plate = this.trackingData.POS17;
-        // this.f6Plate = "sassa";
+        this.f6Plate = this.trackingData.POS17;
         this.f7Plate = this.trackingData.POS18;
         this.f8Plate = this.trackingData.POS19;
         this.f9Plate = this.trackingData.POS20;
@@ -1246,11 +1180,3 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 // R2DownB
 // R2UpB
 // R2UpS
-
-// 7.908130894520052
-// y
-// :
-// 4.0778127899658365
-// z
-// :
-// 5.3786421607536195
