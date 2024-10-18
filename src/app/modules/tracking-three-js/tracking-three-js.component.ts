@@ -154,9 +154,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   ) {}
 
   ngAfterViewInit(): void {
-    this.intervalId = setInterval(() => {
-      this.toggleFlag();
-    }, 2000); // 2000 milliseconds = 2 seconds
+    // this.intervalId = setInterval(() => {
+    //   this.toggleFlag();
+    // }, 2000); // 2000 milliseconds = 2 seconds
     // this.intervalId1 = setInterval(() => {
     //   this.toggleFlag1();
     // }, 5000); // 2000 milliseconds = 2 seconds
@@ -365,7 +365,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 
   private loadModel() {
     const loader = new GLTFLoader();
-    loader.load("assets/models/scenee.gltf", (gltf) => {
+    loader.load("assets/models/scene (4).gltf", (gltf) => {
       this.model = gltf.scene;
       this.scene.add(this.model);
     });
@@ -397,14 +397,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         div.style.color = "blue";
         return div;
       };
-      // const createDynamicDiv = (text, className) => {
-      //   const div = document.createElement("div");
-      //   div.className = className;
-      //   div.textContent = text;
-      //   div.style.color = "green";
-      //   return div;
-      // };
-
+  
       const createDynamicDiv = (
         text: string,
         className: string,
@@ -673,131 +666,49 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         // # UPDATE FURNACE
-        if (mesh.name === "Furnace4") {
-          if (this.fur4 == true) {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
-          } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x6666fa);
-          }
+        const furnaceStatuses = {
+          "Furnace1": this.fur1,
+          "Furnace2": this.fur2,
+          "Furnace3": this.fur3,
+          "Furnace4": this.fur4,
+        };
+        
+        const updateFurnaceMaterial = (mesh, status, activeColor, inactiveColor) => {
+          (mesh.material as THREE.MeshStandardMaterial).color.set(status ? activeColor : inactiveColor);
+        };
+        
+        if (furnaceStatuses[mesh.name] !== undefined) {
+          updateFurnaceMaterial(mesh, furnaceStatuses[mesh.name], 0xffffff, 0x6666fa);
         }
-        if (mesh.name === "Furnace3") {
-          if (this.fur3 == true) {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
-          } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x6666fa);
-          }
+        // # UPDATE PLATES
+        const plateStatuses = {
+          "Discharged":this.dischargedPlate,
+          "R1Plate":this.r1Plate,
+          "R2Plate":this.r2Plate,
+          "R3Plate":this.r3Plate,
+          "R4Plate":this.r4Plate,
+          "R5Plate":this.r5Plate,
+          "Delay1": this.d1Plate,
+          "Delay2": this.d2Plate,
+          "ShearPlate": this.shearPlate,
+          "F6Plate": this.f6Plate,
+          "F7Plate": this.f7Plate,
+          "F8Plate": this.f8Plate,
+          "F9Plate": this.f9Plate,
+          "F10Plate": this.f10Plate,
+          "F11Plate": this.f11Plate,
+          "F12Plate": this.f12Plate,
+          "C1Plate": this.c1Plate,
+          "C2Plate": this.c2Plate,
+          "C3Plate": this.c3Plate,
+        };
+        
+        // Iterate through the plate statuses and set mesh visibility
+        if (plateStatuses[mesh.name] !== undefined) {
+          mesh.visible = !(plateStatuses[mesh.name] == "" || plateStatuses[mesh.name] == null);
         }
-        if (mesh.name === "Furnace2") {
-          if (this.fur2 == true) {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
-          } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x6666fa);
-          }
-        }
-        if (mesh.name === "Furnace1") {
-          if (this.fur1 == true) {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
-          } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x6666fa);
-          }
-        }
-        // #UPDATE PLATES
 
-        if (mesh.name === "Discharged") {
-          this.dischargedPlate == "" || this.dischargedPlate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "R1Plate") {
-          this.r1Plate == "" || this.r1Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "R2Plate") {
-          this.r2Plate == "" || this.r2Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "R3Plate") {
-          this.r3Plate == "" || this.r3Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "R4Plate") {
-          this.r4Plate == "" || this.r4Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "R5Plate") {
-          this.r5Plate == "" || this.r5Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "Delay1") {
-          this.d1Plate == "" || this.d1Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "Delay2") {
-          this.d2Plate == "" || this.d2Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "ShearPlate") {
-          this.shearPlate == "" || this.shearPlate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "F6Plate") {
-          this.f6Plate == "" || this.f6Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "F7Plate") {
-          this.f7Plate == "" || this.f7Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "F8Plate") {
-          this.f8Plate == "" || this.f8Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "F9Plate") {
-          this.f9Plate == "" || this.f9Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "F10Plate") {
-          this.f10Plate == "" || this.f10Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "F11Plate") {
-          this.f11Plate == "" || this.f11Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "F12Plate") {
-          this.f12Plate == "" || this.f12Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "C1Plate") {
-          this.c1Plate == "" || this.c1Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "C2Plate") {
-          this.c2Plate == "" || this.c2Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "C3Plate") {
-          this.c3Plate == "" || this.c3Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
+
         if (mesh.name === "Coil1Plate") {
           if (this.coil1 || this.coil2 || this.coil3 || this.coil4) {
             mesh.visible = true;
@@ -826,6 +737,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         }
 
         // # UPDATE COIL
+     
 
         if (mesh.name === "Coil1") {
           this.coil1 == "" || this.coil1 == null
@@ -926,163 +838,140 @@ export class TrackingThreeJsComponent implements AfterViewInit {
           this.coilFinal19
         );
 
+
+        const speed =.15;
         // # UPDATE Roller
         if (this.r2Plate) {
           if (mesh.name === "R2UpB" || mesh.name === "R2UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "R2DownB" || mesh.name === "R2DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
+
+
         }
         if (this.r3Plate) {
           if (mesh.name === "R3UpB" || mesh.name === "R3UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "R3DownB" || mesh.name === "R3DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.r4Plate) {
           if (mesh.name === "R4UpB" || mesh.name === "R4UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "R4DownB" || mesh.name === "R4DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
 
         if (this.r5Plate) {
           if (mesh.name === "R5UpB" || mesh.name === "R5UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "R5DownB" || mesh.name === "R5DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.f6Plate && this.stand6Status == "1") {
           if (mesh.name === "F6UpB" || mesh.name === "F6UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "F6DownB" || mesh.name === "F6DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.f7Plate && this.stand7Status == "1") {
           if (mesh.name === "F7UpB" || mesh.name === "F7UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "F7DownB" || mesh.name === "F7DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.f8Plate && this.stand8Status == "1") {
           if (mesh.name === "F8UpB" || mesh.name === "F8UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "F8DownB" || mesh.name === "F8DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.f9Plate && this.stand9Status == "1") {
           if (mesh.name === "F9UpB" || mesh.name === "F9UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "F9DownB" || mesh.name === "F9DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.f10Plate && this.stand10Status == "1") {
           if (mesh.name === "F10UpB" || mesh.name === "F10UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "F10DownB" || mesh.name === "F10DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.f11Plate && this.stand11Status == "1") {
           if (mesh.name === "F11UpB" || mesh.name === "F11UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "F11DownB" || mesh.name === "F11DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.f12Plate && this.stand12Status == "1") {
           if (mesh.name === "F12UpB" || mesh.name === "F12UpS") {
-            mesh.rotation.y += 0.3;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "F12DownB" || mesh.name === "F12DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
 
-        if (mesh.name === "F6R") {
-          if (this.stand6Status == "0") {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
+
+        const updateRoughMaterial = (mesh, plateStatus, onColor=0xfb9e14, offColor=0x00458f) => {
+          mesh.material = (mesh.material as THREE.MeshStandardMaterial).clone();
+          (mesh.material as THREE.MeshStandardMaterial).color.set(plateStatus ? onColor : offColor);
+        };
+        if (mesh.name === "R2R" || mesh.name === "R2L") {
+          updateRoughMaterial(mesh, this.r2Plate, );
+        }
+        if (mesh.name === "R3R" || mesh.name === "R3L") {
+          updateRoughMaterial(mesh, this.r3Plate, );
+        }
+        if (mesh.name === "R4R" || mesh.name === "R4L") {
+          updateRoughMaterial(mesh, this.r4Plate, );
+        }
+        if (mesh.name === "R5R" || mesh.name === "R5L") {
+          updateRoughMaterial(mesh, this.r5Plate,);
+        }
+
+
+
+        const updateStandMaterial = (mesh, standStatus, plateStatus, onColor=0xfb9e14, offColor=0x00458f, downColor=0x222222) => {
+          if (standStatus == "0") {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(downColor);
           } else {
-            if (this.f6Plate) {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0xfb9e14);
-            } else {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-            }
+            (mesh.material as THREE.MeshStandardMaterial).color.set(plateStatus ? onColor : offColor);
           }
+        };
+        
+        if (mesh.name === "F6R") {
+          updateStandMaterial(mesh, this.stand6Status, this.f6Plate,);
         }
         if (mesh.name === "F7R") {
-          if (this.stand7Status == "0") {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
-          } else {
-            if (this.f7Plate) {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0xfb9e14);
-            } else {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-            }
-          }
+          updateStandMaterial(mesh, this.stand7Status, this.f7Plate,);
         }
         if (mesh.name === "F8R") {
-          if (this.stand8Status == "0") {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
-          } else {
-            if (this.f8Plate) {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0xfb9e14);
-            } else {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-            }
-          }
+          updateStandMaterial(mesh, this.stand8Status, this.f8Plate,);
         }
         if (mesh.name === "F9R") {
-          if (this.stand9Status == "0") {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
-          } else {
-            if (this.f9Plate) {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0xfb9e14);
-            } else {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-            }
-          }
+          updateStandMaterial(mesh, this.stand9Status, this.f9Plate,);
         }
         if (mesh.name === "F10R") {
-          if (this.stand10Status == "0") {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
-          } else {
-            if (this.f10Plate) {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0xfb9e14);
-            } else {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-            }
-          }
+          updateStandMaterial(mesh, this.stand10Status, this.f10Plate,);
         }
         if (mesh.name === "F11R") {
-          if (this.stand11Status == "0") {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
-          } else {
-            if (this.f11Plate) {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0xfb9e14);
-            } else {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-            }
-          }
+          updateStandMaterial(mesh, this.stand11Status, this.f11Plate,);
         }
         if (mesh.name === "F12R") {
-          if (this.stand12Status == "0") {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
-          } else {
-            if (this.f12Plate) {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0xfb9e14);
-            } else {
-              (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-            }
-          }
+          updateStandMaterial(mesh, this.stand12Status, this.f12Plate,);
         }
+
         if (mesh.name === "coilend") {
           const textureLoader = new THREE.TextureLoader();
           let texture;
@@ -1168,18 +1057,15 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.d1Plate = this.trackingData.POS14;
         this.d2Plate = this.trackingData.POS15;
         // this.millsStandStatus = this.trackingData.MILLSTANDSTATUS;
-
         this.stand6Status = this.trackingData.MILLSTANDSTATUS[0];
         this.stand7Status = this.trackingData.MILLSTANDSTATUS[1];
         this.stand8Status = this.trackingData.MILLSTANDSTATUS[2];
         this.stand9Status = this.trackingData.MILLSTANDSTATUS[3];
-
         this.stand10Status = this.trackingData.MILLSTANDSTATUS[4];
         this.stand11Status = this.trackingData.MILLSTANDSTATUS[5];
         this.stand12Status = this.trackingData.MILLSTANDSTATUS[6];
         this.shearPlate = this.trackingData.POS16;
         this.f6Plate = this.trackingData.POS17;
-        // this.f6Plate = "sassa";
         this.f7Plate = this.trackingData.POS18;
         this.f8Plate = this.trackingData.POS19;
         this.f9Plate = this.trackingData.POS20;
@@ -1202,24 +1088,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.coiler4Strapper = this.trackingData.POS38;
         this.coiler4Tilter = this.trackingData.POS39;
         this.millsStandStatus = this.trackingData.POS3;
-        this.coilFinal1 = this.trackingData.POS40;
-        this.coilFinal2 = this.trackingData.POS41;
-        this.coilFinal3 = this.trackingData.POS42;
-        this.coilFinal4 = this.trackingData.POS43;
-        this.coilFinal5 = this.trackingData.POS44;
-        this.coilFinal6 = this.trackingData.POS45;
-        this.coilFinal7 = this.trackingData.POS46;
-        this.coilFinal8 = this.trackingData.POS47;
-        this.coilFinal9 = this.trackingData.POS48;
-        this.coilFinal10 = this.trackingData.POS49;
-        this.coilFinal11 = this.trackingData.POS50;
-        this.coilFinal12 = this.trackingData.POS51;
-        this.coilFinal13 = this.trackingData.POS52;
-        this.coilFinal14 = this.trackingData.POS53;
-        this.coilFinal15 = this.trackingData.POS54;
-        this.coilFinal16 = this.trackingData.POS55;
-        this.coilFinal17 = this.trackingData.POS56;
-        this.coilFinal18 = this.trackingData.POS57;
+        for (let i = 1; i <= 18; i++) {
+          this[`coilFinal${i}`] = this.trackingData[`POS${39 + i}`];
+        }
         this.coilFinal19 = this.trackingData.ttc4;
 
         this.loading = false;
