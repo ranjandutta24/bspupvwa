@@ -15,9 +15,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { CommonModule } from "@angular/common";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
-import { CdkDropListGroup } from "@angular/cdk/drag-drop";
+
 import {
   CSS2DRenderer,
   CSS2DObject,
@@ -26,16 +24,12 @@ import {
 @Component({
   selector: "app-tracking-three-js",
   standalone: true,
-
   templateUrl: "./tracking-three-js.component.html",
-  // template: "<canvas #canvas></canvas>",
   styleUrl: "./tracking-three-js.component.scss",
-  imports: [CommonModule], // Import CommonModule here
+  imports: [CommonModule], 
 })
 export class TrackingThreeJsComponent implements AfterViewInit {
   @ViewChild("canvas") canvasRef!: ElementRef<HTMLCanvasElement>;
-  @ViewChild("canvas2D") canvas2DRef!: ElementRef<HTMLCanvasElement>;
-  private ctx!: CanvasRenderingContext2D;
   private labels: CSS2DObject[] = [];
   private scene!: THREE.Scene;
   private orcamera!: THREE.OrthographicCamera;
@@ -1120,11 +1114,3 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 // R2DownB
 // R2UpB
 // R2UpS
-
-// 7.908130894520052
-// y
-// :
-// 4.0778127899658365
-// z
-// :
-// 5.3786421607536195
