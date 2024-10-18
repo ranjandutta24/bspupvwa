@@ -105,7 +105,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
         type: "basic",
         icon: "people",
         // link: 'tracking-page',
-        link: "tracking-three-js",
+        link: "tracking-js",
         privilege: ["View User"],
       },
     ],

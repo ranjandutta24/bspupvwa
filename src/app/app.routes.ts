@@ -176,7 +176,7 @@ export const appRoutes: Route[] = [
             {
                 path: '',
                 children: [
-                    { path: 'tracking-three-js', loadChildren: () => import('app/modules/tracking-three-js/tracking-three-js') },
+                    { path: 'tracking-js', loadChildren: () => import('app/modules/tracking-three-js/tracking-three-js') },
                 ]
             },
 
