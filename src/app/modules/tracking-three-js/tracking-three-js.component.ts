@@ -142,6 +142,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   loading = true;
   status = "";
   millsStandStatus = "";
+  ltc = "";
+  shearTemp = "";
+  coilTemp = "";
 
   constructor(
     private reportService: ReportService,
@@ -458,7 +461,8 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     const createDynamicDiv = (
       text: string,
       className: string,
-      part: boolean
+      part: boolean,
+      color = "green"
     ): HTMLDivElement => {
       const div = document.createElement("div");
       div.className = className;
@@ -468,8 +472,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
           ? (div.innerHTML = text.replace(/-/g, "-<br>"))
           : (div.innerHTML = text);
       }
-
-      div.style.color = "green"; // Example style
+      div.style.color = color;
       return div;
     };
 
@@ -525,6 +528,29 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 
     const div17 = createDynamicDiv(secondPlate, "label_dynamic", false);
     const div18 = createDynamicDiv(thirdPlate, "label_dynamic", false);
+
+    const div19 = createDynamicDiv(
+      this.ltc == "0" || this.ltc == null ? "" : "LCT " + this.ltc,
+      "label_dynamic",
+      false,
+      "red"
+    );
+    const div20 = createDynamicDiv(
+      this.shearTemp == "0" || this.shearTemp == null
+        ? ""
+        : "ST " + this.shearTemp,
+      "label_dynamic",
+      false,
+      "red"
+    );
+    const div21 = createDynamicDiv(
+      this.coilTemp == "0" || this.coilTemp == null
+        ? ""
+        : "CT " + this.coilTemp,
+      "label_dynamic",
+      false,
+      "red"
+    );
     this.updateTag = setInterval(() => {
       div16.innerHTML = this.dischargedPlate
         ? this.dischargedPlate.replace(/-/g, "-<br>")
@@ -548,6 +574,16 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.f11Plate ||
         this.f12Plate ||
         " ";
+      div19.innerHTML =
+        this.ltc == "0" || this.ltc == null ? "" : "LCT " + this.ltc;
+      div20.innerHTML =
+        this.shearTemp == "0" || this.shearTemp == null
+          ? ""
+          : "ST " + this.shearTemp;
+      div21.innerHTML =
+        this.coilTemp == "0" || this.coilTemp == null
+          ? ""
+          : "CT " + this.coilTemp;
     }, 3000);
 
     const label1 = new CSS2DObject(div);
@@ -590,6 +626,12 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     label18.position.set(-12.2, -4, 0.49);
     const label19 = new CSS2DObject(div18);
     label19.position.set(0.18, 2, 0.49);
+    const label20 = new CSS2DObject(div19);
+    label20.position.set(3.5, 1.2, 0.49);
+    const label21 = new CSS2DObject(div20);
+    label21.position.set(-1.8, 1.2, 0.49);
+    const label22 = new CSS2DObject(div21);
+    label22.position.set(5, 1.7, 0.49);
 
     const line = createLine([-1.03, 0.47, -0.35], [-1.03, 0.87, -0.35]);
     const line1 = createLine([-0.48, -0.413, 0.369], [-0.48, -0.813, 0.369]);
@@ -624,6 +666,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       label17,
       label18,
       label19,
+      label20,
+      label21,
+      label22,
     ];
 
     const lines = [
@@ -1164,6 +1209,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.coiler4Strapper = this.trackingData.POS38;
         this.coiler4Tilter = this.trackingData.POS39;
         this.millsStandStatus = this.trackingData.POS3;
+        this.ltc = this.trackingData.CT;
+        this.shearTemp = this.trackingData.SHEAR;
+        this.coilTemp = this.trackingData.DCT;
         for (let i = 1; i <= 18; i++) {
           // this[`coilFinal${i}`] = this.trackingData[`POS${39 + i}`];
           this[`coilFinal${i}`] = "all";
