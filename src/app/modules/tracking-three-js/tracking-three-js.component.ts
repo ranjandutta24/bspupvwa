@@ -31,6 +31,7 @@ import {
 export class TrackingThreeJsComponent implements AfterViewInit {
   @ViewChild("canvas") canvasRef!: ElementRef<HTMLCanvasElement>;
   private labels: CSS2DObject[] = [];
+  private zoomlabels: CSS2DObject[] = [];
   private scene!: THREE.Scene;
   private orcamera!: THREE.OrthographicCamera;
   private camera!: THREE.PerspectiveCamera;
@@ -112,7 +113,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   coilFinal17: string = "";
   coilFinal18: string = "";
   coilFinal19: string = "";
-  stand6Status = "0";
+  stand6Status = "1";
   stand7Status = "1";
   stand8Status = "1";
   stand9Status = "1";
@@ -332,29 +333,47 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   }
   zoomView() {
     this.zoom = true;
-    if (this.tag == true) {
-      this.showTag();
-    }
+    this.labels.forEach((label) => {
+      this.scene.remove(label);
+    });
+    
     this.orcamera.position.set(
-      8.40194719278616,
-      7.862986526100946,
-      3.9672717138291755
+      11.203138293576298,
+      4.229356214298246,
+      4.332292258372877
     );
     this.orcamera.zoom = 2;
     this.controls.target.set(
-      5.84282973405875,
-      4.0861666065376056e-17,
-      -1.542720771805631
+      5.779865143071354, 3.025351412851267e-17,-2.839618980379983
     );
+    if(this.zoom){
+      const material = new THREE.LineBasicMaterial({ color: 0x333333 }); // Red color
+      const createLine = (start, end) => {
+        const points = [];
+        points.push(new THREE.Vector3(...start)); // Start point of the line (origin)
+        points.push(new THREE.Vector3(...end)); // End point of the line
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const line = new THREE.Line(geometry, material);
+        return line;
+      };
+      const line1 = createLine([3.73, 0.30, -1.32], [3.73, 0.70, -1.32]);
+      this.scene.add(line1)
+
+      // }
+
+    }
+
+
+  
     this.orcamera.updateProjectionMatrix();
     this.controls.update();
   }
   log() {
-    // console.log(this.orcamera.position);
-    // console.log(this.orcamera.zoom);
+    console.log(this.orcamera.position);
+    console.log(this.orcamera.zoom);
     console.log(this.controls.target);
-    console.log(this.camera.position);
-    console.log(this.camera.zoom);
+    // console.log(this.camera.position);
+    // console.log(this.camera.zoom);
   }
 
   private loadModel() {
@@ -1083,7 +1102,8 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.coiler4Tilter = this.trackingData.POS39;
         this.millsStandStatus = this.trackingData.POS3;
         for (let i = 1; i <= 18; i++) {
-          this[`coilFinal${i}`] = this.trackingData[`POS${39 + i}`];
+          // this[`coilFinal${i}`] = this.trackingData[`POS${39 + i}`];
+          this[`coilFinal${i}`] = "all";
         }
         this.coilFinal19 = this.trackingData.ttc4;
 
