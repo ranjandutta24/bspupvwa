@@ -26,7 +26,7 @@ import {
   standalone: true,
   templateUrl: "./tracking-three-js.component.html",
   styleUrl: "./tracking-three-js.component.scss",
-  imports: [CommonModule], 
+  imports: [CommonModule],
 })
 export class TrackingThreeJsComponent implements AfterViewInit {
   @ViewChild("canvas") canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -332,41 +332,44 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.controls.update();
   }
   zoomView() {
-    this.zoom = true;
-    this.labels.forEach((label) => {
-      this.scene.remove(label);
-    });
-    
-    this.orcamera.position.set(
-      11.203138293576298,
-      4.229356214298246,
-      4.332292258372877
-    );
-    this.orcamera.zoom = 2;
-    this.controls.target.set(
-      5.779865143071354, 3.025351412851267e-17,-2.839618980379983
-    );
-    if(this.zoom){
-      const material = new THREE.LineBasicMaterial({ color: 0x333333 }); // Red color
-      const createLine = (start, end) => {
-        const points = [];
-        points.push(new THREE.Vector3(...start)); // Start point of the line (origin)
-        points.push(new THREE.Vector3(...end)); // End point of the line
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        const line = new THREE.Line(geometry, material);
-        return line;
-      };
-      const line1 = createLine([3.73, 0.30, -1.32], [3.73, 0.70, -1.32]);
-      this.scene.add(line1)
+    this.zoom = !this.zoom;
 
-      // }
+    if (this.zoom) {
+      this.orcamera.position.set(
+        11.203138293576298,
+        4.229356214298246,
+        4.332292258372877
+      );
+      this.orcamera.zoom = 2;
+      this.controls.target.set(
+        5.779865143071354,
+        3.025351412851267e-17,
+        -2.839618980379983
+      );
 
+      this.orcamera.updateProjectionMatrix();
+      this.controls.update();
+      if (this.tag) {
+        this.labels.forEach((label) => {
+          this.scene.remove(label);
+        });
+        if (this.updateTag) {
+          clearInterval(this.updateTag);
+        }
+        this.showZoomdTag();
+      }
+    } else {
+      if (this.tag) {
+        this.zoomlabels.forEach((label) => {
+          this.scene.remove(label);
+        });
+        // if (this.updateTag) {
+        //   clearInterval(this.updateTag);
+        // }
+        this.showNormalTag();
+      }
+      this.resetCamera();
     }
-
-
-  
-    this.orcamera.updateProjectionMatrix();
-    this.controls.update();
   }
   log() {
     console.log(this.orcamera.position);
@@ -399,78 +402,141 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.labelRenderer.render(this.scene, this.camera);
   }
   showTag() {
-    this.resetCamera();
+    // this.resetCamera();
     this.tag = !this.tag;
+
     if (this.tag) {
-      // Function to create text mesh
-      const createDiv = (text, className) => {
-        const div = document.createElement("div");
-        div.className = className;
-        div.textContent = text;
-        div.style.color = "blue";
-        return div;
-      };
-  
-      const createDynamicDiv = (
-        text: string,
-        className: string,
-        part: boolean
-      ): HTMLDivElement => {
-        const div = document.createElement("div");
-        div.className = className;
+      this.controls.enabled = false;
+      this.controls.update();
+      if (this.zoom) {
+        this.orcamera.position.set(
+          11.203138293576298,
+          4.229356214298246,
+          4.332292258372877
+        );
+        this.orcamera.zoom = 2;
+        this.controls.target.set(
+          5.779865143071354,
+          3.025351412851267e-17,
+          -2.839618980379983
+        );
 
-        if (text) {
-          part == true
-            ? (div.innerHTML = text.replace(/-/g, "-<br>"))
-            : (div.innerHTML = text);
-        }
+        this.orcamera.updateProjectionMatrix();
+        this.controls.update();
 
-        div.style.color = "green"; // Example style
-        return div;
-      };
+        this.showZoomdTag();
+      } else {
+        this.resetCamera();
+        this.showNormalTag();
+      }
+    } else {
+      this.labels.forEach((label) => {
+        this.scene.remove(label);
+      });
+      this.zoomlabels.forEach((label) => {
+        this.scene.remove(label);
+      });
+      if (this.updateTag) {
+        clearInterval(this.updateTag);
+      }
 
-      const material = new THREE.LineBasicMaterial({ color: 0x333333 }); // Red color
+      this.controls.enabled = true;
+      // this.controls.enableRotate = true;
+      this.controls.update();
+    }
+  }
 
-      const createLine = (start, end) => {
-        const points = [];
-        points.push(new THREE.Vector3(...start)); // Start point of the line (origin)
-        points.push(new THREE.Vector3(...end)); // End point of the line
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        const line = new THREE.Line(geometry, material);
-        return line;
-      };
+  showNormalTag() {
+    const createDiv = (text, className) => {
+      const div = document.createElement("div");
+      div.className = className;
+      div.textContent = text;
+      div.style.color = "blue";
+      return div;
+    };
 
-      // Create an HTML label and attach it to the cube
-      const div = createDiv("F6", "label");
-      const div1 = createDiv("F7", "label");
-      const div2 = createDiv("F8", "label");
-      const div3 = createDiv("F9", "label");
-      const div4 = createDiv("F10", "label");
-      const div5 = createDiv("F11", "label");
-      const div6 = createDiv("F12", "label");
-      const div7 = createDiv("DS1", "label");
-      const div8 = createDiv("RR2", "label");
-      const div9 = createDiv("R3", "label");
-      const div10 = createDiv("R4", "label");
-      const div11 = createDiv("R5", "label");
-      const div12 = createDiv("C1", "label");
-      const div13 = createDiv("C2", "label");
-      const div14 = createDiv("C3", "label");
-      const div15 = createDiv("C4", "label");
+    const createDynamicDiv = (
+      text: string,
+      className: string,
+      part: boolean
+    ): HTMLDivElement => {
+      const div = document.createElement("div");
+      div.className = className;
 
-      const div16 = createDynamicDiv(
-        this.dischargedPlate,
-        "label_dynamic",
-        true
-      );
-      let secondPlate =
+      if (text) {
+        part == true
+          ? (div.innerHTML = text.replace(/-/g, "-<br>"))
+          : (div.innerHTML = text);
+      }
+
+      div.style.color = "green"; // Example style
+      return div;
+    };
+
+    const material = new THREE.LineBasicMaterial({ color: 0x333333 }); // Red color
+
+    const createLine = (start, end) => {
+      const points = [];
+      points.push(new THREE.Vector3(...start)); // Start point of the line (origin)
+      points.push(new THREE.Vector3(...end)); // End point of the line
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const line = new THREE.Line(geometry, material);
+      return line;
+    };
+
+    // Create an HTML label and attach it to the cube
+    const div = createDiv("F6", "label");
+    const div1 = createDiv("F7", "label");
+    const div2 = createDiv("F8", "label");
+    const div3 = createDiv("F9", "label");
+    const div4 = createDiv("F10", "label");
+    const div5 = createDiv("F11", "label");
+    const div6 = createDiv("F12", "label");
+    const div7 = createDiv("DS1", "label");
+    const div8 = createDiv("RR2", "label");
+    const div9 = createDiv("R3", "label");
+    const div10 = createDiv("R4", "label");
+    const div11 = createDiv("R5", "label");
+    const div12 = createDiv("C1", "label");
+    const div13 = createDiv("C2", "label");
+    const div14 = createDiv("C3", "label");
+    const div15 = createDiv("C4", "label");
+
+    const div16 = createDynamicDiv(this.dischargedPlate, "label_dynamic", true);
+    let secondPlate =
+      this.r2Plate ||
+      this.r2Plate ||
+      this.r3Plate ||
+      this.r4Plate ||
+      this.r5Plate ||
+      " ";
+    let thirdPlate =
+      this.d1Plate ||
+      this.d2Plate ||
+      this.shearPlate ||
+      this.f6Plate ||
+      this.f7Plate ||
+      this.f8Plate ||
+      this.f9Plate ||
+      this.f10Plate ||
+      this.f11Plate ||
+      this.f12Plate ||
+      " ";
+
+    const div17 = createDynamicDiv(secondPlate, "label_dynamic", false);
+    const div18 = createDynamicDiv(thirdPlate, "label_dynamic", false);
+    this.updateTag = setInterval(() => {
+      div16.innerHTML = this.dischargedPlate
+        ? this.dischargedPlate.replace(/-/g, "-<br>")
+        : "";
+      div17.innerHTML =
         this.r2Plate ||
         this.r2Plate ||
         this.r3Plate ||
         this.r4Plate ||
         this.r5Plate ||
         " ";
-      let thirdPlate =
+      div18.innerHTML =
         this.d1Plate ||
         this.d2Plate ||
         this.shearPlate ||
@@ -482,151 +548,126 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.f11Plate ||
         this.f12Plate ||
         " ";
+    }, 3000);
 
-      const div17 = createDynamicDiv(secondPlate, "label_dynamic", false);
-      const div18 = createDynamicDiv(thirdPlate, "label_dynamic", false);
-      this.updateTag = setInterval(() => {
-        div16.innerHTML = this.dischargedPlate
-          ? this.dischargedPlate.replace(/-/g, "-<br>")
-          : "";
-        div17.innerHTML =
-          this.r2Plate ||
-          this.r2Plate ||
-          this.r3Plate ||
-          this.r4Plate ||
-          this.r5Plate ||
-          " ";
-        div18.innerHTML =
-          this.d1Plate ||
-          this.d2Plate ||
-          this.shearPlate ||
-          this.f6Plate ||
-          this.f7Plate ||
-          this.f8Plate ||
-          this.f9Plate ||
-          this.f10Plate ||
-          this.f11Plate ||
-          this.f12Plate ||
-          " ";
-      }, 3000);
+    const label1 = new CSS2DObject(div);
+    label1.position.set(-1.3, 1, -0.35);
+    const label2 = new CSS2DObject(div1);
+    label2.position.set(-1.6, -2, 0.369);
+    const label3 = new CSS2DObject(div2);
+    label3.position.set(0.091, 0.88, -0.34);
+    const label4 = new CSS2DObject(div3);
+    label4.position.set(0, -1.99, 0.36);
+    const label5 = new CSS2DObject(div4);
+    label5.position.set(1.25, 0.88, -0.35);
+    const label6 = new CSS2DObject(div5);
+    label6.position.set(1.45, -1.83, 0.36);
+    const label7 = new CSS2DObject(div6);
+    label7.position.set(2.4, 0.75, -0.35);
 
-      const label1 = new CSS2DObject(div);
-      label1.position.set(-1.3, 1, -0.35);
-      const label2 = new CSS2DObject(div1);
-      label2.position.set(-1.6, -2, 0.369);
-      const label3 = new CSS2DObject(div2);
-      label3.position.set(0.091, 0.88, -0.34);
-      const label4 = new CSS2DObject(div3);
-      label4.position.set(0, -1.99, 0.36);
-      const label5 = new CSS2DObject(div4);
-      label5.position.set(1.25, 0.88, -0.35);
-      const label6 = new CSS2DObject(div5);
-      label6.position.set(1.45, -1.83, 0.36);
-      const label7 = new CSS2DObject(div6);
-      label7.position.set(2.4, 0.75, -0.35);
+    const label8 = new CSS2DObject(div7);
+    label8.position.set(-13.65, -2.8, 0.35);
+    const label9 = new CSS2DObject(div8);
+    label9.position.set(-11.5, -2.8, 0.36);
+    const label10 = new CSS2DObject(div9);
+    label10.position.set(-9.5, -2.6, 0.36);
+    const label11 = new CSS2DObject(div10);
+    label11.position.set(-5.5, 1.3, -0.35);
+    const label12 = new CSS2DObject(div11);
+    label12.position.set(-4.5, 1.2, -0.35);
+    const label13 = new CSS2DObject(div12);
+    label13.position.set(3.6, -0.98, 0.49);
+    const label14 = new CSS2DObject(div13);
+    label14.position.set(4.1, -0.98, 0.49);
+    const label15 = new CSS2DObject(div14);
+    label15.position.set(4.7, -0.98, 0.49);
+    const label16 = new CSS2DObject(div15);
+    label16.position.set(6.3, -0.8, 0.49);
 
-      const label8 = new CSS2DObject(div7);
-      label8.position.set(-13.65, -2.8, 0.35);
-      const label9 = new CSS2DObject(div8);
-      label9.position.set(-11.5, -2.8, 0.36);
-      const label10 = new CSS2DObject(div9);
-      label10.position.set(-9.5, -2.6, 0.36);
-      const label11 = new CSS2DObject(div10);
-      label11.position.set(-5.5, 1.3, -0.35);
-      const label12 = new CSS2DObject(div11);
-      label12.position.set(-4.5, 1.2, -0.35);
-      const label13 = new CSS2DObject(div12);
-      label13.position.set(3.6, -0.98, 0.49);
-      const label14 = new CSS2DObject(div13);
-      label14.position.set(4.1, -0.98, 0.49);
-      const label15 = new CSS2DObject(div14);
-      label15.position.set(4.7, -0.98, 0.49);
-      const label16 = new CSS2DObject(div15);
-      label16.position.set(6.3, -0.8, 0.49);
+    const label17 = new CSS2DObject(div16);
+    label17.position.set(-16, -2, 0.49);
+    const label18 = new CSS2DObject(div17);
+    label18.position.set(-12.2, -4, 0.49);
+    const label19 = new CSS2DObject(div18);
+    label19.position.set(0.18, 2, 0.49);
 
-      const label17 = new CSS2DObject(div16);
-      label17.position.set(-16, -2, 0.49);
-      const label18 = new CSS2DObject(div17);
-      label18.position.set(-12.2, -4, 0.49);
-      const label19 = new CSS2DObject(div18);
-      label19.position.set(0.18, 2, 0.49);
+    const line = createLine([-1.03, 0.47, -0.35], [-1.03, 0.87, -0.35]);
+    const line1 = createLine([-0.48, -0.413, 0.369], [-0.48, -0.813, 0.369]);
+    const line2 = createLine([0.091, 0.48, -0.34], [0.091, 0.88, -0.34]);
+    const line3 = createLine([0.65, -0.42, 0.36], [0.65, -0.82, 0.36]);
+    const line4 = createLine([1.19, 0.48, -0.35], [1.19, 0.88, -0.35]);
+    const line5 = createLine([1.74, -0.43, 0.36], [1.74, -0.83, 0.36]);
+    const line6 = createLine([2.29, 0.48, -0.35], [2.29, 0.88, -0.35]);
+    const line7 = createLine([-5.65, -0.36, 0.35], [-5.65, -0.76, 0.35]); //ds1
+    const line8 = createLine([-5.01, -0.42, 0.36], [-5.01, -0.82, 0.36]);
+    const line9 = createLine([-4.41, -0.43, 0.36], [-4.41, -0.83, 0.36]);
+    const line10 = createLine([-3.8, 0.48, -0.35], [-3.8, 0.88, -0.35]);
+    const line11 = createLine([-3.19, 0.48, -0.35], [-3.19, 0.88, -0.35]);
 
-      const line = createLine([-1.03, 0.47, -0.35], [-1.03, 0.87, -0.35]);
-      const line1 = createLine([-0.48, -0.413, 0.369], [-0.48, -0.813, 0.369]);
-      const line2 = createLine([0.091, 0.48, -0.34], [0.091, 0.88, -0.34]);
-      const line3 = createLine([0.65, -0.42, 0.36], [0.65, -0.82, 0.36]);
-      const line4 = createLine([1.19, 0.48, -0.35], [1.19, 0.88, -0.35]);
-      const line5 = createLine([1.74, -0.43, 0.36], [1.74, -0.83, 0.36]);
-      const line6 = createLine([2.29, 0.48, -0.35], [2.29, 0.88, -0.35]);
-      const line7 = createLine([-5.65, -0.36, 0.35], [-5.65, -0.76, 0.35]); //ds1
-      const line8 = createLine([-5.01, -0.42, 0.36], [-5.01, -0.82, 0.36]);
-      const line9 = createLine([-4.41, -0.43, 0.36], [-4.41, -0.83, 0.36]);
-      const line10 = createLine([-3.8, 0.48, -0.35], [-3.8, 0.88, -0.35]);
-      const line11 = createLine([-3.19, 0.48, -0.35], [-3.19, 0.88, -0.35]);
+    const labels = [
+      label1,
+      label2,
+      label3,
+      label4,
+      label5,
+      label6,
+      label7,
+      label8,
+      label9,
+      label10,
+      label11,
+      label12,
+      label13,
+      label14,
+      label15,
+      label16,
+      label17,
+      label18,
+      label19,
+    ];
 
-      const labels = [
-        label1,
-        label2,
-        label3,
-        label4,
-        label5,
-        label6,
-        label7,
-        label8,
-        label9,
-        label10,
-        label11,
-        label12,
-        label13,
-        label14,
-        label15,
-        label16,
-        label17,
-        label18,
-        label19,
-      ];
+    const lines = [
+      line,
+      line1,
+      line2,
+      line3,
+      line4,
+      line5,
+      line6,
+      line7,
+      line8,
+      line9,
+      line10,
+      line11,
+    ];
 
-      const lines = [
-        line,
-        line1,
-        line2,
-        line3,
-        line4,
-        line5,
-        line6,
-        line7,
-        line8,
-        line9,
-        line10,
-        line11,
-      ];
+    labels.forEach((label) => {
+      this.scene.add(label);
+      this.labels.push(label);
+    });
 
-      labels.forEach((label) => {
-        this.scene.add(label);
-        this.labels.push(label);
-      });
+    lines.forEach((line) => {
+      this.scene.add(line);
+      this.labels.push(line);
+    });
+  }
+  showZoomdTag() {
+    const material = new THREE.LineBasicMaterial({ color: 0x333333 }); // Red color
+    const createLine = (start, end) => {
+      const points = [];
+      points.push(new THREE.Vector3(...start)); // Start point of the line (origin)
+      points.push(new THREE.Vector3(...end)); // End point of the line
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const line = new THREE.Line(geometry, material);
+      return line;
+    };
+    const line1 = createLine([3.73, 0.3, -1.32], [3.73, 0.7, -1.32]);
+    const lines = [line1];
 
-      lines.forEach((line) => {
-        this.scene.add(line);
-        this.labels.push(line);
-      });
-
-      // this.controls.enableRotate = false;
-
-      this.controls.enabled = false;
-      this.controls.update();
-    } else {
-      this.labels.forEach((label) => {
-        this.scene.remove(label);
-      });
-      if (this.updateTag) {
-        clearInterval(this.updateTag);
-      }
-
-      this.controls.enabled = true;
-      // this.controls.enableRotate = true;
-      this.controls.update();
-    }
+    lines.forEach((line) => {
+      this.scene.add(line);
+      this.zoomlabels.push(line);
+    });
   }
 
   colapse() {
@@ -680,47 +721,60 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         const mesh = child as THREE.Mesh;
         // # UPDATE FURNACE
         const furnaceStatuses = {
-          "Furnace1": this.fur1,
-          "Furnace2": this.fur2,
-          "Furnace3": this.fur3,
-          "Furnace4": this.fur4,
+          Furnace1: this.fur1,
+          Furnace2: this.fur2,
+          Furnace3: this.fur3,
+          Furnace4: this.fur4,
         };
-        
-        const updateFurnaceMaterial = (mesh, status, activeColor, inactiveColor) => {
-          (mesh.material as THREE.MeshStandardMaterial).color.set(status ? activeColor : inactiveColor);
+
+        const updateFurnaceMaterial = (
+          mesh,
+          status,
+          activeColor,
+          inactiveColor
+        ) => {
+          (mesh.material as THREE.MeshStandardMaterial).color.set(
+            status ? activeColor : inactiveColor
+          );
         };
-        
+
         if (furnaceStatuses[mesh.name] !== undefined) {
-          updateFurnaceMaterial(mesh, furnaceStatuses[mesh.name], 0xffffff, 0x6666fa);
+          updateFurnaceMaterial(
+            mesh,
+            furnaceStatuses[mesh.name],
+            0xffffff,
+            0x6666fa
+          );
         }
         // # UPDATE PLATES
         const plateStatuses = {
-          "Discharged":this.dischargedPlate,
-          "R1Plate":this.r1Plate,
-          "R2Plate":this.r2Plate,
-          "R3Plate":this.r3Plate,
-          "R4Plate":this.r4Plate,
-          "R5Plate":this.r5Plate,
-          "Delay1": this.d1Plate,
-          "Delay2": this.d2Plate,
-          "ShearPlate": this.shearPlate,
-          "F6Plate": this.f6Plate,
-          "F7Plate": this.f7Plate,
-          "F8Plate": this.f8Plate,
-          "F9Plate": this.f9Plate,
-          "F10Plate": this.f10Plate,
-          "F11Plate": this.f11Plate,
-          "F12Plate": this.f12Plate,
-          "C1Plate": this.c1Plate,
-          "C2Plate": this.c2Plate,
-          "C3Plate": this.c3Plate,
+          Discharged: this.dischargedPlate,
+          R1Plate: this.r1Plate,
+          R2Plate: this.r2Plate,
+          R3Plate: this.r3Plate,
+          R4Plate: this.r4Plate,
+          R5Plate: this.r5Plate,
+          Delay1: this.d1Plate,
+          Delay2: this.d2Plate,
+          ShearPlate: this.shearPlate,
+          F6Plate: this.f6Plate,
+          F7Plate: this.f7Plate,
+          F8Plate: this.f8Plate,
+          F9Plate: this.f9Plate,
+          F10Plate: this.f10Plate,
+          F11Plate: this.f11Plate,
+          F12Plate: this.f12Plate,
+          C1Plate: this.c1Plate,
+          C2Plate: this.c2Plate,
+          C3Plate: this.c3Plate,
         };
-        
+
         // Iterate through the plate statuses and set mesh visibility
         if (plateStatuses[mesh.name] !== undefined) {
-          mesh.visible = !(plateStatuses[mesh.name] == "" || plateStatuses[mesh.name] == null);
+          mesh.visible = !(
+            plateStatuses[mesh.name] == "" || plateStatuses[mesh.name] == null
+          );
         }
-
 
         if (mesh.name === "Coil1Plate") {
           if (this.coil1 || this.coil2 || this.coil3 || this.coil4) {
@@ -750,7 +804,6 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         }
 
         // # UPDATE COIL
-     
 
         if (mesh.name === "Coil1") {
           this.coil1 == "" || this.coil1 == null
@@ -851,8 +904,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
           this.coilFinal19
         );
 
-
-        const speed =.15;
+        const speed = 0.15;
         // # UPDATE Roller
         if (this.r2Plate) {
           if (mesh.name === "R2UpB" || mesh.name === "R2UpS") {
@@ -860,8 +912,6 @@ export class TrackingThreeJsComponent implements AfterViewInit {
           } else if (mesh.name === "R2DownB" || mesh.name === "R2DownS") {
             mesh.rotation.y -= speed;
           }
-
-
         }
         if (this.r3Plate) {
           if (mesh.name === "R3UpB" || mesh.name === "R3UpS") {
@@ -935,54 +985,67 @@ export class TrackingThreeJsComponent implements AfterViewInit {
           }
         }
 
-
-        const updateRoughMaterial = (mesh, plateStatus, onColor=0xfb9e14, offColor=0x00458f) => {
+        const updateRoughMaterial = (
+          mesh,
+          plateStatus,
+          onColor = 0xfb9e14,
+          offColor = 0x00458f
+        ) => {
           mesh.material = (mesh.material as THREE.MeshStandardMaterial).clone();
-          (mesh.material as THREE.MeshStandardMaterial).color.set(plateStatus ? onColor : offColor);
+          (mesh.material as THREE.MeshStandardMaterial).color.set(
+            plateStatus ? onColor : offColor
+          );
         };
         if (mesh.name === "R2R" || mesh.name === "R2L") {
-          updateRoughMaterial(mesh, this.r2Plate, );
+          updateRoughMaterial(mesh, this.r2Plate);
         }
         if (mesh.name === "R3R" || mesh.name === "R3L") {
-          updateRoughMaterial(mesh, this.r3Plate, );
+          updateRoughMaterial(mesh, this.r3Plate);
         }
         if (mesh.name === "R4R" || mesh.name === "R4L") {
-          updateRoughMaterial(mesh, this.r4Plate, );
+          updateRoughMaterial(mesh, this.r4Plate);
         }
         if (mesh.name === "R5R" || mesh.name === "R5L") {
-          updateRoughMaterial(mesh, this.r5Plate,);
+          updateRoughMaterial(mesh, this.r5Plate);
         }
 
-
-
-        const updateStandMaterial = (mesh, standStatus, plateStatus, onColor=0xfb9e14, offColor=0x00458f, downColor=0x222222) => {
+        const updateStandMaterial = (
+          mesh,
+          standStatus,
+          plateStatus,
+          onColor = 0xfb9e14,
+          offColor = 0x00458f,
+          downColor = 0x222222
+        ) => {
           if (standStatus == "0") {
             (mesh.material as THREE.MeshStandardMaterial).color.set(downColor);
           } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(plateStatus ? onColor : offColor);
+            (mesh.material as THREE.MeshStandardMaterial).color.set(
+              plateStatus ? onColor : offColor
+            );
           }
         };
-        
+
         if (mesh.name === "F6R") {
-          updateStandMaterial(mesh, this.stand6Status, this.f6Plate,);
+          updateStandMaterial(mesh, this.stand6Status, this.f6Plate);
         }
         if (mesh.name === "F7R") {
-          updateStandMaterial(mesh, this.stand7Status, this.f7Plate,);
+          updateStandMaterial(mesh, this.stand7Status, this.f7Plate);
         }
         if (mesh.name === "F8R") {
-          updateStandMaterial(mesh, this.stand8Status, this.f8Plate,);
+          updateStandMaterial(mesh, this.stand8Status, this.f8Plate);
         }
         if (mesh.name === "F9R") {
-          updateStandMaterial(mesh, this.stand9Status, this.f9Plate,);
+          updateStandMaterial(mesh, this.stand9Status, this.f9Plate);
         }
         if (mesh.name === "F10R") {
-          updateStandMaterial(mesh, this.stand10Status, this.f10Plate,);
+          updateStandMaterial(mesh, this.stand10Status, this.f10Plate);
         }
         if (mesh.name === "F11R") {
-          updateStandMaterial(mesh, this.stand11Status, this.f11Plate,);
+          updateStandMaterial(mesh, this.stand11Status, this.f11Plate);
         }
         if (mesh.name === "F12R") {
-          updateStandMaterial(mesh, this.stand12Status, this.f12Plate,);
+          updateStandMaterial(mesh, this.stand12Status, this.f12Plate);
         }
 
         if (mesh.name === "coilend") {
