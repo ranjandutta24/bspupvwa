@@ -20,6 +20,7 @@ import {
   CSS2DRenderer,
   CSS2DObject,
 } from "three/examples/jsm/renderers/CSS2DRenderer";
+import { CdkDropListGroup } from "@angular/cdk/drag-drop";
 
 @Component({
   selector: "app-tracking-three-js",
@@ -716,7 +717,26 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     });
   }
   showZoomdTag() {
-    const material = new THREE.LineBasicMaterial({ color: 0x333333 }); // Red color
+
+    const createDynamicDiv = (
+      text: string,
+      className: string,
+      part: boolean,
+      color = "green"
+    ): HTMLDivElement => {
+      const div = document.createElement("div");
+      div.className = className;
+
+      if (text) {
+        part == true
+          ? (div.innerHTML = text.replace(/-/g, "-<br>"))
+          : (div.innerHTML = text);
+      }
+      div.style.color = color;
+      div.style.fontWeight = "bold"; // Make text bold
+      return div;
+    };
+    const material = new THREE.LineBasicMaterial({ color: 0xbbbbbb }); // Red color
     const createLine = (start, end) => {
       const points = [];
       points.push(new THREE.Vector3(...start)); // Start point of the line (origin)
@@ -725,13 +745,136 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       const line = new THREE.Line(geometry, material);
       return line;
     };
-    const line1 = createLine([3.73, 0.3, -1.32], [3.73, 0.7, -1.32]);
-    const lines = [line1];
+    const line1 = createLine([3.65, 0.3, -1.32], [3.65, 2.4, -1.32]);
+    const div1 = createDynamicDiv(this.coilFinal1, "label_dynamic", false);
+    const label1 = new CSS2DObject(div1);
+    label1.position.set(-4.3, 2.7, -1.32);
 
-    lines.forEach((line) => {
-      this.scene.add(line);
-      this.zoomlabels.push(line);
+    const line2 = createLine([3.9, 0.3, -1.32], [3.9, 2.3, -1.32]);
+    const div2 = createDynamicDiv(this.coilFinal2, "label_dynamic", false);
+    const label2 = new CSS2DObject(div2);
+    label2.position.set(-3.7, 2.5, -1.32);
+
+    const line3 = createLine([4.12, 0.3, -1.32], [4.12, 2.3, -1.32]);
+    const div3 = createDynamicDiv(this.coilFinal3, "label_dynamic", false);
+    const label3 = new CSS2DObject(div3);
+    label3.position.set(-3.3, 2.3, -1.32);
+
+    const line4 = createLine([4.3, 0.3, -1.32], [4.3, 2.2, -1.32]);
+    const div4 = createDynamicDiv(this.coilFinal4, "label_dynamic", false);
+    const label4 = new CSS2DObject(div4);
+    label4.position.set(-2.9, 2.1, -1.32);
+
+    const line5 = createLine([4.5, 0.3, -1.32], [4.5, 2.1, -1.32]);
+    const div5 = createDynamicDiv(this.coilFinal5, "label_dynamic", false);
+    const label5 = new CSS2DObject(div5);
+    label5.position.set(-2.5, 1.9, -1.32);
+
+    const line6 = createLine([4.7, 0.3, -1.32], [4.7, 2, -1.32]);
+    const div6 = createDynamicDiv(this.coilFinal6, "label_dynamic", false);
+    const label6 = new CSS2DObject(div6);
+    label6.position.set(-2.2, 1.7, -1.32);
+
+    const line7 = createLine([4.9, 0.3, -1.32], [4.9, 1.9, -1.32]);
+    const div7 = createDynamicDiv(this.coilFinal7, "label_dynamic", false);
+    const label7 = new CSS2DObject(div7);
+    label7.position.set(-1.8, 1.5, -1.32);
+
+    const line8 = createLine([5.1, 0.3, -1.32], [5.1, 1.86, -1.32]);
+    const div8 = createDynamicDiv(this.coilFinal8, "label_dynamic", false);
+    const label8 = new CSS2DObject(div8);
+    label8.position.set(-1.4, 1.3, -1.32);
+
+    const line9 = createLine([5.3, 0.3, -1.32], [5.3, 1.8, -1.32]);
+    const div9 = createDynamicDiv(this.coilFinal9, "label_dynamic", false);
+    const label9 = new CSS2DObject(div9);
+    label9.position.set(-.9, 1.1, -1.32);
+
+
+
+    this.updateTag = setInterval(() => {
+      if(this.coilFinal1){
+        div1.innerHTML =
+        this.coilFinal1
+        if(!this.zoomlabels.includes(label1)){
+          this.zoomlabels.push(label1,line1)
+          this.scene.add(label1,line1)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label1 || line1);
+       this.scene.remove(label1,line1)
+      }
+      if(this.coilFinal2){
+        div2.innerHTML =
+        this.coilFinal2
+        if(!this.zoomlabels.includes(label2)){
+          this.zoomlabels.push(label2,line2)
+          this.scene.add(label2,line2)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label2 || line2);
+       this.scene.remove(label2,line2)
+      }
+      if(this.coilFinal3){
+        div3.innerHTML =
+        this.coilFinal3
+        if(!this.zoomlabels.includes(label3)){
+          this.zoomlabels.push(label3,line3)
+          this.scene.add(label3,line3)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label3 || line3);
+       this.scene.remove(label3,line3)
+      }
+      if(this.coilFinal4){
+        div4.innerHTML =
+        this.coilFinal4
+        if(!this.zoomlabels.includes(label4)){
+          this.zoomlabels.push(label4,line4)
+          this.scene.add(label4,line4)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label4 || line4);
+       this.scene.remove(label4,line4)
+      }
+      if(this.coilFinal5){
+        div5.innerHTML =
+        this.coilFinal5
+        if(!this.zoomlabels.includes(label5)){
+          this.zoomlabels.push(label5,line5)
+          this.scene.add(label5,line5)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label5 || line5);
+       this.scene.remove(label5,line5)
+      }
+   
+    //  loopadd
+    }, 3000);
+
+
+    const coilFinals = [
+      { coil: this.coilFinal1, label: label1, line: line1 },
+      { coil: this.coilFinal2, label: label2, line: line2 },
+      { coil: this.coilFinal3, label: label3, line: line3 },
+      { coil: this.coilFinal4, label: label4, line: line4 },
+      { coil: this.coilFinal5, label: label5, line: line5 },
+      { coil: this.coilFinal6, label: label6, line: line6 },
+      { coil: this.coilFinal7, label: label7, line: line7 },
+      { coil: this.coilFinal8, label: label8, line: line8 }, 
+      { coil: this.coilFinal9, label: label9, line: line9 }, 
+      // Add more coils if necessary
+    ];
+    
+    coilFinals.forEach(({ coil, label, line }) => {
+      if (coil) {
+        this.zoomlabels.push(label, line);
+        this.scene.add(label, line);
+      }
     });
+
+
+ 
   }
 
   colapse() {
@@ -1245,8 +1388,8 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.rt_w[1] = this.trackingData.R5EXITWID;
 
         for (let i = 1; i <= 18; i++) {
-          this[`coilFinal${i}`] = this.trackingData[`POS${39 + i}`];
-          // this[`coilFinal${i}`] = "all";
+          // this[`coilFinal${i}`] = this.trackingData[`POS${39 + i}`];
+          this[`coilFinal${i}`] = "all";
         }
         this.coilFinal19 = this.trackingData.ttc4;
 
