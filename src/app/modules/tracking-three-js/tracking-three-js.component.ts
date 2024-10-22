@@ -303,7 +303,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.controls.update(); // Ensure controls are updated for damping
 
     // Add yellow directional light
-    const yellowLight = new THREE.DirectionalLight(0xffff00, 1); // Yellow color (hex code: #ffff00)
+    const yellowLight = new THREE.DirectionalLight(0xffff00, 2); // Yellow color (hex code: #ffff00)
     yellowLight.position.set(-5, 5, 5);
     this.scene.add(yellowLight);
 
@@ -734,9 +734,11 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       }
       div.style.color = color;
       div.style.fontWeight = "bold"; // Make text bold
+      div.style.textAlign= "start"
+      div.style.marginLeft= "110px"
       return div;
     };
-    const material = new THREE.LineBasicMaterial({ color: 0xbbbbbb }); // Red color
+    const material = new THREE.LineBasicMaterial({ color: 0x999999 }); // Red color
     const createLine = (start, end) => {
       const points = [];
       points.push(new THREE.Vector3(...start)); // Start point of the line (origin)
@@ -790,7 +792,96 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     const label9 = new CSS2DObject(div9);
     label9.position.set(-.9, 1.1, -1.32);
 
+    const line10 = createLine([5.5, 0.3, -1.32], [5.5, 1.7, -1.32]);
+    const div10 = createDynamicDiv(this.coilFinal10, "label_dynamic", false);
+    const label10 = new CSS2DObject(div10);
+    label10.position.set(-.5, .9, -1.32);
 
+    const line11 = createLine([5.7, 0.3, -1.32], [5.7, 1.6, -1.32]);
+    const div11 = createDynamicDiv(this.coilFinal11, "label_dynamic", false);
+    const label11 = new CSS2DObject(div11);
+    label11.position.set(-.1, .7, -1.32);
+
+    const line12 = createLine([5.9, 0.3, -1.32], [5.9, 1.54, -1.32]);
+    const div12 = createDynamicDiv(this.coilFinal12, "label_dynamic", false);
+    const label12 = new CSS2DObject(div12);
+    label12.position.set(.25, .55, -1.32);
+
+    const line13 = createLine([6.1, 0.3, -1.32], [6.1, 1.52, -1.32]);
+    const div13 = createDynamicDiv(this.coilFinal13, "label_dynamic", false);
+    const label13 = new CSS2DObject(div13);
+    label13.position.set(.65, .4, -1.32);
+
+    const line14 = createLine([6.3, 0.3, -1.32], [6.3, 1.5, -1.32]);
+    const div14 = createDynamicDiv(this.coilFinal14, "label_dynamic", false);
+    const label14 = new CSS2DObject(div14);
+    label14.position.set(1.1, .28, -1.32);
+
+    const line15 = createLine([6.7, 0.3, -1.32], [6.7, 1.42, -1.32]);
+    const div15 = createDynamicDiv(this.coilFinal15, "label_dynamic", false);
+    const label15 = new CSS2DObject(div15);
+    label15.position.set(1.9, .19, -1.32);
+
+    const line16 = createLine([6.95, 0.3, -1.32], [6.95, 1.42, -1.32]);
+    const div16 = createDynamicDiv(this.coilFinal16, "label_dynamic", false);
+    const label16 = new CSS2DObject(div16);
+    label16.position.set(2.3, .1, -1.32);
+
+    const line17 = createLine([7.15, 0.3, -1.32], [7.15, 1.42, -1.32]);
+    const div17 = createDynamicDiv(this.coilFinal17, "label_dynamic", false);
+    const label17 = new CSS2DObject(div17);
+    label17.position.set(2.69, .02, -1.32);
+
+    const line18 = createLine([7.35, 0.3, -1.32], [7.35, 1.42, -1.32]);
+    const div18 = createDynamicDiv(this.coilFinal18, "label_dynamic", false);
+    const label18 = new CSS2DObject(div18);
+    label18.position.set(3, -.1, -1.32);
+
+    const line19 = createLine([7.35, 0.3, -1.32], [7.35, 1.42, -1.32]);
+    const div19 = createDynamicDiv(this.coil1|| this.coil2|| this.coil3|| this.coil4, "label_dynamic", false);
+    const label19 = new CSS2DObject(div19);
+    label19.position.set(-6, -8, 2);
+
+    const line20 = createLine([6.7, -0.5, -1.32], [8, -0.5, -1.32]);
+    const div20 = createDynamicDiv(this.coiler4Strapper, "label_dynamic", false);
+    const label20 = new CSS2DObject(div20);
+    label20.position.set(5, -5.5, -1.32);
+
+    const line21 = createLine([6.9, -0.3, -1.32], [8.1, -0.3, -1.32]);
+    const div21 = createDynamicDiv(this.coiler4Tilter, "label_dynamic", false);
+    const label21 = new CSS2DObject(div21);
+    label21.position.set(5, -4.9, -1.32);
+
+    const line22 = createLine([5.2, 0.1, -0.8], [6, 0.8, -0.8]);
+    const div22 = createDynamicDiv(this.coiler3Tilter, "label_dynamic", false);
+    const label22 = new CSS2DObject(div22);
+    label22.position.set(-0.6, -2.45, -1.32);
+
+    const line23 = createLine([5, 0, -0.4], [6.2, 1.1, -0.4]);
+    const div23 = createDynamicDiv(this.coiler3Strapper, "label_dynamic", false);
+    const label23 = new CSS2DObject(div23);
+    label23.position.set(-0.7, -2.1, -1.32);
+
+    const line24 = createLine([5, 0.4, -0.4], [5.7, 1.2, -0.4]);
+    const div24 = createDynamicDiv(this.coiler2Tilter, "label_dynamic", false);
+    const label24 = new CSS2DObject(div24);
+    label24.position.set(-2.2, -1.9, -1.32);
+
+    const line25 = createLine([4.56, 0.19, -0.4], [5.6, 1.4, -0.4]);
+    const div25 = createDynamicDiv(this.coiler2Strapper, "label_dynamic", false);
+    const label25 = new CSS2DObject(div25);
+    label25.position.set(-2.5, -1.6, -1.32);
+   
+
+    const line26 = createLine([4, 0.19, -0.4], [4.7, 1.6, -0.4]);
+    const div26 = createDynamicDiv(this.coiler1Strapper, "label_dynamic", false);
+    const label26 = new CSS2DObject(div26);
+    label26.position.set(-4.5, -0.6, -1.32);
+
+    const line27 = createLine([4.35, 0.3, -0.4], [4.9, 1.53, -0.4]);
+    const div27 = createDynamicDiv(this.coiler1Tilter, "label_dynamic", false);
+    const label27 = new CSS2DObject(div27);
+    label27.position.set(-4.1, -0.8, -1.32);
 
     this.updateTag = setInterval(() => {
       if(this.coilFinal1){
@@ -848,9 +939,254 @@ export class TrackingThreeJsComponent implements AfterViewInit {
        this.zoomlabels = this.zoomlabels.filter(item => item !== label5 || line5);
        this.scene.remove(label5,line5)
       }
+      if(this.coilFinal6){
+        div6.innerHTML =
+        this.coilFinal6
+        if(!this.zoomlabels.includes(label6)){
+          this.zoomlabels.push(label6,line6)
+          this.scene.add(label6,line6)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label6 || line6);
+       this.scene.remove(label6,line6)
+      }
+      if(this.coilFinal7){
+        div7.innerHTML =
+        this.coilFinal7
+        if(!this.zoomlabels.includes(label7)){
+          this.zoomlabels.push(label7,line7)
+          this.scene.add(label7,line7)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label7 || line7);
+       this.scene.remove(label7,line7)
+      }
+      if(this.coilFinal8){
+        div8.innerHTML =
+        this.coilFinal8
+        if(!this.zoomlabels.includes(label8)){
+          this.zoomlabels.push(label8,line8)
+          this.scene.add(label8,line8)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label8 || line8);
+       this.scene.remove(label8,line8)
+      }
+      if(this.coilFinal9){
+        div9.innerHTML =
+        this.coilFinal9
+        if(!this.zoomlabels.includes(label9)){
+          this.zoomlabels.push(label9,line9)
+          this.scene.add(label9,line9)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label9 || line9);
+       this.scene.remove(label9,line9)
+      }
+      if(this.coilFinal10){
+        div10.innerHTML =
+        this.coilFinal10
+        if(!this.zoomlabels.includes(label10)){
+          this.zoomlabels.push(label10,line10)
+          this.scene.add(label10,line10)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label10 || line10);
+       this.scene.remove(label10,line10)
+      }
+      if(this.coilFinal11){
+        div11.innerHTML =
+        this.coilFinal11
+        if(!this.zoomlabels.includes(label11)){
+          this.zoomlabels.push(label11,line11)
+          this.scene.add(label11,line11)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label11 || line11);
+       this.scene.remove(label11,line11)
+      }
+      if(this.coilFinal12){
+        div12.innerHTML =
+        this.coilFinal12
+        if(!this.zoomlabels.includes(label12)){
+          this.zoomlabels.push(label12,line12)
+          this.scene.add(label12,line12)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label12 || line12);
+       this.scene.remove(label12,line12)
+      }
+      if(this.coilFinal13){
+        div13.innerHTML =
+        this.coilFinal13
+        if(!this.zoomlabels.includes(label13)){
+          this.zoomlabels.push(label13,line13)
+          this.scene.add(label13,line13)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label13 || line13);
+       this.scene.remove(label13,line13)
+      }
+      if(this.coilFinal14){
+        div14.innerHTML =
+        this.coilFinal14
+        if(!this.zoomlabels.includes(label14)){
+          this.zoomlabels.push(label14,line14)
+          this.scene.add(label14,line14)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label14 || line14);
+       this.scene.remove(label14,line14)
+      }
+      if(this.coilFinal15){
+        div15.innerHTML =
+        this.coilFinal15
+        if(!this.zoomlabels.includes(label15)){
+          this.zoomlabels.push(label15,line15)
+          this.scene.add(label15,line15)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label15 || line15);
+       this.scene.remove(label15,line15)
+      }
+      if(this.coilFinal16){
+        div16.innerHTML =
+        this.coilFinal16
+        if(!this.zoomlabels.includes(label16)){
+          this.zoomlabels.push(label16,line16)
+          this.scene.add(label16,line16)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label16 || line16);
+       this.scene.remove(label16,line16)
+      }
+      if(this.coilFinal17){
+        div17.innerHTML =
+        this.coilFinal17
+        if(!this.zoomlabels.includes(label17)){
+          this.zoomlabels.push(label17,line17)
+          this.scene.add(label17,line17)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label17 || line17);
+       this.scene.remove(label17,line17)
+      }
+      if(this.coilFinal18){
+        div18.innerHTML =
+        this.coilFinal18
+        if(!this.zoomlabels.includes(label18)){
+          this.zoomlabels.push(label18,line18)
+          this.scene.add(label18,line18)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label18 || line18);
+       this.scene.remove(label18,line18)
+      }
+      if(this.coiler4Strapper){
+        div20.innerHTML =
+        this.coiler4Strapper
+        if(!this.zoomlabels.includes(label20)){
+          this.zoomlabels.push(label20,line20)
+          this.scene.add(label20,line20)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label20 || line20);
+       this.scene.remove(label20,line20)
+      }
+      if(this.coiler4Tilter){
+        div21.innerHTML =
+        this.coiler4Tilter
+        if(!this.zoomlabels.includes(label21)){
+          this.zoomlabels.push(label21,line21)
+          this.scene.add(label21,line21)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label21 || line21);
+       this.scene.remove(label21,line21)
+      }
+      if(this.coiler3Tilter){
+        div22.innerHTML =
+        this.coiler3Tilter
+        if(!this.zoomlabels.includes(label22)){
+          this.zoomlabels.push(label22,line22)
+          this.scene.add(label22,line22)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label22 || line22);
+       this.scene.remove(label22,line22)
+      }
+      if(this.coiler3Strapper){
+        div23.innerHTML =
+        this.coiler3Strapper
+        if(!this.zoomlabels.includes(label23)){
+          this.zoomlabels.push(label23,line23)
+          this.scene.add(label23,line23)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label23 || line23);
+       this.scene.remove(label23,line23)
+      }
+      if(this.coiler2Tilter){
+        div24.innerHTML =
+        this.coiler2Tilter
+        if(!this.zoomlabels.includes(label24)){
+          this.zoomlabels.push(label24,line24)
+          this.scene.add(label24,line24)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label24 || line24);
+       this.scene.remove(label24,line24)
+      }
+      if(this.coiler2Strapper){
+        div25.innerHTML =
+        this.coiler2Strapper
+        if(!this.zoomlabels.includes(label25)){
+          this.zoomlabels.push(label25,line25)
+          this.scene.add(label25,line25)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label25 || line25);
+       this.scene.remove(label25,line25)
+      }
+      if(this.coiler1Strapper){
+        div26.innerHTML =
+        this.coiler1Strapper
+        if(!this.zoomlabels.includes(label26)){
+          this.zoomlabels.push(label26,line26)
+          this.scene.add(label26,line26)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label26 || line26);
+       this.scene.remove(label26,line26)
+      }
+      if(this.coiler1Tilter){
+        div27.innerHTML =
+        this.coiler1Tilter
+        if(!this.zoomlabels.includes(label27)){
+          this.zoomlabels.push(label27,line27)
+          this.scene.add(label27,line27)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label27 || line27);
+       this.scene.remove(label27,line27)
+      }
+
+
+      if(this.coil1|| this.coil2|| this.coil3|| this.coil4){
+        div19.innerHTML =
+        this.coil1|| this.coil2|| this.coil3|| this.coil4
+        if(!this.zoomlabels.includes(label19)){
+          this.zoomlabels.push(label19,line19)
+          this.scene.add(label19,line19)
+        }
+      }else{
+       this.zoomlabels = this.zoomlabels.filter(item => item !== label19 || line19);
+       this.scene.remove(label19,line19)
+      }
+
    
     //  loopadd
-    }, 3000);
+    }, 1000);
 
 
     const coilFinals = [
@@ -863,7 +1199,25 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       { coil: this.coilFinal7, label: label7, line: line7 },
       { coil: this.coilFinal8, label: label8, line: line8 }, 
       { coil: this.coilFinal9, label: label9, line: line9 }, 
-      // Add more coils if necessary
+      { coil: this.coilFinal10, label: label10, line: line10 }, 
+      { coil: this.coilFinal11, label: label11, line: line11 }, 
+      { coil: this.coilFinal12, label: label12, line: line12 }, 
+      { coil: this.coilFinal13, label: label13, line: line13 }, 
+      { coil: this.coilFinal14, label: label14, line: line14 }, 
+      { coil: this.coilFinal15, label: label15, line: line15 }, 
+      { coil: this.coilFinal16, label: label16, line: line16 }, 
+      { coil: this.coilFinal17, label: label17, line: line17 }, 
+      { coil: this.coilFinal18, label: label18, line: line18 }, 
+      { coil: this.coil1|| this.coil2|| this.coil3|| this.coil4, label: label19, line :line19  }, 
+      { coil: this.coiler4Strapper, label: label20, line: line20 }, 
+      { coil: this.coiler4Tilter, label: label21, line: line21 }, 
+      { coil: this.coiler3Tilter, label: label22, line: line22 }, 
+      { coil: this.coiler3Strapper, label: label23, line: line23 }, 
+      { coil: this.coiler2Tilter, label: label24, line: line24 }, 
+      { coil: this.coiler2Strapper, label: label25, line: line25 }, 
+      { coil: this.coiler1Strapper, label: label26, line: line26 }, 
+      { coil: this.coiler1Tilter, label: label27, line: line27 }, 
+
     ];
     
     coilFinals.forEach(({ coil, label, line }) => {
@@ -1365,6 +1719,14 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.coil2 = this.trackingData.POS28;
         this.coil3 = this.trackingData.POS29;
         this.coil4 = this.trackingData.POS30;
+        // this.coiler1Strapper = "1087102-2.70-1030-P3CR2K/DCR";
+        // this.coiler1Tilter = "1087102-2.70-1030-P3CR2K/DCR";
+        // this.coiler2Strapper = "1087102-2.70-1030-P3CR2K/DCR";
+        // this.coiler2Tilter = "1087102-2.70-1030-P3CR2K/DCR";
+        // this.coiler3Strapper = "1087102-2.70-1030-P3CR2K/DCR";
+        // this.coiler3Tilter = "1087102-2.70-1030-P3CR2K/DCR";
+        // this.coiler4Strapper = "1087102-2.70-1030-P3CR2K/DCR";
+        // this.coiler4Tilter = "1087102-2.70-1030-P3CR2K/DCR";
         this.coiler1Strapper = this.trackingData.POS32;
         this.coiler1Tilter = this.trackingData.POS33;
         this.coiler2Strapper = this.trackingData.POS34;
@@ -1388,8 +1750,8 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.rt_w[1] = this.trackingData.R5EXITWID;
 
         for (let i = 1; i <= 18; i++) {
-          // this[`coilFinal${i}`] = this.trackingData[`POS${39 + i}`];
-          this[`coilFinal${i}`] = "all";
+          this[`coilFinal${i}`] = this.trackingData[`POS${39 + i}`];
+          // this[`coilFinal${i}`] = "all";
         }
         this.coilFinal19 = this.trackingData.ttc4;
 

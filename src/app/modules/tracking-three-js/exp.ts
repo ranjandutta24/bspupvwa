@@ -15,27 +15,24 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { CommonModule } from "@angular/common";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
-import { CdkDropListGroup } from "@angular/cdk/drag-drop";
+
 import {
   CSS2DRenderer,
   CSS2DObject,
 } from "three/examples/jsm/renderers/CSS2DRenderer";
+import { CdkDropListGroup } from "@angular/cdk/drag-drop";
 
 @Component({
   selector: "app-tracking-three-js",
   standalone: true,
-
   templateUrl: "./tracking-three-js.component.html",
-  // template: "<canvas #canvas></canvas>",
   styleUrl: "./tracking-three-js.component.scss",
-  imports: [CommonModule], // Import CommonModule here
+  imports: [CommonModule],
 })
 export class TrackingThreeJsComponent implements AfterViewInit {
   @ViewChild("canvas") canvasRef!: ElementRef<HTMLCanvasElement>;
-  @ViewChild("canvas2D") canvas2DRef!: ElementRef<HTMLCanvasElement>;
-  private ctx!: CanvasRenderingContext2D;
+  private labels: CSS2DObject[] = [];
+  private zoomlabels: CSS2DObject[] = [];
   private scene!: THREE.Scene;
   private orcamera!: THREE.OrthographicCamera;
   private camera!: THREE.PerspectiveCamera;
@@ -50,6 +47,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   private mouse = new THREE.Vector2();
   selectedPartName: string = ""; // Store the selected component's name
   isColapsed: boolean = true;
+  updateTag: any;
   tag: boolean = false;
   zoom: boolean = false;
   flag: boolean = false;
@@ -116,7 +114,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   coilFinal17: string = "";
   coilFinal18: string = "";
   coilFinal19: string = "";
-  stand6Status = "0";
+  stand6Status = "1";
   stand7Status = "1";
   stand8Status = "1";
   stand9Status = "1";
@@ -145,6 +143,12 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   loading = true;
   status = "";
   millsStandStatus = "";
+  ltc = "";
+  shearTemp = "";
+  coilTemp = "";
+  imt = "";
+  rt_w = [];
+  ft_th = [];
 
   constructor(
     private reportService: ReportService,
@@ -152,9 +156,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   ) {}
 
   ngAfterViewInit(): void {
-    this.intervalId = setInterval(() => {
-      this.toggleFlag();
-    }, 2000); // 2000 milliseconds = 2 seconds
+    // this.intervalId = setInterval(() => {
+    //   this.toggleFlag();
+    // }, 2000); // 2000 milliseconds = 2 seconds
     // this.intervalId1 = setInterval(() => {
     //   this.toggleFlag1();
     // }, 5000); // 2000 milliseconds = 2 seconds
@@ -166,7 +170,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.loadModel();
     this.animate();
 
-    window.addEventListener("resize", this.onWindowResize.bind(this), false); // Add resize listener
+    // window.addEventListener("resize", this.onWindowResize.bind(this), false); // Add resize listener
 
     this.canvasRef.nativeElement.addEventListener(
       "click",
@@ -179,6 +183,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     window.removeEventListener("resize", this.onWindowResize.bind(this)); // Clean up listener
     if (this.intervalld) {
       clearInterval(this.intervalld);
+    }
+    if (this.tag) {
+      this.showTag();
     }
   }
 
@@ -212,8 +219,10 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 
     if (intersects.length > 0) {
       const intersectedObject = intersects[0].object as THREE.Mesh;
+      const intersectionPoint = intersects[0].point;
       this.selectedPartName = intersectedObject.name;
-      console.log(intersectedObject);
+      // console.log(intersectedObject);
+      console.log("Click Position in 3D Space:", intersectionPoint);
       // this.drawTextOnCanvas(`Clicked part: ${this.selectedPartName}`);
       this.item = this.selectedPartName;
     } else {
@@ -257,12 +266,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   }
 
   private toggleCamera() {
-    this.useOrthographic = !this.useOrthographic; // Toggle the flag
-
-    // Set the current camera based on the flag
+    this.resetCamera();
+    this.useOrthographic = !this.useOrthographic;
     this.currentCamera = this.useOrthographic ? this.orcamera : this.camera;
-
-    // If needed, adjust the controls to work with the current camera
     this.controls.object = this.currentCamera;
   }
 
@@ -276,35 +282,25 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       canvas: this.canvasRef.nativeElement,
     });
     this.renderer.setSize(window.innerWidth - 2, window.innerHeight - 40);
+    this.renderer.setPixelRatio(window.devicePixelRatio); // Handle high DPI screens
 
-    // CSS2DRenderer setup
-    // this.labelRenderer = new CSS2DRenderer();
-    this.labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    // Handle resizing the window dynamically
+    window.addEventListener("resize", () => this.onWindowResize());
+
+    // Initialize the CSS2DRenderer for labels
+    this.labelRenderer = new CSS2DRenderer();
+    this.labelRenderer.setSize(window.innerWidth - 2, window.innerHeight - 40);
     this.labelRenderer.domElement.style.position = "absolute";
     this.labelRenderer.domElement.style.top = "0px";
-    this.canvasRef.nativeElement.appendChild(this.labelRenderer.domElement);
-
-    // const geometry = new THREE.BoxGeometry();
-    // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    // const cube = new THREE.Mesh(geometry, material);
-    // this.scene.add(cube);
-
-    // Create an HTML element (a label) to overlay on the cube
-    const div = document.createElement("div");
-    div.className = "label";
-    div.textContent = "Hello, Cube!";
-    div.style.color = "blue";
-
-    // Create a CSS2DObject and attach it to the cube
-    const label = new CSS2DObject(div);
-    label.position.set(3, 2, 0); // Position label relative to the cube
-    // cube.add(label);
+    this.labelRenderer.domElement.style.pointerEvents = "none";
+    document.body.appendChild(this.labelRenderer.domElement);
 
     // // Initialize OrbitControls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
     this.controls.dampingFactor = 0.25;
     this.controls.screenSpacePanning = false;
+    this.controls.update(); // Ensure controls are updated for damping
 
     // Add yellow directional light
     const yellowLight = new THREE.DirectionalLight(0xffff00, 1); // Yellow color (hex code: #ffff00)
@@ -321,54 +317,78 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.scene.add(ambientLight);
   }
   resetCamera() {
-    this.camera.position.z = 5.690522470597121;
-    this.camera.position.x = 1.0053592648786294;
-    this.camera.position.y = 6.805748555764769;
+    this.camera.position.z = 5.4415139840108715;
+    this.camera.position.x = 5.80241900127863;
+    this.camera.position.y = 4.575380122497185;
+
     this.orcamera.position.set(
-      3.1552823130450722,
-      6.178599430348983,
-      4.617582318835524
+      7.985137535537665,
+      3.4136345801138646,
+      5.76447500418364
     );
+
     this.controls.target.set(
-      -0.028482466462984878,
-      1.2318590585064277e-17,
-      -1.0884730652746188
+      2.8224093597773567,
+      -2.082825686254486e-16,
+      -0.24810180529617526
     );
-    if (this.orcamera instanceof THREE.OrthographicCamera) {
-      const aspect = window.innerWidth / window.innerHeight;
-      const frustumSize = 10; // Base size
-      // Adjust frustum size based on the zoom factor
-      this.orcamera.left = (frustumSize * aspect) / -2;
-      this.orcamera.right = (frustumSize * aspect) / 2;
-      this.orcamera.top = frustumSize / 2;
-      this.orcamera.bottom = frustumSize / -2;
-      this.orcamera.zoom = 1;
-      this.orcamera.updateProjectionMatrix();
-    }
+    this.orcamera.zoom = 1.2277376631548256;
+
+    this.orcamera.updateProjectionMatrix();
+    this.camera.updateProjectionMatrix();
     this.controls.update();
   }
   zoomView() {
-    this.orcamera.position.set(
-      8.40194719278616,
-      7.862986526100946,
-      3.9672717138291755
-    );
-    this.orcamera.zoom = 2;
-    this.controls.target.set(
-      5.84282973405875,
-      4.0861666065376056e-17,
-      -1.542720771805631
-    );
-    this.orcamera.updateProjectionMatrix();
-    this.controls.update();
+    this.zoom = !this.zoom;
+
+    if (this.zoom) {
+      this.orcamera.position.set(
+        11.203138293576298,
+        4.229356214298246,
+        4.332292258372877
+      );
+      this.orcamera.zoom = 2;
+      this.controls.target.set(
+        5.779865143071354,
+        3.025351412851267e-17,
+        -2.839618980379983
+      );
+
+      this.orcamera.updateProjectionMatrix();
+      this.controls.update();
+      if (this.tag) {
+        this.labels.forEach((label) => {
+          this.scene.remove(label);
+        });
+        if (this.updateTag) {
+          clearInterval(this.updateTag);
+        }
+        this.showZoomdTag();
+      }
+    } else {
+      if (this.tag) {
+        this.zoomlabels.forEach((label) => {
+          this.scene.remove(label);
+        });
+        // if (this.updateTag) {
+        //   clearInterval(this.updateTag);
+        // }
+        this.showNormalTag();
+      }
+      this.resetCamera();
+    }
   }
   log() {
     console.log(this.orcamera.position);
+    console.log(this.orcamera.zoom);
+    console.log(this.controls.target);
+    // console.log(this.camera.position);
+    // console.log(this.camera.zoom);
   }
 
   private loadModel() {
     const loader = new GLTFLoader();
-    loader.load("assets/models/scenee.gltf", (gltf) => {
+    loader.load("assets/models/scene.gltf", (gltf) => {
       this.model = gltf.scene;
       this.scene.add(this.model);
     });
@@ -389,209 +409,505 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.labelRenderer.render(this.scene, this.camera);
   }
   showTag() {
+    // this.resetCamera();
     this.tag = !this.tag;
+
     if (this.tag) {
-      this.resetCamera();
-      const loader = new FontLoader();
-
-      // Function to create text mesh
-      const createTextMesh = (text, position, rotation) => {
-        const font = loader.load(
-          "assets/models/font.json",
-          (font) => {
-            const textGeometry = new TextGeometry(text, {
-              font: font,
-              size: 0.2, // Keep size small
-              height: 0.005, // Thinner text height
-              curveSegments: 50, // More segments for smoothness
-              bevelEnabled: true, // Keep bevel for a sharp edge
-              bevelThickness: 0.0005, // Decreased bevel thickness for less boldness
-              bevelSize: 0.0025, // Decreased bevel size for sharper edges
-              bevelOffset: 0,
-              bevelSegments: 2, // Lower bevel segments for sharper edges
-            });
-
-            // Create a material
-            const textMaterial = new THREE.MeshBasicMaterial({
-              // color: 0x222222,
-              color: 0x137625,
-            });
-
-            // Create a mesh
-            const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-            textMesh.name = `${text}Mesh`; // Unique name for each text mesh
-
-            // Set the position and rotation of the text
-            textMesh.position.set(...position);
-            textMesh.rotation.set(...rotation);
-
-            // Add text to the scene
-            this.scene.add(textMesh);
-          },
-          undefined,
-          (error) => {
-            console.error("An error occurred while loading the font:", error);
-          }
-        );
-      };
-
-      // Create first text mesh
-      createTextMesh(
-        "F6",
-        [-1.0, 1, 0],
-        [
-          THREE.MathUtils.degToRad(-60),
-          THREE.MathUtils.degToRad(23),
-          THREE.MathUtils.degToRad(25),
-        ]
-      );
-
-      // Create second text mesh
-      createTextMesh(
-        "F7",
-        [-0.888787628226152, -1.3, 0],
-        [
-          THREE.MathUtils.degToRad(-60),
-          THREE.MathUtils.degToRad(23),
-          THREE.MathUtils.degToRad(25),
-        ]
-      );
-      createTextMesh(
-        "F8",
-        [0.188787628226152, 1, 0],
-        [
-          THREE.MathUtils.degToRad(-60),
-          THREE.MathUtils.degToRad(23),
-          THREE.MathUtils.degToRad(25),
-        ]
-      );
-      createTextMesh(
-        "F9",
-        [0.288787628226152, -1.4, 0],
-        [
-          THREE.MathUtils.degToRad(-60),
-          THREE.MathUtils.degToRad(23),
-          THREE.MathUtils.degToRad(25),
-        ]
-      );
-      createTextMesh(
-        "F10",
-        [1.288787628226152, 1, 0],
-        [
-          THREE.MathUtils.degToRad(-60),
-          THREE.MathUtils.degToRad(23),
-          THREE.MathUtils.degToRad(25),
-        ]
-      );
-      createTextMesh(
-        "F11",
-        [1.9, -0.3, 1],
-        [
-          THREE.MathUtils.degToRad(-60),
-          THREE.MathUtils.degToRad(23),
-          THREE.MathUtils.degToRad(25),
-        ]
-      );
-      createTextMesh(
-        "F12",
-        [2.3, 0.98, 0],
-        [
-          THREE.MathUtils.degToRad(-60),
-          THREE.MathUtils.degToRad(23),
-          THREE.MathUtils.degToRad(25),
-        ]
-      );
-      createTextMesh(
-        "DS1",
-        [-6.2, -1.4, 0],
-        [
-          THREE.MathUtils.degToRad(-60),
-          THREE.MathUtils.degToRad(23),
-          THREE.MathUtils.degToRad(25),
-        ]
-      );
-      createTextMesh(
-        "RR2",
-        [-5, 1.1, 0],
-        [
-          THREE.MathUtils.degToRad(-60),
-          THREE.MathUtils.degToRad(23),
-          THREE.MathUtils.degToRad(25),
-        ]
-      );
-      createTextMesh(
-        "R3",
-        [-4.8, -1.5, 0],
-        [
-          THREE.MathUtils.degToRad(-60),
-          THREE.MathUtils.degToRad(23),
-          THREE.MathUtils.degToRad(25),
-        ]
-      );
-      createTextMesh(
-        "R4",
-        [-3.7, 1, 0],
-        [
-          THREE.MathUtils.degToRad(-60),
-          THREE.MathUtils.degToRad(23),
-          THREE.MathUtils.degToRad(25),
-        ]
-      );
-      createTextMesh(
-        "R5",
-        [-3.5, -1.5, 0],
-        [
-          THREE.MathUtils.degToRad(-60),
-          THREE.MathUtils.degToRad(23),
-          THREE.MathUtils.degToRad(25),
-        ]
-      );
-
-      // this.controls.enableRotate = false;
-
-      // this.controls.enabled = false;
+      this.controls.enabled = false;
       this.controls.update();
+      if (this.zoom) {
+        this.orcamera.position.set(
+          11.203138293576298,
+          4.229356214298246,
+          4.332292258372877
+        );
+        this.orcamera.zoom = 2;
+        this.controls.target.set(
+          5.779865143071354,
+          3.025351412851267e-17,
+          -2.839618980379983
+        );
+
+        this.orcamera.updateProjectionMatrix();
+        this.controls.update();
+
+        this.showZoomdTag();
+      } else {
+        this.resetCamera();
+        this.showNormalTag();
+      }
     } else {
-      // Remove both text meshes
-      const meshToRemove1 = this.scene.getObjectByName("F6Mesh");
-      const meshToRemove2 = this.scene.getObjectByName("F7Mesh");
-      const meshToRemove3 = this.scene.getObjectByName("F8Mesh");
-      const meshToRemove4 = this.scene.getObjectByName("F9Mesh");
-      const meshToRemove5 = this.scene.getObjectByName("F10Mesh");
-      const meshToRemove6 = this.scene.getObjectByName("F11Mesh");
-      const meshToRemove7 = this.scene.getObjectByName("F12Mesh");
-      const meshToRemove8 = this.scene.getObjectByName("DS1Mesh");
-      const meshToRemove9 = this.scene.getObjectByName("RR2Mesh");
-      const meshToRemove10 = this.scene.getObjectByName("R3Mesh");
-      const meshToRemove11 = this.scene.getObjectByName("R4Mesh");
-      const meshToRemove12 = this.scene.getObjectByName("R5Mesh");
+      this.labels.forEach((label) => {
+        this.scene.remove(label);
+      });
+      this.zoomlabels.forEach((label) => {
+        this.scene.remove(label);
+      });
+      if (this.updateTag) {
+        clearInterval(this.updateTag);
+      }
 
-      // Function to remove a mesh
-      const removeMesh = (mesh) => {
-        if (mesh) {
-          this.scene.remove(mesh);
-          mesh.geometry.dispose();
-          mesh.material.dispose();
-        }
-      };
-
-      removeMesh(meshToRemove1);
-      removeMesh(meshToRemove2);
-      removeMesh(meshToRemove3);
-      removeMesh(meshToRemove4);
-      removeMesh(meshToRemove5);
-      removeMesh(meshToRemove6);
-      removeMesh(meshToRemove7);
-      removeMesh(meshToRemove8);
-      removeMesh(meshToRemove9);
-      removeMesh(meshToRemove10);
-      removeMesh(meshToRemove11);
-      removeMesh(meshToRemove12);
-
-      // this.controls.enabled = true;
-      this.controls.enableRotate = true;
+      this.controls.enabled = true;
+      // this.controls.enableRotate = true;
       this.controls.update();
     }
+  }
+
+  showNormalTag() {
+    const createDiv = (text, className) => {
+      const div = document.createElement("div");
+      div.className = className;
+      div.textContent = text;
+      div.style.color = "blue";
+      return div;
+    };
+
+    const createDynamicDiv = (
+      text: string,
+      className: string,
+      part: boolean,
+      color = "green"
+    ): HTMLDivElement => {
+      const div = document.createElement("div");
+      div.className = className;
+
+      if (text) {
+        part == true
+          ? (div.innerHTML = text.replace(/-/g, "-<br>"))
+          : (div.innerHTML = text);
+      }
+      div.style.color = color;
+      div.style.fontWeight = "bold"; // Make text bold
+      return div;
+    };
+
+    const material = new THREE.LineBasicMaterial({ color: 0x333333 }); // Red color
+
+    const createLine = (start, end) => {
+      const points = [];
+      points.push(new THREE.Vector3(...start)); // Start point of the line (origin)
+      points.push(new THREE.Vector3(...end)); // End point of the line
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const line = new THREE.Line(geometry, material);
+      return line;
+    };
+
+    // Create an HTML label and attach it to the cube
+    const div = createDiv("F6", "label");
+    const div1 = createDiv("F7", "label");
+    const div2 = createDiv("F8", "label");
+    const div3 = createDiv("F9", "label");
+    const div4 = createDiv("F10", "label");
+    const div5 = createDiv("F11", "label");
+    const div6 = createDiv("F12", "label");
+    const div7 = createDiv("DS1", "label");
+    const div8 = createDiv("RR2", "label");
+    const div9 = createDiv("R3", "label");
+    const div10 = createDiv("R4", "label");
+    const div11 = createDiv("R5", "label");
+    const div12 = createDiv("C1", "label");
+    const div13 = createDiv("C2", "label");
+    const div14 = createDiv("C3", "label");
+    const div15 = createDiv("C4", "label");
+
+    const div16 = createDynamicDiv(this.dischargedPlate, "label_dynamic", true);
+    let secondPlate =
+      this.r2Plate ||
+      this.r2Plate ||
+      this.r3Plate ||
+      this.r4Plate ||
+      this.r5Plate ||
+      " ";
+    let thirdPlate =
+      this.d1Plate ||
+      this.d2Plate ||
+      this.shearPlate ||
+      this.f6Plate ||
+      this.f7Plate ||
+      this.f8Plate ||
+      this.f9Plate ||
+      this.f10Plate ||
+      this.f11Plate ||
+      this.f12Plate ||
+      " ";
+
+    const div17 = createDynamicDiv(secondPlate, "label_dynamic", false);
+    const div18 = createDynamicDiv(thirdPlate, "label_dynamic", false);
+
+    const div19 = createDynamicDiv(
+      this.ltc == "0" || this.ltc == null ? "" : "LCT " + this.ltc,
+      "label_dynamic",
+      false,
+      "red"
+    );
+    const div20 = createDynamicDiv(
+      this.shearTemp == "0" || this.shearTemp == null
+        ? ""
+        : "ST " + this.shearTemp,
+      "label_dynamic",
+      false,
+      "red"
+    );
+    const div21 = createDynamicDiv(
+      this.coilTemp == "0" || this.coilTemp == null
+        ? ""
+        : "CT " + this.coilTemp,
+      "label_dynamic",
+      false,
+      "red"
+    );
+    const div22 = createDynamicDiv(
+      this.imt == "0" || this.imt == null ? "" : "IMT " + this.imt,
+      "label_dynamic",
+      false,
+      "red"
+    );
+    const div23 = createDynamicDiv(
+      this.ft_th[0] == "0" || this.imt == null
+        ? ""
+        : "FT " + this.ft_th[0] + " | TH" + this.ft_th[1],
+      "label_dynamic",
+      false,
+      "red"
+    );
+    const div24 = createDynamicDiv(
+      this.rt_w[0] == "0" || this.imt == null
+        ? ""
+        : "RT " + this.rt_w[0] + " | W" + this.rt_w[1],
+      "label_dynamic",
+      false,
+      "red"
+    );
+    this.updateTag = setInterval(() => {
+      div16.innerHTML = this.dischargedPlate
+        ? this.dischargedPlate.replace(/-/g, "-<br>")
+        : "";
+      div17.innerHTML =
+        this.r2Plate ||
+        this.r2Plate ||
+        this.r3Plate ||
+        this.r4Plate ||
+        this.r5Plate ||
+        " ";
+      div18.innerHTML =
+        this.d1Plate ||
+        this.d2Plate ||
+        this.shearPlate ||
+        this.f6Plate ||
+        this.f7Plate ||
+        this.f8Plate ||
+        this.f9Plate ||
+        this.f10Plate ||
+        this.f11Plate ||
+        this.f12Plate ||
+        " ";
+      div19.innerHTML =
+        this.ltc == "0" || this.ltc == null ? "" : "LCT " + this.ltc;
+      div20.innerHTML =
+        this.shearTemp == "0" || this.shearTemp == null
+          ? ""
+          : "ST " + this.shearTemp;
+      div21.innerHTML =
+        this.coilTemp == "0" || this.coilTemp == null
+          ? ""
+          : "CT " + this.coilTemp;
+      div22.innerHTML =
+        this.imt == "0" || this.imt == null ? "" : "IMT " + this.imt;
+      div23.innerHTML =
+        this.ft_th[0] == "0" || this.imt == null
+          ? ""
+          : "FT " + this.ft_th[0] + " | TH" + this.ft_th[1];
+      div24.innerHTML =
+        this.rt_w[0] == "0" || this.imt == null
+          ? ""
+          : "RT " + this.rt_w[0] + " | W" + this.rt_w[1];
+    }, 3000);
+
+    const label1 = new CSS2DObject(div);
+    label1.position.set(-1.3, 1, -0.35);
+    const label2 = new CSS2DObject(div1);
+    label2.position.set(-1.6, -2, 0.369);
+    const label3 = new CSS2DObject(div2);
+    label3.position.set(0.091, 0.88, -0.34);
+    const label4 = new CSS2DObject(div3);
+    label4.position.set(0, -1.99, 0.36);
+    const label5 = new CSS2DObject(div4);
+    label5.position.set(1.25, 0.88, -0.35);
+    const label6 = new CSS2DObject(div5);
+    label6.position.set(1.45, -1.83, 0.36);
+    const label7 = new CSS2DObject(div6);
+    label7.position.set(2.4, 0.75, -0.35);
+
+    const label8 = new CSS2DObject(div7);
+    label8.position.set(-13.65, -2.8, 0.35);
+    const label9 = new CSS2DObject(div8);
+    label9.position.set(-11.5, -2.8, 0.36);
+    const label10 = new CSS2DObject(div9);
+    label10.position.set(-9.5, -2.6, 0.36);
+    const label11 = new CSS2DObject(div10);
+    label11.position.set(-5.5, 1.3, -0.35);
+    const label12 = new CSS2DObject(div11);
+    label12.position.set(-4.5, 1.2, -0.35);
+    const label13 = new CSS2DObject(div12);
+    label13.position.set(3.6, -0.98, 0.49);
+    const label14 = new CSS2DObject(div13);
+    label14.position.set(4.1, -0.98, 0.49);
+    const label15 = new CSS2DObject(div14);
+    label15.position.set(4.7, -0.98, 0.49);
+    const label16 = new CSS2DObject(div15);
+    label16.position.set(6.3, -0.8, 0.49);
+
+    const label17 = new CSS2DObject(div16);
+    label17.position.set(-16, -2, 0.49);
+    const label18 = new CSS2DObject(div17);
+    label18.position.set(-12.2, -4, 0.49);
+    const label19 = new CSS2DObject(div18);
+    label19.position.set(0.18, 2, 0.49);
+    const label20 = new CSS2DObject(div19); // LCT
+    label20.position.set(3.7, 1, 0.49);
+    const label21 = new CSS2DObject(div20); // ST
+    label21.position.set(-1.6, 1.1, 0.49);
+    const label22 = new CSS2DObject(div21); // CT
+    label22.position.set(5.3, -0.89, 0.49);
+    const label23 = new CSS2DObject(div22); // IMT
+    label23.position.set(3.3, 1.2, 0.49);
+    const label24 = new CSS2DObject(div23); //FT|TH
+    label24.position.set(3, 1.6, 0.49);
+    const label25 = new CSS2DObject(div24); //RT|W
+    label25.position.set(-1.6, 2, 0.49);
+
+    const line = createLine([-1.03, 0.47, -0.35], [-1.03, 0.87, -0.35]);
+    const line1 = createLine([-0.48, -0.413, 0.369], [-0.48, -0.813, 0.369]);
+    const line2 = createLine([0.091, 0.48, -0.34], [0.091, 0.88, -0.34]);
+    const line3 = createLine([0.65, -0.42, 0.36], [0.65, -0.82, 0.36]);
+    const line4 = createLine([1.19, 0.48, -0.35], [1.19, 0.88, -0.35]);
+    const line5 = createLine([1.74, -0.43, 0.36], [1.74, -0.83, 0.36]);
+    const line6 = createLine([2.29, 0.48, -0.35], [2.29, 0.88, -0.35]);
+    const line7 = createLine([-5.65, -0.36, 0.35], [-5.65, -0.76, 0.35]); //ds1
+    const line8 = createLine([-5.01, -0.42, 0.36], [-5.01, -0.82, 0.36]);
+    const line9 = createLine([-4.41, -0.43, 0.36], [-4.41, -0.83, 0.36]);
+    const line10 = createLine([-3.8, 0.48, -0.35], [-3.8, 0.88, -0.35]);
+    const line11 = createLine([-3.19, 0.48, -0.35], [-3.19, 0.88, -0.35]);
+
+    const labels = Array.from({ length: 25 }, (_, i) => eval(`label${i + 1}`));
+
+    const lines = [
+      line,
+      line1,
+      line2,
+      line3,
+      line4,
+      line5,
+      line6,
+      line7,
+      line8,
+      line9,
+      line10,
+      line11,
+    ];
+
+    labels.forEach((label) => {
+      this.scene.add(label);
+      this.labels.push(label);
+    });
+
+    lines.forEach((line) => {
+      this.scene.add(line);
+      this.labels.push(line);
+    });
+  }
+  showZoomdTag() {
+
+    const createDynamicDiv = (
+      text: string,
+      className: string,
+      part: boolean,
+      color = "green"
+    ): HTMLDivElement => {
+      const div = document.createElement("div");
+      div.className = className;
+
+      if (text) {
+        part == true
+          ? (div.innerHTML = text.replace(/-/g, "-<br>"))
+          : (div.innerHTML = text);
+      }
+      div.style.color = color;
+      div.style.fontWeight = "bold"; // Make text bold
+      return div;
+    };
+    const material = new THREE.LineBasicMaterial({ color: 0xbbbbbb }); // Red color
+    const createLine = (start, end) => {
+      const points = [];
+      points.push(new THREE.Vector3(...start)); // Start point of the line (origin)
+      points.push(new THREE.Vector3(...end)); // End point of the line
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const line = new THREE.Line(geometry, material);
+      return line;
+    };
+    const line1 = createLine([3.65, 0.3, -1.32], [3.65, 2.4, -1.32]);
+    const div1 = createDynamicDiv(this.coilFinal1, "label_dynamic", false);
+    const label1 = new CSS2DObject(div1);
+    label1.position.set(-4.3, 2.7, -1.32);
+
+    const line2 = createLine([3.9, 0.3, -1.32], [3.9, 2.3, -1.32]);
+    const div2 = createDynamicDiv(this.coilFinal2, "label_dynamic", false);
+    const label2 = new CSS2DObject(div2);
+    label2.position.set(-3.7, 2.5, -1.32);
+
+    const line3 = createLine([4.12, 0.3, -1.32], [4.12, 2.3, -1.32]);
+    const div3 = createDynamicDiv(this.coilFinal3, "label_dynamic", false);
+    const label3 = new CSS2DObject(div3);
+    label3.position.set(-3.3, 2.3, -1.32);
+
+    const line4 = createLine([4.3, 0.3, -1.32], [4.3, 2.2, -1.32]);
+    const div4 = createDynamicDiv(this.coilFinal4, "label_dynamic", false);
+    const label4 = new CSS2DObject(div4);
+    label4.position.set(-2.9, 2.1, -1.32);
+
+    const line5 = createLine([4.5, 0.3, -1.32], [4.5, 2.1, -1.32]);
+    const div5 = createDynamicDiv(this.coilFinal5, "label_dynamic", false);
+    const label5 = new CSS2DObject(div5);
+    label5.position.set(-2.5, 1.9, -1.32);
+
+    const line6 = createLine([4.7, 0.3, -1.32], [4.7, 2, -1.32]);
+    const div6 = createDynamicDiv(this.coilFinal6, "label_dynamic", false);
+    const label6 = new CSS2DObject(div6);
+    label6.position.set(-2.2, 1.7, -1.32);
+
+    const line7 = createLine([4.9, 0.3, -1.32], [4.9, 1.9, -1.32]);
+    const div7 = createDynamicDiv(this.coilFinal7, "label_dynamic", false);
+    const label7 = new CSS2DObject(div7);
+    label7.position.set(-1.8, 1.5, -1.32);
+
+    const line8 = createLine([5.1, 0.3, -1.32], [5.1, 1.86, -1.32]);
+    const div8 = createDynamicDiv(this.coilFinal8, "label_dynamic", false);
+    const label8 = new CSS2DObject(div8);
+    label8.position.set(-1.4, 1.3, -1.32);
+
+    const line9 = createLine([5.3, 0.3, -1.32], [5.3, 1.8, -1.32]);
+    const div9 = createDynamicDiv(this.coilFinal9, "label_dynamic", false);
+    const label9 = new CSS2DObject(div9);
+    label9.position.set(-.9, 1.1, -1.32);
+
+    const line10 = createLine([5.5, 0.3, -1.32], [5.5, 1.7, -1.32]);
+    const div10 = createDynamicDiv(this.coilFinal10, "label_dynamic", false);
+    const label10 = new CSS2DObject(div10);
+    label10.position.set(-.5, .9, -1.32);
+
+    const line11 = createLine([5.7, 0.3, -1.32], [5.7, 1.6, -1.32]);
+    const div11 = createDynamicDiv(this.coilFinal11, "label_dynamic", false);
+    const label11 = new CSS2DObject(div11);
+    label11.position.set(-.1, .7, -1.32);
+
+    const line12 = createLine([5.9, 0.3, -1.32], [5.9, 1.54, -1.32]);
+    const div12 = createDynamicDiv(this.coilFinal12, "label_dynamic", false);
+    const label12 = new CSS2DObject(div12);
+    label12.position.set(.25, .55, -1.32);
+
+    const line13 = createLine([6.1, 0.3, -1.32], [6.1, 1.52, -1.32]);
+    const div13 = createDynamicDiv(this.coilFinal13, "label_dynamic", false);
+    const label13 = new CSS2DObject(div13);
+    label13.position.set(.65, .4, -1.32);
+
+    const line14 = createLine([6.3, 0.3, -1.32], [6.3, 1.5, -1.32]);
+    const div14 = createDynamicDiv(this.coilFinal14, "label_dynamic", false);
+    const label14 = new CSS2DObject(div14);
+    label14.position.set(1.1, .28, -1.32);
+
+    const line15 = createLine([6.7, 0.3, -1.32], [6.7, 1.42, -1.32]);
+    const div15 = createDynamicDiv(this.coilFinal15, "label_dynamic", false);
+    const label15 = new CSS2DObject(div15);
+    label15.position.set(1.9, .19, -1.32);
+
+    const line16 = createLine([6.95, 0.3, -1.32], [6.95, 1.42, -1.32]);
+    const div16 = createDynamicDiv(this.coilFinal16, "label_dynamic", false);
+    const label16 = new CSS2DObject(div16);
+    label16.position.set(2.3, .1, -1.32);
+
+    const line17 = createLine([7.15, 0.3, -1.32], [7.15, 1.42, -1.32]);
+    const div17 = createDynamicDiv(this.coilFinal17, "label_dynamic", false);
+    const label17 = new CSS2DObject(div17);
+    label17.position.set(2.69, .02, -1.32);
+
+    const line18 = createLine([7.35, 0.3, -1.32], [7.35, 1.42, -1.32]);
+    const div18 = createDynamicDiv(this.coilFinal18, "label_dynamic", false);
+    const label18 = new CSS2DObject(div18);
+    label18.position.set(3, -.1, -1.32);
+
+
+
+    function updateCoil(coilFinal, div, label, line) {
+      if (coilFinal) {
+        div.innerHTML = coilFinal;
+        if (!this.zoomlabels.includes(label)) {
+          this.zoomlabels.push(label, line);
+          this.scene.add(label, line);
+        }
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(item => item !== label && item !== line);
+        this.scene.remove(label, line);
+      }
+    }
+    
+    // Call the function for each coil
+
+
+    this.updateTag = setInterval(() => {
+      updateCoil(this.coilFinal1, div1, label1, line1);
+      updateCoil(this.coilFinal2, div2, label2, line2);
+      updateCoil(this.coilFinal3, div3, label3, line3);
+      updateCoil(this.coilFinal4, div4, label4, line4);
+      updateCoil(this.coilFinal5, div5, label5, line5);
+      updateCoil(this.coilFinal6, div6, label6, line6);
+      updateCoil(this.coilFinal7, div7, label7, line7);
+      updateCoil(this.coilFinal8, div8, label8, line8);
+      updateCoil(this.coilFinal9, div9, label9, line9);
+      updateCoil(this.coilFinal10, div10, label10, line10);
+      updateCoil(this.coilFinal11, div11, label11, line11);
+      updateCoil(this.coilFinal12, div12, label12, line12);
+      updateCoil(this.coilFinal13, div13, label13, line13);
+      updateCoil(this.coilFinal14, div14, label14, line14);
+      updateCoil(this.coilFinal15, div15, label15, line15);
+      updateCoil(this.coilFinal16, div16, label16, line16);
+      updateCoil(this.coilFinal17, div17, label17, line17);
+    
+   
+    //  loopadd
+    }, 3000);
+
+
+    const coilFinals = [
+      { coil: this.coilFinal1, label: label1, line: line1 },
+      { coil: this.coilFinal2, label: label2, line: line2 },
+      { coil: this.coilFinal3, label: label3, line: line3 },
+      { coil: this.coilFinal4, label: label4, line: line4 },
+      { coil: this.coilFinal5, label: label5, line: line5 },
+      { coil: this.coilFinal6, label: label6, line: line6 },
+      { coil: this.coilFinal7, label: label7, line: line7 },
+      { coil: this.coilFinal8, label: label8, line: line8 }, 
+      { coil: this.coilFinal9, label: label9, line: line9 }, 
+      { coil: this.coilFinal10, label: label10, line: line10 }, 
+      { coil: this.coilFinal11, label: label11, line: line11 }, 
+      { coil: this.coilFinal12, label: label12, line: line12 }, 
+      { coil: this.coilFinal13, label: label13, line: line13 }, 
+      { coil: this.coilFinal14, label: label14, line: line14 }, 
+      { coil: this.coilFinal15, label: label15, line: line15 }, 
+      { coil: this.coilFinal16, label: label16, line: line16 }, 
+      { coil: this.coilFinal17, label: label17, line: line17 }, 
+      { coil: this.coilFinal18, label: label18, line: line18 }, 
+      // Add more coils if necessary
+    ];
+    
+    coilFinals.forEach(({ coil, label, line }) => {
+      if (coil) {
+        this.zoomlabels.push(label, line);
+        this.scene.add(label, line);
+      }
+    });
+
+
+ 
   }
 
   colapse() {
@@ -602,7 +918,15 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     // Update camera aspect ratio and renderer size
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(window.innerWidth - 2, window.innerHeight - 40);
+
+    // If you are using a CSS2DRenderer for labels, update its size as well
+    if (this.labelRenderer) {
+      this.labelRenderer.setSize(
+        window.innerWidth - 2,
+        window.innerHeight - 40
+      );
+    }
   }
 
   updateEndCoil(mesh, meshName, meshCore, flag) {
@@ -611,9 +935,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         mesh.visible = true;
         let parts = flag.split("-");
         if (parts[parts.length - 1][0] == "C") {
-          (mesh.material as THREE.MeshStandardMaterial).color.set(0xc64d00);
+          (mesh.material as THREE.MeshStandardMaterial).color.set(0xff9f8b);
         } else {
-          (mesh.material as THREE.MeshStandardMaterial).color.set(0x1e69b1);
+          (mesh.material as THREE.MeshStandardMaterial).color.set(0x7dbdfb);
         }
       } else {
         mesh.visible = false;
@@ -636,131 +960,62 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         // # UPDATE FURNACE
-        if (mesh.name === "Furnace4") {
-          if (this.fur4 == true) {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
-          } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x6666fa);
-          }
-        }
-        if (mesh.name === "Furnace3") {
-          if (this.fur3 == true) {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
-          } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x6666fa);
-          }
-        }
-        if (mesh.name === "Furnace2") {
-          if (this.fur2 == true) {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
-          } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x6666fa);
-          }
-        }
-        if (mesh.name === "Furnace1") {
-          if (this.fur1 == true) {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0xffffff);
-          } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x6666fa);
-          }
-        }
-        // #UPDATE PLATES
+        const furnaceStatuses = {
+          Furnace1: this.fur1,
+          Furnace2: this.fur2,
+          Furnace3: this.fur3,
+          Furnace4: this.fur4,
+        };
 
-        if (mesh.name === "Discharged") {
-          this.dischargedPlate == "" || this.dischargedPlate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
+        const updateFurnaceMaterial = (
+          mesh,
+          status,
+          activeColor,
+          inactiveColor
+        ) => {
+          (mesh.material as THREE.MeshStandardMaterial).color.set(
+            status ? activeColor : inactiveColor
+          );
+        };
+
+        if (furnaceStatuses[mesh.name] !== undefined) {
+          updateFurnaceMaterial(
+            mesh,
+            furnaceStatuses[mesh.name],
+            0xffffff,
+            0x6666fa
+          );
         }
-        if (mesh.name === "R1Plate") {
-          this.r1Plate == "" || this.r1Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
+        // # UPDATE PLATES
+        const plateStatuses = {
+          Discharged: this.dischargedPlate,
+          R1Plate: this.r1Plate,
+          R2Plate: this.r2Plate,
+          R3Plate: this.r3Plate,
+          R4Plate: this.r4Plate,
+          R5Plate: this.r5Plate,
+          Delay1: this.d1Plate,
+          Delay2: this.d2Plate,
+          ShearPlate: this.shearPlate,
+          F6Plate: this.f6Plate,
+          F7Plate: this.f7Plate,
+          F8Plate: this.f8Plate,
+          F9Plate: this.f9Plate,
+          F10Plate: this.f10Plate,
+          F11Plate: this.f11Plate,
+          F12Plate: this.f12Plate,
+          C1Plate: this.c1Plate,
+          C2Plate: this.c2Plate,
+          C3Plate: this.c3Plate,
+        };
+
+        // Iterate through the plate statuses and set mesh visibility
+        if (plateStatuses[mesh.name] !== undefined) {
+          mesh.visible = !(
+            plateStatuses[mesh.name] == "" || plateStatuses[mesh.name] == null
+          );
         }
-        if (mesh.name === "R2Plate") {
-          this.r2Plate == "" || this.r2Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "R3Plate") {
-          this.r3Plate == "" || this.r3Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "R4Plate") {
-          this.r4Plate == "" || this.r4Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "R5Plate") {
-          this.r5Plate == "" || this.r5Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "Delay1") {
-          this.d1Plate == "" || this.d1Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "Delay2") {
-          this.d2Plate == "" || this.d2Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "ShearPlate") {
-          this.shearPlate == "" || this.shearPlate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "F6Plate") {
-          this.f6Plate == "" || this.f6Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "F7Plate") {
-          this.f7Plate == "" || this.f7Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "F8Plate") {
-          this.f8Plate == "" || this.f8Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "F9Plate") {
-          this.f9Plate == "" || this.f9Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "F10Plate") {
-          this.f10Plate == "" || this.f10Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "F11Plate") {
-          this.f11Plate == "" || this.f11Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "F12Plate") {
-          this.f12Plate == "" || this.f12Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "C1Plate") {
-          this.c1Plate == "" || this.c1Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "C2Plate") {
-          this.c2Plate == "" || this.c2Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
-        if (mesh.name === "C3Plate") {
-          this.c3Plate == "" || this.c3Plate == null
-            ? (mesh.visible = false)
-            : (mesh.visible = true);
-        }
+
         if (mesh.name === "Coil1Plate") {
           if (this.coil1 || this.coil2 || this.coil3 || this.coil4) {
             mesh.visible = true;
@@ -790,6 +1045,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 
         // # UPDATE COIL
 
+        if (mesh.name === "Cylinder_35") {
+          mesh.rotation.y -= 0.3;
+        }
         if (mesh.name === "Coil1") {
           this.coil1 == "" || this.coil1 == null
             ? (mesh.visible = false)
@@ -889,135 +1147,150 @@ export class TrackingThreeJsComponent implements AfterViewInit {
           this.coilFinal19
         );
 
+        const speed = 0.15;
         // # UPDATE Roller
         if (this.r2Plate) {
           if (mesh.name === "R2UpB" || mesh.name === "R2UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "R2DownB" || mesh.name === "R2DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.r3Plate) {
           if (mesh.name === "R3UpB" || mesh.name === "R3UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "R3DownB" || mesh.name === "R3DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.r4Plate) {
           if (mesh.name === "R4UpB" || mesh.name === "R4UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "R4DownB" || mesh.name === "R4DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
 
         if (this.r5Plate) {
           if (mesh.name === "R5UpB" || mesh.name === "R5UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "R5DownB" || mesh.name === "R5DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.f6Plate && this.stand6Status == "1") {
           if (mesh.name === "F6UpB" || mesh.name === "F6UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "F6DownB" || mesh.name === "F6DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.f7Plate && this.stand7Status == "1") {
           if (mesh.name === "F7UpB" || mesh.name === "F7UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "F7DownB" || mesh.name === "F7DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.f8Plate && this.stand8Status == "1") {
           if (mesh.name === "F8UpB" || mesh.name === "F8UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "F8DownB" || mesh.name === "F8DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.f9Plate && this.stand9Status == "1") {
           if (mesh.name === "F9UpB" || mesh.name === "F9UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "F9DownB" || mesh.name === "F9DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.f10Plate && this.stand10Status == "1") {
           if (mesh.name === "F10UpB" || mesh.name === "F10UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "F10DownB" || mesh.name === "F10DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.f11Plate && this.stand11Status == "1") {
           if (mesh.name === "F11UpB" || mesh.name === "F11UpS") {
-            mesh.rotation.y += 0.03;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "F11DownB" || mesh.name === "F11DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
         if (this.f12Plate && this.stand12Status == "1") {
           if (mesh.name === "F12UpB" || mesh.name === "F12UpS") {
-            mesh.rotation.y += 0.3;
+            mesh.rotation.y += speed;
           } else if (mesh.name === "F12DownB" || mesh.name === "F12DownS") {
-            mesh.rotation.y -= 0.03;
+            mesh.rotation.y -= speed;
           }
         }
 
-        if (mesh.name === "F6R") {
-          if (this.stand6Status == "0") {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
+        const updateRoughMaterial = (
+          mesh,
+          plateStatus,
+          onColor = 0xfb9e14,
+          offColor = 0x00458f
+        ) => {
+          mesh.material = (mesh.material as THREE.MeshStandardMaterial).clone();
+          (mesh.material as THREE.MeshStandardMaterial).color.set(
+            plateStatus ? onColor : offColor
+          );
+        };
+        if (mesh.name === "R2R" || mesh.name === "R2L") {
+          updateRoughMaterial(mesh, this.r2Plate);
+        }
+        if (mesh.name === "R3R" || mesh.name === "R3L") {
+          updateRoughMaterial(mesh, this.r3Plate);
+        }
+        if (mesh.name === "R4R" || mesh.name === "R4L") {
+          updateRoughMaterial(mesh, this.r4Plate);
+        }
+        if (mesh.name === "R5R" || mesh.name === "R5L") {
+          updateRoughMaterial(mesh, this.r5Plate);
+        }
+
+        const updateStandMaterial = (
+          mesh,
+          standStatus,
+          plateStatus,
+          onColor = 0xfb9e14,
+          offColor = 0x00458f,
+          downColor = 0x222222
+        ) => {
+          if (standStatus == "0") {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(downColor);
           } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
+            (mesh.material as THREE.MeshStandardMaterial).color.set(
+              plateStatus ? onColor : offColor
+            );
           }
+        };
+
+        if (mesh.name === "F6R") {
+          updateStandMaterial(mesh, this.stand6Status, this.f6Plate);
         }
         if (mesh.name === "F7R") {
-          if (this.stand7Status == "0") {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
-          } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-          }
+          updateStandMaterial(mesh, this.stand7Status, this.f7Plate);
         }
         if (mesh.name === "F8R") {
-          if (this.stand8Status == "0") {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
-          } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-          }
+          updateStandMaterial(mesh, this.stand8Status, this.f8Plate);
         }
         if (mesh.name === "F9R") {
-          if (this.stand9Status == "0") {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
-          } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-          }
+          updateStandMaterial(mesh, this.stand9Status, this.f9Plate);
         }
         if (mesh.name === "F10R") {
-          if (this.stand10Status == "0") {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
-          } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-          }
+          updateStandMaterial(mesh, this.stand10Status, this.f10Plate);
         }
         if (mesh.name === "F11R") {
-          if (this.stand11Status == "0") {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
-          } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-          }
+          updateStandMaterial(mesh, this.stand11Status, this.f11Plate);
         }
         if (mesh.name === "F12R") {
-          if (this.stand12Status == "0") {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x888888);
-          } else {
-            (mesh.material as THREE.MeshStandardMaterial).color.set(0x00458f);
-          }
+          updateStandMaterial(mesh, this.stand12Status, this.f12Plate);
         }
+
         if (mesh.name === "coilend") {
           const textureLoader = new THREE.TextureLoader();
           let texture;
@@ -1093,7 +1366,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         }
 
         this.dischargedPlate = this.trackingData.POS8;
+        // this.dischargedPlate = "1084250-3.45-1280-PCR1K";
         this.r1Plate = this.trackingData.POS9;
+        // this.r2Plate = "1084250-3.45-1280-PCR1K";
         this.r2Plate = this.trackingData.POS10;
         this.r3Plate = this.trackingData.POS11;
         this.r4Plate = this.trackingData.POS12;
@@ -1101,7 +1376,6 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.d1Plate = this.trackingData.POS14;
         this.d2Plate = this.trackingData.POS15;
         // this.millsStandStatus = this.trackingData.MILLSTANDSTATUS;
-
         this.stand6Status = this.trackingData.MILLSTANDSTATUS[0];
         this.stand7Status = this.trackingData.MILLSTANDSTATUS[1];
         this.stand8Status = this.trackingData.MILLSTANDSTATUS[2];
@@ -1124,33 +1398,40 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.coil2 = this.trackingData.POS28;
         this.coil3 = this.trackingData.POS29;
         this.coil4 = this.trackingData.POS30;
-        this.coiler1Strapper = this.trackingData.POS32;
-        this.coiler1Tilter = this.trackingData.POS33;
-        this.coiler2Strapper = this.trackingData.POS34;
-        this.coiler2Tilter = this.trackingData.POS35;
-        this.coiler3Strapper = this.trackingData.POS36;
-        this.coiler3Tilter = this.trackingData.POS37;
-        this.coiler4Strapper = this.trackingData.POS38;
-        this.coiler4Tilter = this.trackingData.POS39;
+        this.coiler1Strapper = "all";
+        this.coiler1Tilter = "all";
+        this.coiler2Strapper = "all";
+        this.coiler2Tilter = "all";
+        this.coiler3Strapper = "all";
+        this.coiler3Tilter = "all";
+        this.coiler4Strapper = "all";
+        this.coiler4Tilter = "all";
+        // this.coiler1Strapper = this.trackingData.POS32;
+        // this.coiler1Tilter = this.trackingData.POS33;
+        // this.coiler2Strapper = this.trackingData.POS34;
+        // this.coiler2Tilter = this.trackingData.POS35;
+        // this.coiler3Strapper = this.trackingData.POS36;
+        // this.coiler3Tilter = this.trackingData.POS37;
+        // this.coiler4Strapper = this.trackingData.POS38;
+        // this.coiler4Tilter = this.trackingData.POS39;
         this.millsStandStatus = this.trackingData.POS3;
-        this.coilFinal1 = this.trackingData.POS40;
-        this.coilFinal2 = this.trackingData.POS41;
-        this.coilFinal3 = this.trackingData.POS42;
-        this.coilFinal4 = this.trackingData.POS43;
-        this.coilFinal5 = this.trackingData.POS44;
-        this.coilFinal6 = this.trackingData.POS45;
-        this.coilFinal7 = this.trackingData.POS46;
-        this.coilFinal8 = this.trackingData.POS47;
-        this.coilFinal9 = this.trackingData.POS48;
-        this.coilFinal10 = this.trackingData.POS49;
-        this.coilFinal11 = this.trackingData.POS50;
-        this.coilFinal12 = this.trackingData.POS51;
-        this.coilFinal13 = this.trackingData.POS52;
-        this.coilFinal14 = this.trackingData.POS53;
-        this.coilFinal15 = this.trackingData.POS54;
-        this.coilFinal16 = this.trackingData.POS55;
-        this.coilFinal17 = this.trackingData.POS56;
-        this.coilFinal18 = this.trackingData.POS57;
+        // this.ltc = "44";
+        // this.shearTemp = "23";
+        // this.coilTemp = "134";
+        // this.imt = "36";
+        this.ltc = this.trackingData.CT;
+        this.shearTemp = this.trackingData.SHEAR;
+        this.coilTemp = this.trackingData.DCT;
+        this.imt = this.trackingData.FIN2;
+        this.ft_th[0] = this.trackingData.FIN1;
+        this.ft_th[1] = this.trackingData.FMEXTHICK;
+        this.rt_w[0] = this.trackingData.R5EXIT;
+        this.rt_w[1] = this.trackingData.R5EXITWID;
+
+        for (let i = 1; i <= 18; i++) {
+          this[`coilFinal${i}`] = this.trackingData[`POS${39 + i}`];
+          // this[`coilFinal${i}`] = "all";
+        }
         this.coilFinal19 = this.trackingData.ttc4;
 
         this.loading = false;
