@@ -48,6 +48,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   selectedPartName: string = ""; // Store the selected component's name
   isColapsed: boolean = true;
   updateTag: any;
+  updateZoomTag: any;
   tag: boolean = false;
   zoom: boolean = false;
   flag: boolean = false;
@@ -275,6 +276,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
   private initThreeJS() {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xffffff);
+    // this.scene.background = new THREE.Color(0x111111);
     // this.scene.background = null;
     this.initCameras();
 
@@ -303,12 +305,16 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.controls.update(); // Ensure controls are updated for damping
 
     // Add yellow directional light
-    const yellowLight = new THREE.DirectionalLight(0xffff00, 2); // Yellow color (hex code: #ffff00)
+    const yellowLight = new THREE.DirectionalLight(0xffff00, 1); // Yellow color (hex code: #ffff00)
     yellowLight.position.set(-5, 5, 5);
     this.scene.add(yellowLight);
 
+    // const whiteLight = new THREE.DirectionalLight(0xffffff, 2); // Yellow color (hex code: #ffff00)
+    // whiteLight.position.set(5, 2, -1);
+    // this.scene.add(whiteLight);
+
     // Add orange directional light
-    const orangeLight = new THREE.DirectionalLight(0xffa500, 2); // Orange color (hex code: #ffa500)
+    const orangeLight = new THREE.DirectionalLight(0xffa500, 1); // Orange color (hex code: #ffa500)
     orangeLight.position.set(5, -5, 5);
     this.scene.add(orangeLight);
 
@@ -342,6 +348,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     this.zoom = !this.zoom;
 
     if (this.zoom) {
+      if (this.updateTag) {
+        clearInterval(this.updateTag);
+      }
       this.orcamera.position.set(
         11.203138293576298,
         4.229356214298246,
@@ -370,9 +379,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         this.zoomlabels.forEach((label) => {
           this.scene.remove(label);
         });
-        // if (this.updateTag) {
-        //   clearInterval(this.updateTag);
-        // }
+        if (this.updateZoomTag) {
+          clearInterval(this.updateZoomTag);
+        }
         this.showNormalTag();
       }
       this.resetCamera();
@@ -392,6 +401,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       this.model = gltf.scene;
       this.scene.add(this.model);
     });
+    this.toggleCamera();
   }
 
   private animate() {
@@ -445,6 +455,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       });
       if (this.updateTag) {
         clearInterval(this.updateTag);
+      }
+      if (this.updateZoomTag) {
+        clearInterval(this.updateZoomTag);
       }
 
       this.controls.enabled = true;
@@ -683,7 +696,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     const line4 = createLine([1.19, 0.48, -0.35], [1.19, 0.88, -0.35]);
     const line5 = createLine([1.74, -0.43, 0.36], [1.74, -0.83, 0.36]);
     const line6 = createLine([2.29, 0.48, -0.35], [2.29, 0.88, -0.35]);
-    const line7 = createLine([-5.65, -0.36, 0.35], [-5.65, -0.76, 0.35]); //ds1
+    const line7 = createLine([-5.65, -0, 0.35], [-5.65, -0.76, 0.35]); //ds1
     const line8 = createLine([-5.01, -0.42, 0.36], [-5.01, -0.82, 0.36]);
     const line9 = createLine([-4.41, -0.43, 0.36], [-4.41, -0.83, 0.36]);
     const line10 = createLine([-3.8, 0.48, -0.35], [-3.8, 0.88, -0.35]);
@@ -717,7 +730,6 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     });
   }
   showZoomdTag() {
-
     const createDynamicDiv = (
       text: string,
       className: string,
@@ -734,8 +746,8 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       }
       div.style.color = color;
       div.style.fontWeight = "bold"; // Make text bold
-      div.style.textAlign= "start"
-      div.style.marginLeft= "110px"
+      div.style.textAlign = "start";
+      div.style.marginLeft = "105px";
       return div;
     };
     const material = new THREE.LineBasicMaterial({ color: 0x999999 }); // Red color
@@ -790,60 +802,68 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     const line9 = createLine([5.3, 0.3, -1.32], [5.3, 1.8, -1.32]);
     const div9 = createDynamicDiv(this.coilFinal9, "label_dynamic", false);
     const label9 = new CSS2DObject(div9);
-    label9.position.set(-.9, 1.1, -1.32);
+    label9.position.set(-0.9, 1.1, -1.32);
 
     const line10 = createLine([5.5, 0.3, -1.32], [5.5, 1.7, -1.32]);
     const div10 = createDynamicDiv(this.coilFinal10, "label_dynamic", false);
     const label10 = new CSS2DObject(div10);
-    label10.position.set(-.5, .9, -1.32);
+    label10.position.set(-0.5, 0.9, -1.32);
 
     const line11 = createLine([5.7, 0.3, -1.32], [5.7, 1.6, -1.32]);
     const div11 = createDynamicDiv(this.coilFinal11, "label_dynamic", false);
     const label11 = new CSS2DObject(div11);
-    label11.position.set(-.1, .7, -1.32);
+    label11.position.set(-0.1, 0.7, -1.32);
 
     const line12 = createLine([5.9, 0.3, -1.32], [5.9, 1.54, -1.32]);
     const div12 = createDynamicDiv(this.coilFinal12, "label_dynamic", false);
     const label12 = new CSS2DObject(div12);
-    label12.position.set(.25, .55, -1.32);
+    label12.position.set(0.25, 0.55, -1.32);
 
     const line13 = createLine([6.1, 0.3, -1.32], [6.1, 1.52, -1.32]);
     const div13 = createDynamicDiv(this.coilFinal13, "label_dynamic", false);
     const label13 = new CSS2DObject(div13);
-    label13.position.set(.65, .4, -1.32);
+    label13.position.set(0.65, 0.4, -1.32);
 
     const line14 = createLine([6.3, 0.3, -1.32], [6.3, 1.5, -1.32]);
     const div14 = createDynamicDiv(this.coilFinal14, "label_dynamic", false);
     const label14 = new CSS2DObject(div14);
-    label14.position.set(1.1, .28, -1.32);
+    label14.position.set(1.1, 0.28, -1.32);
 
     const line15 = createLine([6.7, 0.3, -1.32], [6.7, 1.42, -1.32]);
     const div15 = createDynamicDiv(this.coilFinal15, "label_dynamic", false);
     const label15 = new CSS2DObject(div15);
-    label15.position.set(1.9, .19, -1.32);
+    label15.position.set(1.9, 0.19, -1.32);
 
     const line16 = createLine([6.95, 0.3, -1.32], [6.95, 1.42, -1.32]);
     const div16 = createDynamicDiv(this.coilFinal16, "label_dynamic", false);
     const label16 = new CSS2DObject(div16);
-    label16.position.set(2.3, .1, -1.32);
+    label16.position.set(2.3, 0.1, -1.32);
 
     const line17 = createLine([7.15, 0.3, -1.32], [7.15, 1.42, -1.32]);
     const div17 = createDynamicDiv(this.coilFinal17, "label_dynamic", false);
     const label17 = new CSS2DObject(div17);
-    label17.position.set(2.69, .02, -1.32);
+    label17.position.set(2.69, 0.02, -1.32);
 
     const line18 = createLine([7.35, 0.3, -1.32], [7.35, 1.42, -1.32]);
     const div18 = createDynamicDiv(this.coilFinal18, "label_dynamic", false);
     const label18 = new CSS2DObject(div18);
-    label18.position.set(3, -.1, -1.32);
+    label18.position.set(3, -0.1, -1.32);
 
-    const line19 = createLine([7.35, 0.3, -1.32], [7.35, 1.42, -1.32]);
-    const div19 = createDynamicDiv(this.coil1|| this.coil2|| this.coil3|| this.coil4, "label_dynamic", false);
+    const line19 = createLine([0, 0, 0], [0, 0, 0]);
+    const div19 = createDynamicDiv(
+      this.coil1 || this.coil2 || this.coil3 || this.coil4,
+      "label_dynamic",
+      false
+    );
     const label19 = new CSS2DObject(div19);
     label19.position.set(-6, -8, 2);
 
     const line20 = createLine([6.7, -0.5, -1.32], [8, -0.5, -1.32]);
-    const div20 = createDynamicDiv(this.coiler4Strapper, "label_dynamic", false);
+    const div20 = createDynamicDiv(
+      this.coiler4Strapper,
+      "label_dynamic",
+      false
+    );
     const label20 = new CSS2DObject(div20);
     label20.position.set(5, -5.5, -1.32);
 
@@ -858,7 +878,11 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     label22.position.set(-0.6, -2.45, -1.32);
 
     const line23 = createLine([5, 0, -0.4], [6.2, 1.1, -0.4]);
-    const div23 = createDynamicDiv(this.coiler3Strapper, "label_dynamic", false);
+    const div23 = createDynamicDiv(
+      this.coiler3Strapper,
+      "label_dynamic",
+      false
+    );
     const label23 = new CSS2DObject(div23);
     label23.position.set(-0.7, -2.1, -1.32);
 
@@ -868,13 +892,20 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     label24.position.set(-2.2, -1.9, -1.32);
 
     const line25 = createLine([4.56, 0.19, -0.4], [5.6, 1.4, -0.4]);
-    const div25 = createDynamicDiv(this.coiler2Strapper, "label_dynamic", false);
+    const div25 = createDynamicDiv(
+      this.coiler2Strapper,
+      "label_dynamic",
+      false
+    );
     const label25 = new CSS2DObject(div25);
     label25.position.set(-2.5, -1.6, -1.32);
-   
 
     const line26 = createLine([4, 0.19, -0.4], [4.7, 1.6, -0.4]);
-    const div26 = createDynamicDiv(this.coiler1Strapper, "label_dynamic", false);
+    const div26 = createDynamicDiv(
+      this.coiler1Strapper,
+      "label_dynamic",
+      false
+    );
     const label26 = new CSS2DObject(div26);
     label26.position.set(-4.5, -0.6, -1.32);
 
@@ -883,311 +914,335 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     const label27 = new CSS2DObject(div27);
     label27.position.set(-4.1, -0.8, -1.32);
 
-    this.updateTag = setInterval(() => {
-      if(this.coilFinal1){
-        div1.innerHTML =
-        this.coilFinal1
-        if(!this.zoomlabels.includes(label1)){
-          this.zoomlabels.push(label1,line1)
-          this.scene.add(label1,line1)
+    this.updateZoomTag = setInterval(() => {
+      if (this.coilFinal1) {
+        div1.innerHTML = this.coilFinal1;
+        if (!this.zoomlabels.includes(label1)) {
+          this.zoomlabels.push(label1, line1);
+          this.scene.add(label1, line1);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label1 || line1);
-       this.scene.remove(label1,line1)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label1 || line1
+        );
+        this.scene.remove(label1, line1);
       }
-      if(this.coilFinal2){
-        div2.innerHTML =
-        this.coilFinal2
-        if(!this.zoomlabels.includes(label2)){
-          this.zoomlabels.push(label2,line2)
-          this.scene.add(label2,line2)
+      if (this.coilFinal2) {
+        div2.innerHTML = this.coilFinal2;
+        if (!this.zoomlabels.includes(label2)) {
+          this.zoomlabels.push(label2, line2);
+          this.scene.add(label2, line2);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label2 || line2);
-       this.scene.remove(label2,line2)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label2 || line2
+        );
+        this.scene.remove(label2, line2);
       }
-      if(this.coilFinal3){
-        div3.innerHTML =
-        this.coilFinal3
-        if(!this.zoomlabels.includes(label3)){
-          this.zoomlabels.push(label3,line3)
-          this.scene.add(label3,line3)
+      if (this.coilFinal3) {
+        div3.innerHTML = this.coilFinal3;
+        if (!this.zoomlabels.includes(label3)) {
+          this.zoomlabels.push(label3, line3);
+          this.scene.add(label3, line3);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label3 || line3);
-       this.scene.remove(label3,line3)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label3 || line3
+        );
+        this.scene.remove(label3, line3);
       }
-      if(this.coilFinal4){
-        div4.innerHTML =
-        this.coilFinal4
-        if(!this.zoomlabels.includes(label4)){
-          this.zoomlabels.push(label4,line4)
-          this.scene.add(label4,line4)
+      if (this.coilFinal4) {
+        div4.innerHTML = this.coilFinal4;
+        if (!this.zoomlabels.includes(label4)) {
+          this.zoomlabels.push(label4, line4);
+          this.scene.add(label4, line4);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label4 || line4);
-       this.scene.remove(label4,line4)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label4 || line4
+        );
+        this.scene.remove(label4, line4);
       }
-      if(this.coilFinal5){
-        div5.innerHTML =
-        this.coilFinal5
-        if(!this.zoomlabels.includes(label5)){
-          this.zoomlabels.push(label5,line5)
-          this.scene.add(label5,line5)
+      if (this.coilFinal5) {
+        div5.innerHTML = this.coilFinal5;
+        if (!this.zoomlabels.includes(label5)) {
+          this.zoomlabels.push(label5, line5);
+          this.scene.add(label5, line5);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label5 || line5);
-       this.scene.remove(label5,line5)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label5 || line5
+        );
+        this.scene.remove(label5, line5);
       }
-      if(this.coilFinal6){
-        div6.innerHTML =
-        this.coilFinal6
-        if(!this.zoomlabels.includes(label6)){
-          this.zoomlabels.push(label6,line6)
-          this.scene.add(label6,line6)
+      if (this.coilFinal6) {
+        div6.innerHTML = this.coilFinal6;
+        if (!this.zoomlabels.includes(label6)) {
+          this.zoomlabels.push(label6, line6);
+          this.scene.add(label6, line6);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label6 || line6);
-       this.scene.remove(label6,line6)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label6 || line6
+        );
+        this.scene.remove(label6, line6);
       }
-      if(this.coilFinal7){
-        div7.innerHTML =
-        this.coilFinal7
-        if(!this.zoomlabels.includes(label7)){
-          this.zoomlabels.push(label7,line7)
-          this.scene.add(label7,line7)
+      if (this.coilFinal7) {
+        div7.innerHTML = this.coilFinal7;
+        if (!this.zoomlabels.includes(label7)) {
+          this.zoomlabels.push(label7, line7);
+          this.scene.add(label7, line7);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label7 || line7);
-       this.scene.remove(label7,line7)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label7 || line7
+        );
+        this.scene.remove(label7, line7);
       }
-      if(this.coilFinal8){
-        div8.innerHTML =
-        this.coilFinal8
-        if(!this.zoomlabels.includes(label8)){
-          this.zoomlabels.push(label8,line8)
-          this.scene.add(label8,line8)
+      if (this.coilFinal8) {
+        div8.innerHTML = this.coilFinal8;
+        if (!this.zoomlabels.includes(label8)) {
+          this.zoomlabels.push(label8, line8);
+          this.scene.add(label8, line8);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label8 || line8);
-       this.scene.remove(label8,line8)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label8 || line8
+        );
+        this.scene.remove(label8, line8);
       }
-      if(this.coilFinal9){
-        div9.innerHTML =
-        this.coilFinal9
-        if(!this.zoomlabels.includes(label9)){
-          this.zoomlabels.push(label9,line9)
-          this.scene.add(label9,line9)
+      if (this.coilFinal9) {
+        div9.innerHTML = this.coilFinal9;
+        if (!this.zoomlabels.includes(label9)) {
+          this.zoomlabels.push(label9, line9);
+          this.scene.add(label9, line9);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label9 || line9);
-       this.scene.remove(label9,line9)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label9 || line9
+        );
+        this.scene.remove(label9, line9);
       }
-      if(this.coilFinal10){
-        div10.innerHTML =
-        this.coilFinal10
-        if(!this.zoomlabels.includes(label10)){
-          this.zoomlabels.push(label10,line10)
-          this.scene.add(label10,line10)
+      if (this.coilFinal10) {
+        div10.innerHTML = this.coilFinal10;
+        if (!this.zoomlabels.includes(label10)) {
+          this.zoomlabels.push(label10, line10);
+          this.scene.add(label10, line10);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label10 || line10);
-       this.scene.remove(label10,line10)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label10 || line10
+        );
+        this.scene.remove(label10, line10);
       }
-      if(this.coilFinal11){
-        div11.innerHTML =
-        this.coilFinal11
-        if(!this.zoomlabels.includes(label11)){
-          this.zoomlabels.push(label11,line11)
-          this.scene.add(label11,line11)
+      if (this.coilFinal11) {
+        div11.innerHTML = this.coilFinal11;
+        if (!this.zoomlabels.includes(label11)) {
+          this.zoomlabels.push(label11, line11);
+          this.scene.add(label11, line11);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label11 || line11);
-       this.scene.remove(label11,line11)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label11 || line11
+        );
+        this.scene.remove(label11, line11);
       }
-      if(this.coilFinal12){
-        div12.innerHTML =
-        this.coilFinal12
-        if(!this.zoomlabels.includes(label12)){
-          this.zoomlabels.push(label12,line12)
-          this.scene.add(label12,line12)
+      if (this.coilFinal12) {
+        div12.innerHTML = this.coilFinal12;
+        if (!this.zoomlabels.includes(label12)) {
+          this.zoomlabels.push(label12, line12);
+          this.scene.add(label12, line12);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label12 || line12);
-       this.scene.remove(label12,line12)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label12 || line12
+        );
+        this.scene.remove(label12, line12);
       }
-      if(this.coilFinal13){
-        div13.innerHTML =
-        this.coilFinal13
-        if(!this.zoomlabels.includes(label13)){
-          this.zoomlabels.push(label13,line13)
-          this.scene.add(label13,line13)
+      if (this.coilFinal13) {
+        div13.innerHTML = this.coilFinal13;
+        if (!this.zoomlabels.includes(label13)) {
+          this.zoomlabels.push(label13, line13);
+          this.scene.add(label13, line13);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label13 || line13);
-       this.scene.remove(label13,line13)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label13 || line13
+        );
+        this.scene.remove(label13, line13);
       }
-      if(this.coilFinal14){
-        div14.innerHTML =
-        this.coilFinal14
-        if(!this.zoomlabels.includes(label14)){
-          this.zoomlabels.push(label14,line14)
-          this.scene.add(label14,line14)
+      if (this.coilFinal14) {
+        div14.innerHTML = this.coilFinal14;
+        if (!this.zoomlabels.includes(label14)) {
+          this.zoomlabels.push(label14, line14);
+          this.scene.add(label14, line14);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label14 || line14);
-       this.scene.remove(label14,line14)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label14 || line14
+        );
+        this.scene.remove(label14, line14);
       }
-      if(this.coilFinal15){
-        div15.innerHTML =
-        this.coilFinal15
-        if(!this.zoomlabels.includes(label15)){
-          this.zoomlabels.push(label15,line15)
-          this.scene.add(label15,line15)
+      if (this.coilFinal15) {
+        div15.innerHTML = this.coilFinal15;
+        if (!this.zoomlabels.includes(label15)) {
+          this.zoomlabels.push(label15, line15);
+          this.scene.add(label15, line15);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label15 || line15);
-       this.scene.remove(label15,line15)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label15 || line15
+        );
+        this.scene.remove(label15, line15);
       }
-      if(this.coilFinal16){
-        div16.innerHTML =
-        this.coilFinal16
-        if(!this.zoomlabels.includes(label16)){
-          this.zoomlabels.push(label16,line16)
-          this.scene.add(label16,line16)
+      if (this.coilFinal16) {
+        div16.innerHTML = this.coilFinal16;
+        if (!this.zoomlabels.includes(label16)) {
+          this.zoomlabels.push(label16, line16);
+          this.scene.add(label16, line16);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label16 || line16);
-       this.scene.remove(label16,line16)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label16 || line16
+        );
+        this.scene.remove(label16, line16);
       }
-      if(this.coilFinal17){
-        div17.innerHTML =
-        this.coilFinal17
-        if(!this.zoomlabels.includes(label17)){
-          this.zoomlabels.push(label17,line17)
-          this.scene.add(label17,line17)
+      if (this.coilFinal17) {
+        div17.innerHTML = this.coilFinal17;
+        if (!this.zoomlabels.includes(label17)) {
+          this.zoomlabels.push(label17, line17);
+          this.scene.add(label17, line17);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label17 || line17);
-       this.scene.remove(label17,line17)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label17 || line17
+        );
+        this.scene.remove(label17, line17);
       }
-      if(this.coilFinal18){
-        div18.innerHTML =
-        this.coilFinal18
-        if(!this.zoomlabels.includes(label18)){
-          this.zoomlabels.push(label18,line18)
-          this.scene.add(label18,line18)
+      if (this.coilFinal18) {
+        div18.innerHTML = this.coilFinal18;
+        if (!this.zoomlabels.includes(label18)) {
+          this.zoomlabels.push(label18, line18);
+          this.scene.add(label18, line18);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label18 || line18);
-       this.scene.remove(label18,line18)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label18 || line18
+        );
+        this.scene.remove(label18, line18);
       }
-      if(this.coiler4Strapper){
-        div20.innerHTML =
-        this.coiler4Strapper
-        if(!this.zoomlabels.includes(label20)){
-          this.zoomlabels.push(label20,line20)
-          this.scene.add(label20,line20)
+      if (this.coiler4Strapper) {
+        div20.innerHTML = this.coiler4Strapper;
+        if (!this.zoomlabels.includes(label20)) {
+          this.zoomlabels.push(label20, line20);
+          this.scene.add(label20, line20);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label20 || line20);
-       this.scene.remove(label20,line20)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label20 || line20
+        );
+        this.scene.remove(label20, line20);
       }
-      if(this.coiler4Tilter){
-        div21.innerHTML =
-        this.coiler4Tilter
-        if(!this.zoomlabels.includes(label21)){
-          this.zoomlabels.push(label21,line21)
-          this.scene.add(label21,line21)
+      if (this.coiler4Tilter) {
+        div21.innerHTML = this.coiler4Tilter;
+        if (!this.zoomlabels.includes(label21)) {
+          this.zoomlabels.push(label21, line21);
+          this.scene.add(label21, line21);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label21 || line21);
-       this.scene.remove(label21,line21)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label21 || line21
+        );
+        this.scene.remove(label21, line21);
       }
-      if(this.coiler3Tilter){
-        div22.innerHTML =
-        this.coiler3Tilter
-        if(!this.zoomlabels.includes(label22)){
-          this.zoomlabels.push(label22,line22)
-          this.scene.add(label22,line22)
+      if (this.coiler3Tilter) {
+        div22.innerHTML = this.coiler3Tilter;
+        if (!this.zoomlabels.includes(label22)) {
+          this.zoomlabels.push(label22, line22);
+          this.scene.add(label22, line22);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label22 || line22);
-       this.scene.remove(label22,line22)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label22 || line22
+        );
+        this.scene.remove(label22, line22);
       }
-      if(this.coiler3Strapper){
-        div23.innerHTML =
-        this.coiler3Strapper
-        if(!this.zoomlabels.includes(label23)){
-          this.zoomlabels.push(label23,line23)
-          this.scene.add(label23,line23)
+      if (this.coiler3Strapper) {
+        div23.innerHTML = this.coiler3Strapper;
+        if (!this.zoomlabels.includes(label23)) {
+          this.zoomlabels.push(label23, line23);
+          this.scene.add(label23, line23);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label23 || line23);
-       this.scene.remove(label23,line23)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label23 || line23
+        );
+        this.scene.remove(label23, line23);
       }
-      if(this.coiler2Tilter){
-        div24.innerHTML =
-        this.coiler2Tilter
-        if(!this.zoomlabels.includes(label24)){
-          this.zoomlabels.push(label24,line24)
-          this.scene.add(label24,line24)
+      if (this.coiler2Tilter) {
+        div24.innerHTML = this.coiler2Tilter;
+        if (!this.zoomlabels.includes(label24)) {
+          this.zoomlabels.push(label24, line24);
+          this.scene.add(label24, line24);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label24 || line24);
-       this.scene.remove(label24,line24)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label24 || line24
+        );
+        this.scene.remove(label24, line24);
       }
-      if(this.coiler2Strapper){
-        div25.innerHTML =
-        this.coiler2Strapper
-        if(!this.zoomlabels.includes(label25)){
-          this.zoomlabels.push(label25,line25)
-          this.scene.add(label25,line25)
+      if (this.coiler2Strapper) {
+        div25.innerHTML = this.coiler2Strapper;
+        if (!this.zoomlabels.includes(label25)) {
+          this.zoomlabels.push(label25, line25);
+          this.scene.add(label25, line25);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label25 || line25);
-       this.scene.remove(label25,line25)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label25 || line25
+        );
+        this.scene.remove(label25, line25);
       }
-      if(this.coiler1Strapper){
-        div26.innerHTML =
-        this.coiler1Strapper
-        if(!this.zoomlabels.includes(label26)){
-          this.zoomlabels.push(label26,line26)
-          this.scene.add(label26,line26)
+      if (this.coiler1Strapper) {
+        div26.innerHTML = this.coiler1Strapper;
+        if (!this.zoomlabels.includes(label26)) {
+          this.zoomlabels.push(label26, line26);
+          this.scene.add(label26, line26);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label26 || line26);
-       this.scene.remove(label26,line26)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label26 || line26
+        );
+        this.scene.remove(label26, line26);
       }
-      if(this.coiler1Tilter){
-        div27.innerHTML =
-        this.coiler1Tilter
-        if(!this.zoomlabels.includes(label27)){
-          this.zoomlabels.push(label27,line27)
-          this.scene.add(label27,line27)
+      if (this.coiler1Tilter) {
+        div27.innerHTML = this.coiler1Tilter;
+        if (!this.zoomlabels.includes(label27)) {
+          this.zoomlabels.push(label27, line27);
+          this.scene.add(label27, line27);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label27 || line27);
-       this.scene.remove(label27,line27)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label27 || line27
+        );
+        this.scene.remove(label27, line27);
       }
 
-
-      if(this.coil1|| this.coil2|| this.coil3|| this.coil4){
-        div19.innerHTML =
-        this.coil1|| this.coil2|| this.coil3|| this.coil4
-        if(!this.zoomlabels.includes(label19)){
-          this.zoomlabels.push(label19,line19)
-          this.scene.add(label19,line19)
+      if (this.coil1 || this.coil2 || this.coil3 || this.coil4) {
+        div19.innerHTML = this.coil1 || this.coil2 || this.coil3 || this.coil4;
+        if (!this.zoomlabels.includes(label19)) {
+          this.zoomlabels.push(label19, line19);
+          this.scene.add(label19, line19);
         }
-      }else{
-       this.zoomlabels = this.zoomlabels.filter(item => item !== label19 || line19);
-       this.scene.remove(label19,line19)
+      } else {
+        this.zoomlabels = this.zoomlabels.filter(
+          (item) => item !== label19 || line19
+        );
+        this.scene.remove(label19, line19);
       }
 
-   
-    //  loopadd
+      //  loopadd
     }, 1000);
-
 
     const coilFinals = [
       { coil: this.coilFinal1, label: label1, line: line1 },
@@ -1197,38 +1252,38 @@ export class TrackingThreeJsComponent implements AfterViewInit {
       { coil: this.coilFinal5, label: label5, line: line5 },
       { coil: this.coilFinal6, label: label6, line: line6 },
       { coil: this.coilFinal7, label: label7, line: line7 },
-      { coil: this.coilFinal8, label: label8, line: line8 }, 
-      { coil: this.coilFinal9, label: label9, line: line9 }, 
-      { coil: this.coilFinal10, label: label10, line: line10 }, 
-      { coil: this.coilFinal11, label: label11, line: line11 }, 
-      { coil: this.coilFinal12, label: label12, line: line12 }, 
-      { coil: this.coilFinal13, label: label13, line: line13 }, 
-      { coil: this.coilFinal14, label: label14, line: line14 }, 
-      { coil: this.coilFinal15, label: label15, line: line15 }, 
-      { coil: this.coilFinal16, label: label16, line: line16 }, 
-      { coil: this.coilFinal17, label: label17, line: line17 }, 
-      { coil: this.coilFinal18, label: label18, line: line18 }, 
-      { coil: this.coil1|| this.coil2|| this.coil3|| this.coil4, label: label19, line :line19  }, 
-      { coil: this.coiler4Strapper, label: label20, line: line20 }, 
-      { coil: this.coiler4Tilter, label: label21, line: line21 }, 
-      { coil: this.coiler3Tilter, label: label22, line: line22 }, 
-      { coil: this.coiler3Strapper, label: label23, line: line23 }, 
-      { coil: this.coiler2Tilter, label: label24, line: line24 }, 
-      { coil: this.coiler2Strapper, label: label25, line: line25 }, 
-      { coil: this.coiler1Strapper, label: label26, line: line26 }, 
-      { coil: this.coiler1Tilter, label: label27, line: line27 }, 
-
+      { coil: this.coilFinal8, label: label8, line: line8 },
+      { coil: this.coilFinal9, label: label9, line: line9 },
+      { coil: this.coilFinal10, label: label10, line: line10 },
+      { coil: this.coilFinal11, label: label11, line: line11 },
+      { coil: this.coilFinal12, label: label12, line: line12 },
+      { coil: this.coilFinal13, label: label13, line: line13 },
+      { coil: this.coilFinal14, label: label14, line: line14 },
+      { coil: this.coilFinal15, label: label15, line: line15 },
+      { coil: this.coilFinal16, label: label16, line: line16 },
+      { coil: this.coilFinal17, label: label17, line: line17 },
+      { coil: this.coilFinal18, label: label18, line: line18 },
+      {
+        coil: this.coil1 || this.coil2 || this.coil3 || this.coil4,
+        label: label19,
+        line: line19,
+      },
+      { coil: this.coiler4Strapper, label: label20, line: line20 },
+      { coil: this.coiler4Tilter, label: label21, line: line21 },
+      { coil: this.coiler3Tilter, label: label22, line: line22 },
+      { coil: this.coiler3Strapper, label: label23, line: line23 },
+      { coil: this.coiler2Tilter, label: label24, line: line24 },
+      { coil: this.coiler2Strapper, label: label25, line: line25 },
+      { coil: this.coiler1Strapper, label: label26, line: line26 },
+      { coil: this.coiler1Tilter, label: label27, line: line27 },
     ];
-    
+
     coilFinals.forEach(({ coil, label, line }) => {
       if (coil) {
         this.zoomlabels.push(label, line);
         this.scene.add(label, line);
       }
     });
-
-
- 
   }
 
   colapse() {
@@ -1256,9 +1311,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
         mesh.visible = true;
         let parts = flag.split("-");
         if (parts[parts.length - 1][0] == "C") {
-          (mesh.material as THREE.MeshStandardMaterial).color.set(0xff9f8b);
+          (mesh.material as THREE.MeshStandardMaterial).color.set(0xbd4115);
         } else {
-          (mesh.material as THREE.MeshStandardMaterial).color.set(0x7dbdfb);
+          (mesh.material as THREE.MeshStandardMaterial).color.set(0x1768ab);
         }
       } else {
         mesh.visible = false;
@@ -1366,9 +1421,10 @@ export class TrackingThreeJsComponent implements AfterViewInit {
 
         // # UPDATE COIL
 
-        if (mesh.name === "Cylinder_35") {
-          mesh.rotation.y -= 0.3;
-        }
+        // if (mesh.name === "baseroler") {
+        //   mesh.rotation.y -= 0.3;
+        // }
+
         if (mesh.name === "Coil1") {
           this.coil1 == "" || this.coil1 == null
             ? (mesh.visible = false)
@@ -1754,6 +1810,9 @@ export class TrackingThreeJsComponent implements AfterViewInit {
           // this[`coilFinal${i}`] = "all";
         }
         this.coilFinal19 = this.trackingData.ttc4;
+        if (this.loading == true) {
+          this.showTag();
+        }
 
         this.loading = false;
       },
