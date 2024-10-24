@@ -141,6 +141,7 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     ["oranges", ""],
   ]);
   rollingseq = [];
+  rollingseqModify = [];
   loading = true;
   status = "";
   millsStandStatus = "";
@@ -388,9 +389,10 @@ export class TrackingThreeJsComponent implements AfterViewInit {
     }
   }
   log() {
-    console.log(this.orcamera.position);
-    console.log(this.orcamera.zoom);
-    console.log(this.controls.target);
+    // console.log(this.orcamera.position);
+    // console.log(this.orcamera.zoom);
+    // console.log(this.controls.target);
+    console.log(this.rollingseqModify)
     // console.log(this.camera.position);
     // console.log(this.camera.zoom);
   }
@@ -1727,9 +1729,17 @@ export class TrackingThreeJsComponent implements AfterViewInit {
           this.trackingData.ROLLINGSEQ == "" ||
           this.trackingData.ROLLINGSEQ == null
         ) {
-          this.rollingseq = Array(20).fill("__");
+          this.rollingseq = Array(20).fill("_-_-_-_-");
+          this.rollingseqModify = this.rollingseq.map(item => {
+            const [id, thick, width, dest, fur] = item.split('-');
+            return { id: parseInt(id), thick: parseFloat(thick), width: parseInt(width), dest, fur: parseInt(fur) };
+          });
         } else {
           this.rollingseq = this.trackingData.ROLLINGSEQ.split("|");
+          this.rollingseqModify = this.rollingseq.map(item => {
+            const [id, thick, width, grade, fur] = item.split('-');
+            return { id: parseInt(id), thick: parseFloat(thick), width: parseInt(width), grade, fur: parseInt(fur) };
+          });
         }
 
         if (this.trackingData.MILLSTATUS == 6) {

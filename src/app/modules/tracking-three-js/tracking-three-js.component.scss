@@ -35,14 +35,26 @@ canvas {
     position: absolute;
     top: 0;
     right: 0;
-    width: 280px;
+    width: 380px;
     // height: 100%;
   
     // padding: 10px;
     box-sizing: border-box;
-    background-color: rgba(67, 67, 67, 0.326);
+    background-color: rgba(210, 210, 210, 0.326);
     color: rgb(80, 80, 80);
     border: 1px solid rgb(114, 114, 114);
+}
+.sm {
+
+    width: 380px;
+
+}
+.seq {
+    padding: 5px;
+    width: 380px;
+    // height: 100%;
+  
+
 }
 .collapsible__content {
   max-height: 0px;
@@ -112,4 +124,30 @@ canvas {
   padding: 5px;
   border-radius: 5px;
   color: green;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  font-size: 14px;
+
+  padding: 1px;
+  text-align: center;
+  border: 1px solid #a4a4a4;
+}
+.table td {
+  font-weight: 400;
+  text-shadow: 0 0 5px white;
+}
+
+.table th {
+  background-color: #c4c4c4;
+}
+#status{
+  font-size: 18px;
+  color: gold;
+  font-weight: 600;
 }
